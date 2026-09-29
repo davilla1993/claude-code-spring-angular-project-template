@@ -1,0 +1,39 @@
+# Java / Spring Boot
+*.class
+*.log
+*.jar
+*.war
+*.ear
+target/
+!.mvn/wrapper/maven-wrapper.jar
+build/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+.history/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+.npm/
+npm-debug.log*
+yarn-error.log*
+.yarn/
+
+# OS / Environment
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log

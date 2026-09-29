@@ -1,0 +1,48 @@
+# API CONTRACT TEMPLATE
+<!-- This is a template. Fill the sections below based on the project's specific needs. -->
+
+## 1. General Information
+- **Base URL**: `https://api.project.com/v1`
+- **Content-Type**: `application/json`
+- **Authentication**: Bearer Token (`Authorization: Bearer <token>`)
+
+## 2. Endpoints
+
+### [Module Name]
+#### `GET /resource`
+- **Description**: Retrieve a list of resources.
+- **Query Params**:
+    - `page` (int)
+    - `size` (int)
+- **Success Response (200 OK)**:
+  ```json
+  [ { "id": 1, "name": "Example" } ]
+  ```
+- **Error Responses**:
+    - `401 Unauthorized`: Missing or invalid token.
+    - `403 Forbidden`: Insufficient permissions.
+
+#### `POST /resource`
+- **Description**: Create a new resource.
+- **Request Body**:
+  ```json
+  { "name": "New Resource" }
+  ```
+- **Success Response (201 Created)**:
+  ```json
+  { "id": 2, "name": "New Resource" }
+  ```
+- **Error Responses**:
+    - `400 Bad Request`: Validation failed.
+
+## 3. Error Handling
+Standard error response format:
+```json
+{
+  "timestamp": "2023-10-27T10:00:00Z",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Invalid field: 'name' cannot be null",
+  "path": "/v1/resource"
+}
+```

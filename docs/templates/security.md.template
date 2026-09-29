@@ -1,0 +1,31 @@
+# SECURITY DOCUMENT TEMPLATE
+<!-- This is a template. Fill the sections below based on the project's specific needs. -->
+
+## 1. Authentication
+- How users are authenticated (JWT, OAuth2, Session).
+- Token lifecycle (Expiration, Refresh tokens).
+- Password hashing algorithm (BCrypt, Argon2).
+
+## 2. Authorization
+- RBAC (Role-Based Access Control) / ABAC (Attribute-Based Access Control).
+- Mapping of roles to permissions.
+- How authorization is enforced (Spring Security `@PreAuthorize`, Angular Guards).
+
+## 3. Data Protection
+- Encryption of sensitive data at rest.
+- TLS/SSL for data in transit.
+- Management of secrets (Environment variables, Vault).
+
+## 4. Input Validation & Sanitization
+- Strategies to prevent XSS (Cross-Site Scripting).
+- Strategies to prevent SQL Injection (Spring Data JPA).
+- Validation rules (Bean Validation / JSR 303).
+
+## 5. API Security
+- Rate limiting.
+- CORS configuration.
+- Error message sanitization (Avoiding leak of internal system info).
+
+## 6. Audit & Compliance
+- Logging of security-critical events.
+- Compliance standards (GDPR, HIPAA, etc.).

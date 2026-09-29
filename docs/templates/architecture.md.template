@@ -1,0 +1,41 @@
+# ARCHITECTURE DOCUMENT TEMPLATE
+<!-- This is a template. Fill the sections below based on the project's specific needs. -->
+
+## 1. System Overview
+Brief description of the system, its purpose, and the high-level architecture (e.g., Monolithic, Microservices).
+
+## 2. Technical Stack
+- **Backend**: Spring Boot (version), Java (version)
+- **Frontend**: Angular (version), TypeScript (version)
+- **Database**: PostgreSQL / MySQL / MongoDB
+- **Cache**: Redis / Caffeine
+- **Auth**: JWT / OAuth2 / Spring Security
+- **Infrastructure**: Docker, Kubernetes, etc.
+
+## 3. Backend Architecture
+### 3.1 Package Structure
+Description of the package organization (e.g., DDD-light).
+
+### 3.2 Domain Model
+High-level description of the core entities and their relationships.
+
+### 3.3 Integration Points
+List of external APIs or services the system interacts with.
+
+## 4. Frontend Architecture
+### 4.1 State Management
+(e.g., Signals, NgRx, Simple Services).
+
+### 4.2 Component Hierarchy
+Description of the main modules and their responsibilities.
+
+## 5. Data Flow
+Step-by-step description of a typical request flow from the UI to the Database and back.
+
+## 6. Infrastructure & Deployment
+- CI/CD Pipeline flow.
+- Deployment strategy (Blue/Green, Canary).
+- Monitoring and Logging (ELK, Prometheus, etc.).
+
+## 7. Architectural Decisions (ADR)
+Refer to `docs/adr/` for detailed records of architectural decisions.
