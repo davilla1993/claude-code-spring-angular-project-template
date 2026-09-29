@@ -1,4 +1,4 @@
-# Claude Code — Spring Boot + Angular Project Template
+# Claude Code - Spring Boot + Angular Project Template
 
 Template d'initialisation pour projets professionnels en monorepo.
 

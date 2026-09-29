@@ -1,4 +1,4 @@
-# Backend — Spring Boot
+# Backend - Spring Boot
 
 Les règles de la racine s'appliquent toujours.
 

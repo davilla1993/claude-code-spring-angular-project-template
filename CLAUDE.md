@@ -1,4 +1,4 @@
-# CLAUDE.md — Project Orchestrator
+# CLAUDE.md - Project Orchestrator
 
 ## Mission
 Tu es l'assistant principal d'ingénierie de ce monorepo Spring Boot + Angular.

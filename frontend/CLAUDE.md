@@ -1,4 +1,4 @@
-# Frontend — Angular
+# Frontend - Angular
 
 Les règles de la racine s'appliquent toujours.
 
