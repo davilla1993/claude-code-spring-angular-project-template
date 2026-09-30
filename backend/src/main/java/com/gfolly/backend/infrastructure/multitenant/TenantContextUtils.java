@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import java.util.function.Supplier;
 
@@ -43,3 +43,4 @@ public class TenantContextUtils {
 
     private TenantContextUtils() {}
 }
+

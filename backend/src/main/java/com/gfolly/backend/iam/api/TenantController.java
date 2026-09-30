@@ -1,16 +1,16 @@
-package com.gfolly.quantly_backend.iam.api;
+package com.gfolly.backend.iam.api;
 
-import com.gfolly.quantly_backend.iam.api.dto.requests.UpdateTenantRequest;
-import com.gfolly.quantly_backend.iam.api.dto.responses.TenantResponse;
-import com.gfolly.quantly_backend.iam.application.UpdateTenantUseCase;
-import com.gfolly.quantly_backend.iam.domain.Tenant;
-import com.gfolly.quantly_backend.iam.domain.exception.TenantNotFoundException;
-import com.gfolly.quantly_backend.iam.infrastructure.mapper.TenantMapper;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.TenantRepository;
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
-import com.gfolly.quantly_backend.infrastructure.storage.StoragePort;
-import com.gfolly.quantly_backend.shared.api.ApiResponse;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.iam.api.dto.requests.UpdateTenantRequest;
+import com.gfolly.backend.iam.api.dto.responses.TenantResponse;
+import com.gfolly.backend.iam.application.UpdateTenantUseCase;
+import com.gfolly.backend.iam.domain.Tenant;
+import com.gfolly.backend.iam.domain.exception.TenantNotFoundException;
+import com.gfolly.backend.iam.infrastructure.mapper.TenantMapper;
+import com.gfolly.backend.iam.infrastructure.repository.TenantRepository;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.infrastructure.storage.StoragePort;
+import com.gfolly.backend.shared.api.ApiResponse;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -34,7 +34,7 @@ public class TenantController {
     @PreAuthorize("isAuthenticated()")
     @Cacheable(
         cacheNames = "tenants", 
-        key = "T(com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
+        key = "T(com.gfolly.backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
     )
     public ResponseEntity<ApiResponse<TenantResponse>> getMyTenant() {
         String tenantId = TenantContext.getCurrentTenant();
@@ -47,7 +47,7 @@ public class TenantController {
     @PreAuthorize("hasAuthority('tenant:update')")
     @CacheEvict(
         cacheNames = "tenants",
-        key = "T(com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
+        key = "T(com.gfolly.backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
     )
     public ResponseEntity<ApiResponse<TenantResponse>> updateMyTenant(@Valid @RequestBody UpdateTenantRequest request) {
         return ResponseEntity.ok(ApiResponse.success(updateTenantUseCase.execute(request)));
@@ -57,7 +57,7 @@ public class TenantController {
     @PreAuthorize("hasAuthority('tenant:update')")
     @CacheEvict(
         cacheNames = "tenants",
-        key = "T(com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
+        key = "T(com.gfolly.backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
     )
     public ResponseEntity<ApiResponse<TenantResponse>> uploadLogo(@RequestParam("file") MultipartFile file) {
         String tenantId = TenantContext.getCurrentTenant();
@@ -77,7 +77,7 @@ public class TenantController {
     @PreAuthorize("hasAuthority('tenant:update')")
     @CacheEvict(
         cacheNames = "tenants",
-        key = "T(com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
+        key = "T(com.gfolly.backend.infrastructure.multitenant.TenantContext).getCurrentTenant()"
     )
     public ResponseEntity<ApiResponse<TenantResponse>> deleteLogo() {
         String tenantId = TenantContext.getCurrentTenant();
@@ -92,4 +92,5 @@ public class TenantController {
         return ResponseEntity.ok(ApiResponse.success(TenantMapper.toResponse(tenant)));
     }
 }
+
 

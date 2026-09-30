@@ -1,11 +1,11 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.domain.PasswordResetToken;
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.infrastructure.email.EmailService;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.PasswordResetTokenRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.iam.domain.PasswordResetToken;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.infrastructure.email.EmailService;
+import com.gfolly.backend.iam.infrastructure.repository.PasswordResetTokenRepository;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,3 +51,4 @@ public class ForgotPasswordUseCase {
         return String.valueOf(new SecureRandom().nextInt(900_000) + 100_000);
     }
 }
+

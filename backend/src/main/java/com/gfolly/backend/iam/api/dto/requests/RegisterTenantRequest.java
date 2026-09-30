@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.requests;
+package com.gfolly.backend.iam.api.dto.requests;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -41,4 +41,5 @@ public record RegisterTenantRequest(
         @Pattern(regexp = "^\\+?[0-9\\s-]{8,20}$", message = "Numéro de téléphone invalide")
         String phone
 ) {}
+
 

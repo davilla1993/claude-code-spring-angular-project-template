@@ -1,7 +1,6 @@
-package com.gfolly.quantly_backend.iam.domain;
+package com.gfolly.backend.iam.domain;
 
-import com.gfolly.quantly_backend.cashdesk.domain.CashRegister;
-import com.gfolly.quantly_backend.shared.domain.TenantAwareEntity;
+import com.gfolly.backend.shared.domain.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,14 +55,10 @@ public class User extends TenantAwareEntity {
     @Column(name = "first_login", nullable = false)
     private Boolean firstLogin = false;
 
-    /** Caisse attribuée à cet utilisateur (nullable — un utilisateur peut ne pas avoir de caisse). */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cash_register_id")
-    private CashRegister cashRegister;
-
     public String getFullName() {
         if (firstName == null && lastName == null) return username != null ? username : email;
         return (firstName != null ? firstName : "") + " " + (lastName != null ? lastName : "");
     }
 }
+
 

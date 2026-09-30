@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.util;
+package com.gfolly.backend.shared.util;
 
 import java.text.Normalizer;
 import java.util.regex.Pattern;
@@ -82,3 +82,4 @@ public class NormalizationUtils {
         return sb.toString();
     }
 }
+

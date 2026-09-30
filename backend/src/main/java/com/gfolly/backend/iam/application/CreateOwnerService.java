@@ -1,8 +1,8 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,3 +29,4 @@ public class CreateOwnerService {
         return saved;
     }
 }
+

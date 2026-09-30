@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.iam.domain;
+package com.gfolly.backend.iam.domain;
 
-import com.gfolly.quantly_backend.shared.domain.BaseEntity;
+import com.gfolly.backend.shared.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,3 +33,4 @@ public class PasswordResetToken extends BaseEntity {
         return !used && !isExpired();
     }
 }
+

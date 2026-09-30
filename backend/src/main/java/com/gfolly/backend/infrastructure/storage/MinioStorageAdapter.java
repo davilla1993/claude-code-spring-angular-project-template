@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.storage;
+package com.gfolly.backend.infrastructure.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,3 +43,4 @@ public class MinioStorageAdapter implements StoragePort {
         );
     }
 }
+

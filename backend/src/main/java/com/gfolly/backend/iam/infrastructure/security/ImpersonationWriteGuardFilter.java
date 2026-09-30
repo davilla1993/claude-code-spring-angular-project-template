@@ -1,8 +1,7 @@
-package com.gfolly.quantly_backend.iam.infrastructure.security;
+package com.gfolly.backend.iam.infrastructure.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gfolly.quantly_backend.shared.api.ApiResponse;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.shared.api.ApiResponse;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -99,3 +99,4 @@ public class ImpersonationWriteGuardFilter extends OncePerRequestFilter {
         return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
     }
 }
+

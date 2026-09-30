@@ -1,8 +1,8 @@
-package com.gfolly.quantly_backend.infrastructure.config;
+package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.quantly_backend.iam.infrastructure.security.ImpersonationWriteGuardFilter;
-import com.gfolly.quantly_backend.iam.infrastructure.security.JwtAuthenticationFilter;
-import com.gfolly.quantly_backend.infrastructure.security.RateLimitFilter;
+import com.gfolly.backend.iam.infrastructure.security.ImpersonationWriteGuardFilter;
+import com.gfolly.backend.iam.infrastructure.security.JwtAuthenticationFilter;
+import com.gfolly.backend.infrastructure.security.RateLimitFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,3 +95,4 @@ public class SecurityConfig {
         return source;
     }
 }
+

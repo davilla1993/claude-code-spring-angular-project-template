@@ -1,16 +1,16 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.api.dto.requests.CreateUserRequest;
-import com.gfolly.quantly_backend.iam.api.dto.responses.UserResponse;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.domain.exception.EmailAlreadyExistsException;
-import com.gfolly.quantly_backend.iam.infrastructure.mapper.UserMapper;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
-import com.gfolly.quantly_backend.shared.util.NormalizationUtils;
+import com.gfolly.backend.iam.api.dto.requests.CreateUserRequest;
+import com.gfolly.backend.iam.api.dto.responses.UserResponse;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.exception.EmailAlreadyExistsException;
+import com.gfolly.backend.iam.infrastructure.mapper.UserMapper;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.shared.util.NormalizationUtils;
 import lombok.RequiredArgsConstructor;
-import com.gfolly.quantly_backend.system.infrastructure.service.AuditLogService;
-import com.gfolly.quantly_backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.service.AuditLogService;
+import com.gfolly.backend.system.domain.AuditLog;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,3 +49,4 @@ public class CreateUserUseCase {
         return UserMapper.toResponse(user);
     }
 }
+

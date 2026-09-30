@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.system.domain;
+package com.gfolly.backend.system.domain;
 
-import com.gfolly.quantly_backend.shared.domain.TenantAwareEntity;
+import com.gfolly.backend.shared.domain.TenantAwareEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -56,4 +56,5 @@ public class AuditLog extends TenantAwareEntity {
         FAILED
     }
 }
+
 

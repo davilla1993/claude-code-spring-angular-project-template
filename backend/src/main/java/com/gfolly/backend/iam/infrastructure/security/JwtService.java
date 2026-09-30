@@ -1,9 +1,9 @@
-package com.gfolly.quantly_backend.iam.infrastructure.security;
+package com.gfolly.backend.iam.infrastructure.security;
 
-import com.gfolly.quantly_backend.iam.domain.Permission;
-import com.gfolly.quantly_backend.iam.domain.RefreshToken;
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.Permission;
+import com.gfolly.backend.iam.domain.RefreshToken;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -137,4 +137,5 @@ public class JwtService {
         }
     }
 }
+
 

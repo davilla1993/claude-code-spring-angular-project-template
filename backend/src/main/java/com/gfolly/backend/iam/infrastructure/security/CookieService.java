@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.infrastructure.security;
+package com.gfolly.backend.iam.infrastructure.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,3 +72,4 @@ public class CookieService {
         response.addHeader("Set-Cookie", refreshCookie.toString());
     }
 }
+

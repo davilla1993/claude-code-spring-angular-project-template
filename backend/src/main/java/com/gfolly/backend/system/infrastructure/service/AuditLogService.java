@@ -1,9 +1,9 @@
-package com.gfolly.quantly_backend.system.infrastructure.service;
+package com.gfolly.backend.system.infrastructure.service;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
-import com.gfolly.quantly_backend.shared.util.SecurityUtils;
-import com.gfolly.quantly_backend.system.domain.AuditLog;
-import com.gfolly.quantly_backend.system.infrastructure.repository.AuditLogRepository;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.shared.util.SecurityUtils;
+import com.gfolly.backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.repository.AuditLogRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -79,3 +79,4 @@ public class AuditLogService {
         }
     }
 }
+

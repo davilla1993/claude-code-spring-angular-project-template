@@ -1,12 +1,12 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.domain.PasswordResetToken;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.domain.exception.InvalidVerificationCodeException;
-import com.gfolly.quantly_backend.iam.domain.exception.UserNotFoundException;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.PasswordResetTokenRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.iam.domain.PasswordResetToken;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.exception.InvalidVerificationCodeException;
+import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
+import com.gfolly.backend.iam.infrastructure.repository.PasswordResetTokenRepository;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,10 +39,11 @@ public class ResetPasswordUseCase {
         token.setUsed(true);
         String newHash = passwordEncoder.encode(newPassword);
 
-        if (user.getRole() == com.gfolly.quantly_backend.iam.domain.Role.OWNER || user.getRole() == com.gfolly.quantly_backend.iam.domain.Role.COMMANDER) {
+        if (user.getRole() == com.gfolly.backend.iam.domain.Role.OWNER || user.getRole() == com.gfolly.backend.iam.domain.Role.COMMANDER) {
             userRepository.updatePasswordHashGlobal(email, newHash);
         } else {
             userRepository.updatePasswordHash(user.getPublicId(), newHash);
         }
     }
 }
+

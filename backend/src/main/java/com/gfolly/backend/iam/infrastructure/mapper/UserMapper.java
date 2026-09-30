@@ -1,21 +1,11 @@
-package com.gfolly.quantly_backend.iam.infrastructure.mapper;
+package com.gfolly.backend.iam.infrastructure.mapper;
 
-import com.gfolly.quantly_backend.iam.api.dto.responses.UserResponse;
-import com.gfolly.quantly_backend.iam.domain.User;
+import com.gfolly.backend.iam.api.dto.responses.UserResponse;
+import com.gfolly.backend.iam.domain.User;
 
 public class UserMapper {
 
     public static UserResponse toResponse(User user, String tenantSlug, String tenantName, String tenantLogoUrl, String plan) {
-        String cashRegisterId   = null;
-        String cashRegisterName = null;
-        try {
-            if (user.getCashRegister() != null) {
-                cashRegisterId   = user.getCashRegister().getPublicId();
-                cashRegisterName = user.getCashRegister().getName();
-            }
-        } catch (Exception ignored) {
-            // FK orpheline ou entité filtrée par @TenantId : on retourne null sans planter
-        }
         return new UserResponse(
                 user.getPublicId(),
                 user.getEmail(),
@@ -33,8 +23,8 @@ public class UserMapper {
                 tenantName,
                 tenantLogoUrl,
                 user.getCreatedAt(),
-                cashRegisterId,
-                cashRegisterName,
+                null,
+                null,
                 plan
         );
     }
@@ -51,4 +41,5 @@ public class UserMapper {
 
     private UserMapper() {}
 }
+
 

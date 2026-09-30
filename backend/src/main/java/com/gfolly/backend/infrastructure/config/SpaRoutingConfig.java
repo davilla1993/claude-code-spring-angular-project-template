@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.infrastructure.config;
+package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -82,4 +82,5 @@ public class SpaRoutingConfig implements WebMvcConfigurer {
                 });
     }
 }
+
 

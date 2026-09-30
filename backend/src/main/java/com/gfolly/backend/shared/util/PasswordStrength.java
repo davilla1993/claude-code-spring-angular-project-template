@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.util;
+package com.gfolly.backend.shared.util;
 
 /**
  * Règles de robustesse : min 6 caractères, une majuscule, une minuscule, un chiffre, un caractère spécial.
@@ -13,3 +13,4 @@ public class PasswordStrength {
 
     private PasswordStrength() {}
 }
+

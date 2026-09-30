@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.application.auth;
+package com.gfolly.backend.iam.application.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,10 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class GetOwnerSummaryUseCase {
 
-    private final GetOwnerGlobalDashboardStatsUseCase getOwnerGlobalDashboardStatsUseCase;
-
     @Transactional(readOnly = true)
     public BigDecimal execute(String email, LocalDate from, LocalDate to) {
-        return getOwnerGlobalDashboardStatsUseCase.execute(email, from, to).totalCA();
+        // Pour le template, on retourne ZERO.
+        // La logique réelle dépendra du module implémenté.
+        return BigDecimal.ZERO;
     }
 }

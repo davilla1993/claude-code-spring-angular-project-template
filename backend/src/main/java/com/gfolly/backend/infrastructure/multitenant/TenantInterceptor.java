@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,4 +32,5 @@ public class TenantInterceptor implements HandlerInterceptor {
         TenantContext.clear();
     }
 }
+
 

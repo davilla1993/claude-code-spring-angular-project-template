@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.system.api.dto.responses;
+package com.gfolly.backend.system.api.dto.responses;
 
-import com.gfolly.quantly_backend.system.domain.AuditLog;
+import com.gfolly.backend.system.domain.AuditLog;
 
 import java.time.LocalDateTime;
 
@@ -16,3 +16,4 @@ public record AuditLogResponse(
         String errorMessage,
         LocalDateTime actionDate
 ) {}
+

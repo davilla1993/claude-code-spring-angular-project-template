@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.util;
+package com.gfolly.backend.shared.util;
 
 public class ErrorMessages {
 
@@ -181,4 +181,5 @@ public class ErrorMessages {
         return String.format("Paramètre requis manquant : '%s'.", paramName);
     }
 }
+
 

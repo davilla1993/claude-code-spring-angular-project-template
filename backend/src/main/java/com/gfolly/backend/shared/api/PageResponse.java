@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.api;
+package com.gfolly.backend.shared.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,3 +35,4 @@ public class PageResponse<T> {
                 .build();
     }
 }
+

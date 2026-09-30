@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.domain.exception;
+package com.gfolly.backend.iam.domain.exception;
 
 public class EmailNotVerifiedException extends RuntimeException {
 
@@ -13,3 +13,4 @@ public class EmailNotVerifiedException extends RuntimeException {
         return userId;
     }
 }
+

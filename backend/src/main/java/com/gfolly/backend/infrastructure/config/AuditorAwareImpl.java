@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.infrastructure.config;
+package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.quantly_backend.shared.util.UserPrincipal;
+import com.gfolly.backend.shared.util.UserPrincipal;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,4 +36,5 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         return Optional.of(principal.toString());
     }
 }
+
 

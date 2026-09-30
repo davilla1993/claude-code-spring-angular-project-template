@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.requests;
+package com.gfolly.backend.iam.api.dto.requests;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -14,3 +14,4 @@ public record VerifyEmailRequest(
         @Pattern(regexp = "\\d{6}", message = "Le code doit être composé de 6 chiffres")
         String code
 ) {}
+

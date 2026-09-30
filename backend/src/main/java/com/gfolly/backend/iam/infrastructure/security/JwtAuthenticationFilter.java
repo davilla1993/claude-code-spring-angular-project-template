@@ -1,7 +1,7 @@
-package com.gfolly.quantly_backend.iam.infrastructure.security;
+package com.gfolly.backend.iam.infrastructure.security;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
-import com.gfolly.quantly_backend.shared.util.UserPrincipal;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.shared.util.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -99,4 +99,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
     }
 }
+
 

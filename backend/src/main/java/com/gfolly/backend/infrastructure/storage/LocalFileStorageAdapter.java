@@ -1,7 +1,7 @@
-package com.gfolly.quantly_backend.infrastructure.storage;
+package com.gfolly.backend.infrastructure.storage;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -91,3 +91,4 @@ public class LocalFileStorageAdapter implements StoragePort {
         }
     }
 }
+

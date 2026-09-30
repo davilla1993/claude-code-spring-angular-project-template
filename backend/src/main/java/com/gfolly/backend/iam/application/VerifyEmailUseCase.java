@@ -1,13 +1,13 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.domain.EmailVerificationToken;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.domain.exception.EmailAlreadyVerifiedException;
-import com.gfolly.quantly_backend.iam.domain.exception.InvalidVerificationCodeException;
-import com.gfolly.quantly_backend.iam.domain.exception.UserNotFoundException;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.EmailVerificationTokenRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.iam.domain.EmailVerificationToken;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.exception.EmailAlreadyVerifiedException;
+import com.gfolly.backend.iam.domain.exception.InvalidVerificationCodeException;
+import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
+import com.gfolly.backend.iam.infrastructure.repository.EmailVerificationTokenRepository;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,3 +43,4 @@ public class VerifyEmailUseCase {
         userRepository.markEmailVerified(user.getPublicId());
     }
 }
+

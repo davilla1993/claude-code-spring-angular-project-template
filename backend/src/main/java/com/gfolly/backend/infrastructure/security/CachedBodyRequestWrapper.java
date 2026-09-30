@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.security;
+package com.gfolly.backend.infrastructure.security;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
@@ -32,3 +32,4 @@ class CachedBodyRequestWrapper extends HttpServletRequestWrapper {
         };
     }
 }
+

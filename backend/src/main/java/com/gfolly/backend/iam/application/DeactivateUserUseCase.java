@@ -1,12 +1,12 @@
-package com.gfolly.quantly_backend.iam.application;
+package com.gfolly.backend.iam.application;
 
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.domain.exception.UserNotFoundException;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.RefreshTokenRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
-import com.gfolly.quantly_backend.system.infrastructure.service.AuditLogService;
-import com.gfolly.quantly_backend.system.domain.AuditLog;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
+import com.gfolly.backend.iam.infrastructure.repository.RefreshTokenRepository;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.system.infrastructure.service.AuditLogService;
+import com.gfolly.backend.system.domain.AuditLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,4 +35,5 @@ public class DeactivateUserUseCase {
                 AuditLog.ActionStatus.SUCCESS);
     }
 }
+
 

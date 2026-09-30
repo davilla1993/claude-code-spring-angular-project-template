@@ -1,7 +1,7 @@
-package com.gfolly.quantly_backend.iam.infrastructure.repository;
+package com.gfolly.backend.iam.infrastructure.repository;
 
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import org.springframework.data.jpa.repository.Modifying;
@@ -137,4 +137,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
            nativeQuery = true)
     org.springframework.data.domain.Page<Object[]> findUniqueOwnersGlobal(@Param("search") String search, org.springframework.data.domain.Pageable pageable);
 }
+
 

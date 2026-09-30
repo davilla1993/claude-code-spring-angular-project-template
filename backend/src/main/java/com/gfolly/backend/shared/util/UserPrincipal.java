@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.util;
+package com.gfolly.backend.shared.util;
 
 import java.io.Serializable;
 
@@ -12,3 +12,4 @@ public record UserPrincipal(String userId, String email, String fullName, String
         return userId;
     }
 }
+

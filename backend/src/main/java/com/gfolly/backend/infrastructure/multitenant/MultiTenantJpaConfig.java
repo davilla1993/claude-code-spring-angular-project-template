@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -12,4 +12,5 @@ import org.springframework.context.annotation.Configuration;
 public class MultiTenantJpaConfig {
 
 }
+
 

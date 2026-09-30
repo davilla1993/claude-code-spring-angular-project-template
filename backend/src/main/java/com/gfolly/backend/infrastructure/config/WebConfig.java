@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.infrastructure.config;
+package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantInterceptor;
+import com.gfolly.backend.infrastructure.multitenant.TenantInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -44,4 +44,5 @@ public class WebConfig implements WebMvcConfigurer {
         }
     }
 }
+
 

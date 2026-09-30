@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.responses;
+package com.gfolly.backend.iam.api.dto.responses;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,3 +27,4 @@ public record OwnerGlobalDashboardResponse(
             String unit
     ) {}
 }
+

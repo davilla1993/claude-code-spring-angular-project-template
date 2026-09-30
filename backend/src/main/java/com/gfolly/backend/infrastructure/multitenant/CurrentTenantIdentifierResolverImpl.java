@@ -1,9 +1,9 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.stereotype.Component;
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
 
 /**
  * CurrentTenantIdentifierResolverImpl - Résout le tenant identifier pour
@@ -50,4 +50,5 @@ public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentif
         return true;
     }
 }
+
 

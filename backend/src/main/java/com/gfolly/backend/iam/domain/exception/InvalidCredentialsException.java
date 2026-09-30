@@ -1,8 +1,9 @@
-package com.gfolly.quantly_backend.iam.domain.exception;
+package com.gfolly.backend.iam.domain.exception;
 
 public class InvalidCredentialsException extends RuntimeException {
     public InvalidCredentialsException(String message) {
         super(message);
     }
 }
+
 

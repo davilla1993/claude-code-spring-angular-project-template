@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.system.infrastructure.specification;
+package com.gfolly.backend.system.infrastructure.specification;
 
-import com.gfolly.quantly_backend.system.domain.AuditLog;
+import com.gfolly.backend.system.domain.AuditLog;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -58,4 +58,5 @@ public class AuditLogSpecification {
         };
     }
 }
+
 

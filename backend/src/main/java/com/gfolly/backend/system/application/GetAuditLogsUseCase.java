@@ -1,10 +1,10 @@
-package com.gfolly.quantly_backend.system.application;
+package com.gfolly.backend.system.application;
 
-import com.gfolly.quantly_backend.shared.api.PageResponse;
-import com.gfolly.quantly_backend.system.api.dto.responses.AuditLogResponse;
-import com.gfolly.quantly_backend.system.domain.AuditLog;
-import com.gfolly.quantly_backend.system.infrastructure.repository.AuditLogRepository;
-import com.gfolly.quantly_backend.system.infrastructure.specification.AuditLogSpecification;
+import com.gfolly.backend.shared.api.PageResponse;
+import com.gfolly.backend.system.api.dto.responses.AuditLogResponse;
+import com.gfolly.backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.repository.AuditLogRepository;
+import com.gfolly.backend.system.infrastructure.specification.AuditLogSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,3 +53,4 @@ public class GetAuditLogsUseCase {
         );
     }
 }
+

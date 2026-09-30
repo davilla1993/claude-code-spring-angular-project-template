@@ -1,7 +1,7 @@
-package com.gfolly.quantly_backend.infrastructure.config;
+package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContext;
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContextUtils;
+import com.gfolly.backend.infrastructure.multitenant.TenantContext;
+import com.gfolly.backend.infrastructure.multitenant.TenantContextUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
@@ -68,3 +68,4 @@ public class AsyncConfig {
         }
     }
 }
+

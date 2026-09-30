@@ -1,11 +1,9 @@
-package com.gfolly.quantly_backend.infrastructure.security;
+package com.gfolly.backend.infrastructure.security;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.gfolly.quantly_backend.shared.api.ApiResponse;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.shared.api.ApiResponse;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,7 +59,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         CachedBodyRequestWrapper wrappedRequest = new CachedBodyRequestWrapper(request);
 
         String identifier = extractIdentifier(wrappedRequest);
-        
+
         // If no identifier found (invalid body), we still allow the request to proceed
         // and let the controller/validator handle it.
         if (identifier != null && !identifier.isBlank()) {
@@ -82,18 +82,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private String extractIdentifier(CachedBodyRequestWrapper request) {
         try {
             JsonNode node = objectMapper.readTree(request.getInputStream());
-            
+
             // Try 'email' first, then 'userId'
             JsonNode emailNode = node.get("email");
             if (emailNode != null && !emailNode.isNull()) {
                 return emailNode.asText();
             }
-            
+
             JsonNode userNode = node.get("userId");
             if (userNode != null && !userNode.isNull()) {
                 return userNode.asText();
             }
-            
+
             return null;
         } catch (Exception e) {
             return null;
@@ -108,3 +108,4 @@ public class RateLimitFilter extends OncePerRequestFilter {
         return request.getRemoteAddr();
     }
 }
+

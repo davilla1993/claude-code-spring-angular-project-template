@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.requests;
+package com.gfolly.backend.iam.api.dto.requests;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -13,4 +13,5 @@ public record LoginRequest(
         /** Null ou vide = portail OWNER. Non-null = connexion depuis le sous-domaine (employés). */
         String subdomain
 ) {}
+
 

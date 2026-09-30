@@ -1,23 +1,22 @@
-package com.gfolly.quantly_backend.iam.application.auth;
+package com.gfolly.backend.iam.application.auth;
 
-import com.gfolly.quantly_backend.iam.api.dto.requests.LoginRequest;
-import com.gfolly.quantly_backend.iam.api.dto.responses.AuthResponse;
-import com.gfolly.quantly_backend.iam.api.dto.responses.TenantSelectionResponse;
-import com.gfolly.quantly_backend.iam.application.SendVerificationEmailUseCase;
-import com.gfolly.quantly_backend.iam.application.dto.AuthSessionResult;
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.Tenant;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.domain.exception.EmailNotVerifiedException;
-import com.gfolly.quantly_backend.iam.domain.exception.InvalidCredentialsException;
-import com.gfolly.quantly_backend.iam.domain.exception.TenantInactiveException;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.TenantRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.infrastructure.multitenant.TenantContextUtils;
-import com.gfolly.quantly_backend.reporting.infrastructure.query.SaleReportQueries;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
-import com.gfolly.quantly_backend.system.domain.AuditLog;
-import com.gfolly.quantly_backend.system.infrastructure.service.AuditLogService;
+import com.gfolly.backend.iam.api.dto.requests.LoginRequest;
+import com.gfolly.backend.iam.api.dto.responses.AuthResponse;
+import com.gfolly.backend.iam.api.dto.responses.TenantSelectionResponse;
+import com.gfolly.backend.iam.application.SendVerificationEmailUseCase;
+import com.gfolly.backend.iam.application.dto.AuthSessionResult;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.Tenant;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.domain.exception.EmailNotVerifiedException;
+import com.gfolly.backend.iam.domain.exception.InvalidCredentialsException;
+import com.gfolly.backend.iam.domain.exception.TenantInactiveException;
+import com.gfolly.backend.iam.infrastructure.repository.TenantRepository;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.infrastructure.multitenant.TenantContextUtils;
+import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +39,6 @@ public class LoginFromPortalUseCase {
     private final SendVerificationEmailUseCase sendVerificationEmailUseCase;
     private final AuditLogService auditLogService;
     private final AuthTokenService authTokenService;
-    private final SaleReportQueries saleReportQueries;
 
     @Transactional
     public AuthSessionResult execute(LoginRequest request) {
@@ -49,9 +47,6 @@ public class LoginFromPortalUseCase {
             throw new InvalidCredentialsException(ErrorMessages.LOGIN_NO_DOMAIN_REQUIRED);
         }
 
-        // Le login "portail" (sans sous-domaine) est réservé à OWNER et COMMANDER : on ne sélectionne
-        // JAMAIS une ligne employé (CASHIER/MANAGER/ANALYST) même si elle partage cet email et arriverait
-        // en tête d'une liste dont l'ordre n'est pas garanti (findAllByEmailGlobal n'a pas d'ORDER BY).
         User firstUser = users.stream()
                 .filter(u -> u.getRole() == Role.OWNER || u.getRole() == Role.COMMANDER)
                 .findFirst()
@@ -70,8 +65,6 @@ public class LoginFromPortalUseCase {
             throw new EmailNotVerifiedException(ErrorMessages.EMAIL_NOT_VERIFIED, firstUser.getPublicId());
         }
 
-        // Si multi-boutique pour OWNER, on renvoie la liste — restreinte aux boutiques dont cet email
-        // est réellement OWNER (jamais une boutique où il n'est qu'employé d'un tiers).
         List<User> ownerShops = users.stream().filter(u -> u.getRole() == Role.OWNER).toList();
 
         if (ownerShops.size() > 1 && firstUser.getRole() == Role.OWNER) {
@@ -81,13 +74,8 @@ public class LoginFromPortalUseCase {
                         Tenant tenant = tenantRepository.findByPublicId(tid).orElse(null);
                         if (tenant == null) return null;
 
-                        // Switch context to compute CA
-                        java.math.BigDecimal ca = TenantContextUtils.callInTenantContext(tid, () ->
-                                saleReportQueries.computeCA(
-                                        LocalDate.now().atStartOfDay(),
-                                        LocalDateTime.now()
-                                )
-                        );
+                        // On remplace l'appel à saleReportQueries par ZERO pour le template
+                        java.math.BigDecimal ca = java.math.BigDecimal.ZERO;
 
                         return new TenantSelectionResponse(
                                 tenant.getPublicId(),
@@ -101,11 +89,8 @@ public class LoginFromPortalUseCase {
                     .filter(Objects::nonNull)
                     .toList();
 
-            // On génère quand même un token pour la première boutique pour permettre les appels API suivants
             Tenant firstTenant = tenantRepository.findByPublicId(firstUser.getTenantId()).orElseThrow();
-            
-            // SÉCURITÉ : On bloque si multishop est OFF et la boutique est inactive.
-            // Si multishop est ON, on laisse passer pour voir le portail.
+
             if (!Boolean.TRUE.equals(firstUser.getMultishop()) && !firstTenant.canAccess()) {
                 throw new TenantInactiveException(ErrorMessages.TENANT_INACTIVE);
             }

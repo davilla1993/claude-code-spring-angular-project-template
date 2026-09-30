@@ -1,14 +1,14 @@
-package com.gfolly.quantly_backend.iam.application.auth;
+package com.gfolly.backend.iam.application.auth;
 
-import com.gfolly.quantly_backend.iam.api.dto.responses.AuthResponse;
-import com.gfolly.quantly_backend.iam.application.dto.AuthSessionResult;
-import com.gfolly.quantly_backend.iam.application.dto.TokenPair;
-import com.gfolly.quantly_backend.iam.domain.RefreshToken;
-import com.gfolly.quantly_backend.iam.domain.Tenant;
-import com.gfolly.quantly_backend.iam.domain.User;
-import com.gfolly.quantly_backend.iam.infrastructure.mapper.UserMapper;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.RefreshTokenRepository;
-import com.gfolly.quantly_backend.iam.infrastructure.security.JwtService;
+import com.gfolly.backend.iam.api.dto.responses.AuthResponse;
+import com.gfolly.backend.iam.application.dto.AuthSessionResult;
+import com.gfolly.backend.iam.application.dto.TokenPair;
+import com.gfolly.backend.iam.domain.RefreshToken;
+import com.gfolly.backend.iam.domain.Tenant;
+import com.gfolly.backend.iam.domain.User;
+import com.gfolly.backend.iam.infrastructure.mapper.UserMapper;
+import com.gfolly.backend.iam.infrastructure.repository.RefreshTokenRepository;
+import com.gfolly.backend.iam.infrastructure.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,3 +47,4 @@ public class AuthTokenService {
         );
     }
 }
+

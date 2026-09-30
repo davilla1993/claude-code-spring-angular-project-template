@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.domain;
+package com.gfolly.backend.iam.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -51,4 +51,5 @@ public enum Permission {
     private final String code;
     private final String description;
 }
+
 

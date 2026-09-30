@@ -1,20 +1,20 @@
-package com.gfolly.quantly_backend.iam.api;
+package com.gfolly.backend.iam.api;
 
-import com.gfolly.quantly_backend.iam.application.*;
-import com.gfolly.quantly_backend.iam.domain.Role;
-import com.gfolly.quantly_backend.iam.domain.exception.UserNotFoundException;
-import com.gfolly.quantly_backend.shared.util.UserPrincipal;
-import com.gfolly.quantly_backend.iam.api.dto.requests.ChangePasswordRequest;
-import com.gfolly.quantly_backend.iam.api.dto.requests.SetupPasswordRequest;
-import com.gfolly.quantly_backend.iam.api.dto.requests.CreateUserRequest;
-import com.gfolly.quantly_backend.iam.api.dto.requests.UpdateUserRequest;
-import com.gfolly.quantly_backend.iam.api.dto.responses.ResetEmployeePasswordResponse;
-import com.gfolly.quantly_backend.iam.api.dto.responses.UserResponse;
-import com.gfolly.quantly_backend.iam.infrastructure.mapper.UserMapper;
-import com.gfolly.quantly_backend.iam.infrastructure.repository.UserRepository;
-import com.gfolly.quantly_backend.shared.api.ApiResponse;
-import com.gfolly.quantly_backend.shared.api.PageResponse;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
+import com.gfolly.backend.iam.application.*;
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
+import com.gfolly.backend.shared.util.UserPrincipal;
+import com.gfolly.backend.iam.api.dto.requests.ChangePasswordRequest;
+import com.gfolly.backend.iam.api.dto.requests.SetupPasswordRequest;
+import com.gfolly.backend.iam.api.dto.requests.CreateUserRequest;
+import com.gfolly.backend.iam.api.dto.requests.UpdateUserRequest;
+import com.gfolly.backend.iam.api.dto.responses.ResetEmployeePasswordResponse;
+import com.gfolly.backend.iam.api.dto.responses.UserResponse;
+import com.gfolly.backend.iam.infrastructure.mapper.UserMapper;
+import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
+import com.gfolly.backend.shared.api.ApiResponse;
+import com.gfolly.backend.shared.api.PageResponse;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -120,3 +120,4 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(new ResetEmployeePasswordResponse(tempPassword)));
     }
 }
+

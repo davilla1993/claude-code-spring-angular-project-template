@@ -1,8 +1,8 @@
-package com.gfolly.quantly_backend.iam.infrastructure.mapper;
+package com.gfolly.backend.iam.infrastructure.mapper;
 
-import com.gfolly.quantly_backend.iam.api.dto.responses.TenantResponse;
-import com.gfolly.quantly_backend.iam.api.dto.responses.TenantSelectionResponse;
-import com.gfolly.quantly_backend.iam.domain.Tenant;
+import com.gfolly.backend.iam.api.dto.responses.TenantResponse;
+import com.gfolly.backend.iam.api.dto.responses.TenantSelectionResponse;
+import com.gfolly.backend.iam.domain.Tenant;
 
 public class TenantMapper {
 
@@ -13,9 +13,6 @@ public class TenantMapper {
                 tenant.getSlug(),
                 tenant.getPlan(),
                 tenant.getActive(),
-                tenant.getTvaRate(),
-                tenant.getBanknotes(),
-                tenant.getCoins(),
                 tenant.getCurrencyCode(),
                 tenant.getCountry(),
                 tenant.getAddress(),
@@ -38,3 +35,4 @@ public class TenantMapper {
 
     private TenantMapper() {}
 }
+

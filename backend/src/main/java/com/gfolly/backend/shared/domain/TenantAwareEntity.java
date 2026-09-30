@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.domain;
+package com.gfolly.backend.shared.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -16,4 +16,5 @@ public abstract class TenantAwareEntity extends BaseEntity {
     private String tenantId;
 
 }
+
 

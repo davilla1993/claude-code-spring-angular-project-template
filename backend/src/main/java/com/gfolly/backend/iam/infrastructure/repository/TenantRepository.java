@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.iam.infrastructure.repository;
+package com.gfolly.backend.iam.infrastructure.repository;
 
-import com.gfolly.quantly_backend.iam.domain.Tenant;
+import com.gfolly.backend.iam.domain.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +38,5 @@ public interface TenantRepository extends JpaRepository<Tenant, Long> {
     @Query("UPDATE Tenant t SET t.active = false WHERE t.active = true AND t.expiresAt IS NOT NULL AND t.expiresAt < :now")
     int suspendExpired(@org.springframework.data.repository.query.Param("now") LocalDateTime now);
 }
+
 

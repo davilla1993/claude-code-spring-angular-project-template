@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.iam.api.dto.responses;
+package com.gfolly.backend.iam.api.dto.responses;
 
-import com.gfolly.quantly_backend.iam.domain.Role;
+import com.gfolly.backend.iam.domain.Role;
 
 import java.time.LocalDateTime;
 
@@ -25,4 +25,5 @@ public record UserResponse(
         String cashRegisterName,
         String plan
 ) {}
+
 

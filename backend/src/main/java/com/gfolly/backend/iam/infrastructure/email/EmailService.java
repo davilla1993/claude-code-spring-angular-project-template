@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.infrastructure.email;
+package com.gfolly.backend.iam.infrastructure.email;
 
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -68,3 +68,4 @@ public class EmailService {
         }
     }
 }
+

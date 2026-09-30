@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.domain;
+package com.gfolly.backend.shared.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -76,3 +76,4 @@ public abstract class BaseEntity {
         updatedAt = LocalDateTime.now();
     }
 }
+

@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,4 +69,5 @@ public class TenantContext {
         return tenant != null ? tenant : defaultTenantId;
     }
 }
+
 

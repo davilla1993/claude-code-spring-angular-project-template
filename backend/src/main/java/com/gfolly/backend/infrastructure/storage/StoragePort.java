@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.storage;
+package com.gfolly.backend.infrastructure.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,3 +21,4 @@ public interface StoragePort {
      */
     void delete(String path);
 }
+

@@ -1,13 +1,7 @@
-package com.gfolly.quantly_backend.shared.api;
+package com.gfolly.backend.shared.api;
 
-import com.gfolly.quantly_backend.cashdesk.domain.exception.*;
-import com.gfolly.quantly_backend.purchases.domain.exception.*;
-import com.gfolly.quantly_backend.sales.domain.exception.*;
-import com.gfolly.quantly_backend.iam.domain.exception.*;
-import com.gfolly.quantly_backend.catalog.domain.exception.*;
-import com.gfolly.quantly_backend.shared.util.ErrorMessages;
-import com.gfolly.quantly_backend.stock.domain.exception.InsufficientStockException;
-import com.gfolly.quantly_backend.stock.domain.exception.InventoryInProgressException;
+import com.gfolly.backend.iam.domain.exception.*;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -92,54 +86,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler(com.gfolly.quantly_backend.iam.domain.exception.TooManyRequestsException.class)
+    @ExceptionHandler(com.gfolly.backend.iam.domain.exception.TooManyRequestsException.class)
     public ResponseEntity<ApiResponse<Void>> handleTooManyRequests(
-            com.gfolly.quantly_backend.iam.domain.exception.TooManyRequestsException ex) {
+            com.gfolly.backend.iam.domain.exception.TooManyRequestsException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler({TenantNotFoundException.class, UserNotFoundException.class,
-            ProductNotFoundException.class, CategoryNotFoundException.class,
-            BarcodeNotFoundException.class, UnitOfMeasureNotFoundException.class,
-            CashRegisterNotFoundException.class, GlobalSessionNotFoundException.class,
-            CashSessionNotFoundException.class, SaleNotFoundException.class,
-            SupplierNotFoundException.class, PurchaseOrderNotFoundException.class})
+    @ExceptionHandler({TenantNotFoundException.class, UserNotFoundException.class})
     public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(InvalidSessionPinException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidPin(InvalidSessionPinException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler({GlobalSessionAlreadyOpenException.class, CashSessionAlreadyOpenException.class,
-            CashSessionAlreadyClosedException.class, CashRegisterAlreadyInUseException.class,
-            SaleAlreadyCancelledException.class, SupplierNameAlreadyExistsException.class,
-            PurchaseOrderAlreadyValidatedException.class, PurchaseOrderAlreadyCancelledException.class})
-    public ResponseEntity<ApiResponse<Void>> handleCashdeskConflict(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler({GlobalSessionNotOpenException.class, GlobalSessionHasOpenCashSessionsException.class})
-    public ResponseEntity<ApiResponse<Void>> handleCashdeskUnprocessable(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(InsufficientStockException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInsufficientStock(InsufficientStockException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(InventoryInProgressException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInventoryInProgress(InventoryInProgressException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler({DuplicateBarcodeException.class, ProductAlreadyExistsException.class,
-            CategoryAlreadyExistsException.class, UnitOfMeasureDuplicateException.class})
-    public ResponseEntity<ApiResponse<Void>> handleInventoryConflict(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
     }
 
     @ExceptionHandler(TenantInactiveException.class)
@@ -165,4 +120,5 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorMessages.INTERNAL_SERVER_ERROR));
     }
 }
+
 

@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.iam.infrastructure.repository;
+package com.gfolly.backend.iam.infrastructure.repository;
 
-import com.gfolly.quantly_backend.iam.domain.PasswordResetToken;
+import com.gfolly.backend.iam.domain.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,3 +16,4 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     @Query("DELETE FROM PasswordResetToken t WHERE t.userId = :userId")
     void deleteAllByUserId(@Param("userId") String userId);
 }
+

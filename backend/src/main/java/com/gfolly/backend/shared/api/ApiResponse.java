@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.shared.api;
+package com.gfolly.backend.shared.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -61,4 +61,5 @@ public class ApiResponse<T> {
                 .build();
     }
 }
+
 

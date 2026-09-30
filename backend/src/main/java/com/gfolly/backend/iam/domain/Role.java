@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.domain;
+package com.gfolly.backend.iam.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static com.gfolly.quantly_backend.iam.domain.Permission.*;
+import static com.gfolly.backend.iam.domain.Permission.*;
 
 /**
  * Rôles de l'application Quantly.
@@ -69,4 +69,5 @@ public enum Role {
 
     private final Set<Permission> permissions;
 }
+
 

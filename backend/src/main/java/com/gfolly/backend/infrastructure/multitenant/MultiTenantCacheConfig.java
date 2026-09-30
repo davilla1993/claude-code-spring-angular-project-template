@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.infrastructure.multitenant;
+package com.gfolly.backend.infrastructure.multitenant;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.CacheManager;
@@ -31,3 +31,4 @@ public class MultiTenantCacheConfig {
         return cacheManager;
     }
 }
+

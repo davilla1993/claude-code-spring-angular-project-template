@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.responses;
+package com.gfolly.backend.iam.api.dto.responses;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,3 +19,4 @@ public record TenantResponse(
         String logoUrl,
         LocalDateTime createdAt
 ) {}
+

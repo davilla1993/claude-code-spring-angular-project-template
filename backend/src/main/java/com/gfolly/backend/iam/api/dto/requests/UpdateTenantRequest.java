@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.iam.api.dto.requests;
+package com.gfolly.backend.iam.api.dto.requests;
 
 import java.math.BigDecimal;
 
@@ -12,3 +12,4 @@ public record UpdateTenantRequest(
     String address,
     String phone
 ) {}
+

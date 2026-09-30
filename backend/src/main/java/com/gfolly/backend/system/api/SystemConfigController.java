@@ -1,4 +1,4 @@
-package com.gfolly.quantly_backend.system.api;
+package com.gfolly.backend.system.api;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,3 +19,4 @@ public class SystemConfigController {
         return Map.of("appMode", appMode);
     }
 }
+

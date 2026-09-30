@@ -1,6 +1,6 @@
-package com.gfolly.quantly_backend.iam.infrastructure.repository;
+package com.gfolly.backend.iam.infrastructure.repository;
 
-import com.gfolly.quantly_backend.iam.domain.RefreshToken;
+import com.gfolly.backend.iam.domain.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +16,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     @Query("UPDATE RefreshToken r SET r.revoked = true WHERE r.userId = :userId AND r.revoked = false")
     void revokeAllByUserId(@Param("userId") String userId);
 }
+
 
