@@ -44,9 +44,10 @@ Le backend fournit déjà authentification, utilisateurs, audit, stockage de fic
 - Réutiliser ces composants ; ne pas les dupliquer ni contourner `SecurityConfig`.
 - Nouvelles permissions : étendre `iam/domain/Permission` et `Role`.
 - Commandes : `./mvnw test` (le test de contexte nécessite Docker, sinon il est ignoré) ;
-  `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` (PostgreSQL local + MailHog démarrés).
+  `./mvnw spring-boot:run` (profil `dev` par défaut ; PostgreSQL local + MailHog démarrés).
 - Configuration : `application.yml` (commun, sans secret), `application-dev.yml` (valeurs locales en clair),
-  `application-prod.yml` (variables d'environnement obligatoires, sans valeur par défaut). Aucun profil par défaut.
+  `application-prod.yml` (variables d'environnement obligatoires, sans valeur par défaut).
+  Profil par défaut : `dev` ; en production `SPRING_PROFILES_ACTIVE=prod` est obligatoire (voir `docs/PREPROD.md`).
   Toute nouvelle propriété sensible ou propre à l'environnement doit être ajoutée aux deux profils et à `.env.example`.
 
 ## Backend Architecture Rules

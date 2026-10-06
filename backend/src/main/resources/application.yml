@@ -1,9 +1,14 @@
 # Configuration commune à tous les environnements. Aucun identifiant ni secret ici.
 # Profils : "dev" (poste local, valeurs en clair) et "prod" (variables d'environnement obligatoires).
-# Aucun profil par défaut : sans profil, le démarrage échoue (secret JWT absent) plutôt que de tourner mal configuré.
+# Profil par défaut : "dev", appliqué UNIQUEMENT si aucun profil n'est demandé.
+# En production, SPRING_PROFILES_ACTIVE=prod est obligatoire (voir docs/PREPROD.md) : sans lui, l'application
+# démarrerait avec les valeurs de développement.
 spring:
   application:
     name: backend-template
+
+  profiles:
+    default: dev
 
   jpa:
     hibernate:

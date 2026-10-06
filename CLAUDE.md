@@ -10,10 +10,13 @@ Priorités :
 Ne jamais sacrifier la sécurité ou la correction pour aller plus vite.
 
 ## Structure
-Le dépôt contient normalement :
-- `cahier-des-charges.md`, `CLAUDE.md`, `agents.md`, `README.md`
-- `docs/` (Documentation centrale)
-- `backend/` et `frontend/` (Source code)
+Le dépôt contient :
+- À la racine : uniquement `CLAUDE.md` et `README.md` (+ fichiers techniques : `.gitignore`, `.editorconfig`, `.env.example`, `.github/`)
+- `docs/` : documentation centrale, dont `cahier-des-charges.md` (besoin du projet), `AGENTS.md` (rôles et workflows des agents),
+  `PREPROD.md` (checklist de mise en production), `CONTRIBUTING.md`
+- `backend/` et `frontend/` (code source, chacun avec son `CLAUDE.md`)
+
+Ne pas ajouter de fichier à la racine : toute nouvelle documentation va dans `docs/`.
 
 ## Core Architecture Principles
 - **DDD-light**: Pragmatic approach. No Value Objects by default. Avoid unnecessary ceremony.

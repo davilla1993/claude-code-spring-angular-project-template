@@ -8,9 +8,9 @@ Strictly no business logic, endpoints, entities, functional components, or large
 
 ### Phase 1 — DISCOVERY
 Read all project artifacts:
-- `cahier-des-charges.md`
+- `docs/cahier-des-charges.md`
 - `README.md`
-- `agents.md`
+- `docs/AGENTS.md`
 - `docs/` folder
 - Root configurations
 - `backend/` and `frontend/` structures

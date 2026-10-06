@@ -5,11 +5,14 @@ Template d'initialisation pour projets professionnels en monorepo.
 ## Structure cible
 ```text
 project/
-├── cahier-des-charges.md
 ├── CLAUDE.md
-├── agents.md
 ├── README.md
 ├── docs/
+│   ├── cahier-des-charges.md   (à ajouter pour chaque projet)
+│   ├── AGENTS.md
+│   ├── PREPROD.md
+│   ├── CONTRIBUTING.md
+│   └── ...                     (PRD, ARCHITECTURE, API_CONTRACT, SECURITY...)
 ├── backend/
 │   └── CLAUDE.md
 └── frontend/
@@ -17,14 +20,10 @@ project/
 ```
 
 ## Démarrage
-1. Créer le dossier du projet.
-2. Ajouter le cahier des charges.
-3. Copier ce template à la racine.
-4. Générer le backend Spring Boot.
-5. Générer le frontend Angular.
-6. Copier les CLAUDE.md spécifiques dans backend/ et frontend/.
-7. Lancer Claude Code à la racine.
-8. Demander le bootstrap du projet.
+1. Créer le projet à partir de ce template (socle backend et frontend inclus).
+2. Ajouter le cahier des charges dans `docs/cahier-des-charges.md`.
+3. Lancer Claude Code à la racine.
+4. Demander le bootstrap du projet.
 
 Prompt recommandé :
 > Lis intégralement le cahier des charges et les règles du dépôt. Ne code rien. Exécute le bootstrap défini dans CLAUDE.md : analyse, exigences, architecture, documentation et plan d'implémentation. Arrête-toi avant toute implémentation et présente les décisions et questions nécessitant validation.
@@ -39,9 +38,12 @@ Lancement local :
 Prérequis : PostgreSQL local (base `template_db`) et MailHog (SMTP `localhost:1025`, interface http://localhost:8025).
 Les valeurs locales (base, JWT de dev, SMTP, CORS) sont dans `backend/src/main/resources/application-dev.yml` : à adapter à votre poste.
 ```bash
-cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev     # IntelliJ : Active profiles = dev
+cd backend && ./mvnw spring-boot:run      # profil "dev" actif par défaut
 ```
-En production : profil `prod` (`SPRING_PROFILES_ACTIVE=prod`) et variables d'environnement listées dans `.env.example`.
+
+## 🚀 Mise en production
+Dérouler **`docs/PREPROD.md`** avant tout déploiement. Point bloquant : définir `SPRING_PROFILES_ACTIVE=prod` sur le serveur
+(sinon le profil `dev` par défaut s'applique) et les variables listées dans `.env.example`.
 Frontend (autre terminal) :
 ```bash
 cd frontend && npm install && npm start     # http://localhost:4200 — /api proxifié vers le backend

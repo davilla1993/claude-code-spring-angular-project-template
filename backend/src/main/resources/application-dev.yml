@@ -1,5 +1,5 @@
 # Profil de développement local (valeurs en clair, propres au poste de dev).
-# Lancement : ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev  (IntelliJ : Active profiles = dev)
+# Actif par défaut (spring.profiles.default dans application.yml) : ./mvnw spring-boot:run
 # Ne jamais activer ce profil en production : utiliser "prod".
 spring:
   datasource:

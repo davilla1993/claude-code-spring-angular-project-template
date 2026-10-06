@@ -37,7 +37,8 @@ Règles : un utilisateur ne peut ni modifier son propre rôle, ni se désactiver
 - `application-dev.yml` contient des valeurs **locales** en clair (base de dev, secret JWT de dev) : sans valeur hors du poste.
 - `application-prod.yml` ne lit que des variables d'environnement, sans valeur par défaut (échec au démarrage si l'une manque).
   `JWT_SECRET` : au moins 32 caractères aléatoires, propre à chaque environnement.
-- Aucun profil par défaut ; ne jamais activer `dev` en production.
+- Profil par défaut `dev` (confort local) : en production, `SPRING_PROFILES_ACTIVE=prod` est **obligatoire**,
+  sinon l'application tourne avec les valeurs de développement. Voir `PREPROD.md`.
 
 ## Input validation [socle]
 

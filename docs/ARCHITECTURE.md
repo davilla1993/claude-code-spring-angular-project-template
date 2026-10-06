@@ -63,7 +63,8 @@ Voir `docs/SECURITY.md`.
 
 Variables d'environnement : voir `.env.example` et `backend/src/main/resources/application.yml`.
 Profils Spring : `dev` (poste local, valeurs en clair dans `application-dev.yml`) et `prod` (`application-prod.yml`,
-variables d'environnement obligatoires listées dans `.env.example`). Aucun profil par défaut : sans profil, le démarrage échoue.
+variables d'environnement obligatoires listées dans `.env.example`). Profil par défaut : `dev` (si aucun profil n'est demandé) ; en production, `SPRING_PROFILES_ACTIVE=prod` est obligatoire.
+Checklist de mise en production : `PREPROD.md`.
 Prérequis locaux : PostgreSQL (base `template_db`) et MailHog (SMTP 1025, interface 8025).
 
 ## Observability
