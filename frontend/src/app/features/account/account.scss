@@ -1,0 +1,16 @@
+.account {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  align-items: start;
+}
+
+.account__profile {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+
+  dt { font-weight: 600; color: var(--color-text-muted); }
+  dd { margin: 0; overflow-wrap: anywhere; }
+}

@@ -3,27 +3,21 @@ package com.gfolly.backend.iam.api.dto.responses;
 import com.gfolly.backend.iam.domain.Role;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+/**
+ * @param permissions codes des permissions du rôle (ex : "user:view"), pour adapter l'interface.
+ *                    L'autorisation reste vérifiée côté serveur.
+ */
 public record UserResponse(
         String publicId,
         String email,
-        String username,
         String firstName,
         String lastName,
         Role role,
-        Boolean active,
-        Boolean emailVerified,
-        Boolean firstLogin,
-        Boolean multishop,
-        Boolean shopCreationEnabled,
-        String tenantId,
-        String tenantSlug,
-        String tenantName,
-        String tenantLogoUrl,
-        LocalDateTime createdAt,
-        String cashRegisterId,
-        String cashRegisterName,
-        String plan
+        List<String> permissions,
+        boolean active,
+        boolean emailVerified,
+        boolean firstLogin,
+        LocalDateTime createdAt
 ) {}
-
-

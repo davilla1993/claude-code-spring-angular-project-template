@@ -3,22 +3,20 @@ package com.gfolly.backend.infrastructure.storage;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Implémentations disponibles :
- *   - {@link LocalFileStorageAdapter}  (app.storage.provider=local)
- *   - {@link MinioStorageAdapter}      (app.storage.provider=minio)
+ * Port de stockage de fichiers. Implémentation fournie : {@link LocalFileStorageAdapter}.
+ * Pour un stockage objet (S3, MinIO...), ajouter un nouvel adaptateur implémentant ce port.
  */
 public interface StoragePort {
 
     /**
-     * Stocke le fichier et retourne son chemin/clé (ex : "tenantId/uuid.jpg").
-     * Retourne null si le fichier est vide.
+     * Stocke le fichier sous un nom généré et retourne sa clé (ex : "3f2a...c1.png").
+     *
+     * @throws IllegalArgumentException si le fichier est vide ou si son extension n'est pas autorisée
      */
     String store(MultipartFile file);
 
     /**
-     * Supprime le fichier identifié par son chemin/clé.
-     * Sans effet si le chemin est null ou introuvable.
+     * Supprime le fichier identifié par sa clé. Sans effet si la clé est vide ou introuvable.
      */
-    void delete(String path);
+    void delete(String key);
 }
-

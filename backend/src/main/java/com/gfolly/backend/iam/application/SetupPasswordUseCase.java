@@ -4,15 +4,16 @@ import com.gfolly.backend.iam.domain.User;
 import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
 import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
 import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Définit le mot de passe lors du premier login (firstLogin = true).
- * Aucune vérification du mot de passe actuel : le JWT suffit à prouver l'identité,
- * et l'utilisateur a déjà prouvé qu'il connaît le mot de passe temporaire en se connectant.
+ * Remplace le mot de passe temporaire lors de la première connexion (firstLogin = true).
+ * Le mot de passe actuel n'est pas redemandé : l'utilisateur vient de s'authentifier avec.
  */
 @Service
 @RequiredArgsConstructor
@@ -20,27 +21,20 @@ public class SetupPasswordUseCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public void execute(String userId, String newPassword) {
-        User user = userRepository.findByPublicIdGlobal(userId)
+        User user = userRepository.findByPublicIdAndDeletedFalse(userId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
-        if (!Boolean.TRUE.equals(user.getFirstLogin())) {
+        if (!user.isFirstLogin()) {
             throw new IllegalStateException(ErrorMessages.PASSWORD_ALREADY_SET);
         }
 
-        String newHash = passwordEncoder.encode(newPassword);
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.setFirstLogin(false);
 
-        if (user.getRole() == com.gfolly.backend.iam.domain.Role.OWNER) {
-            userRepository.updatePasswordHashGlobal(user.getEmail(), newHash);
-        } else {
-            userRepository.updatePasswordHashAndFirstLogin(
-                    userId,
-                    newHash,
-                    false
-            );
-        }
+        auditLogService.log("PASSWORD_SETUP", "USER", userId, null, AuditLog.ActionStatus.SUCCESS);
     }
 }
-

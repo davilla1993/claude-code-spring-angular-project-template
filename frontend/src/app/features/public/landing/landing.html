@@ -1,0 +1,13 @@
+<section class="hero" aria-labelledby="landing-title">
+  <h1 id="landing-title">{{ appName }}</h1>
+  <p class="hero__lead muted">[À compléter] Présentez ici la proposition de valeur de l'application.</p>
+
+  <div class="form-actions hero__actions">
+    @if (session.isAuthenticated()) {
+      <a class="btn" routerLink="/app">Accéder à l'application</a>
+    } @else {
+      <a class="btn" routerLink="/auth/register">Créer un compte</a>
+      <a class="btn btn--secondary" routerLink="/auth/login">Se connecter</a>
+    }
+  </div>
+</section>

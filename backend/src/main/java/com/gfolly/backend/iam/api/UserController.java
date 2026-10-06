@@ -1,20 +1,17 @@
 package com.gfolly.backend.iam.api;
 
+import com.gfolly.backend.iam.api.dto.requests.ChangePasswordRequest;
+import com.gfolly.backend.iam.api.dto.requests.CreateUserRequest;
+import com.gfolly.backend.iam.api.dto.requests.SetupPasswordRequest;
+import com.gfolly.backend.iam.api.dto.requests.UpdateUserRequest;
+import com.gfolly.backend.iam.api.dto.responses.TemporaryPasswordResponse;
+import com.gfolly.backend.iam.api.dto.responses.UserResponse;
 import com.gfolly.backend.iam.application.*;
 import com.gfolly.backend.iam.domain.Role;
-import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
-import com.gfolly.backend.shared.util.UserPrincipal;
-import com.gfolly.backend.iam.api.dto.requests.ChangePasswordRequest;
-import com.gfolly.backend.iam.api.dto.requests.SetupPasswordRequest;
-import com.gfolly.backend.iam.api.dto.requests.CreateUserRequest;
-import com.gfolly.backend.iam.api.dto.requests.UpdateUserRequest;
-import com.gfolly.backend.iam.api.dto.responses.ResetEmployeePasswordResponse;
-import com.gfolly.backend.iam.api.dto.responses.UserResponse;
-import com.gfolly.backend.iam.infrastructure.mapper.UserMapper;
-import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
 import com.gfolly.backend.shared.api.ApiResponse;
 import com.gfolly.backend.shared.api.PageResponse;
 import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.shared.util.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -30,94 +27,89 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final GetUserUseCase getUserUseCase;
+    private final ListUsersUseCase listUsersUseCase;
     private final CreateUserUseCase createUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
-    private final DeactivateUserUseCase deactivateUserUseCase;
+    private final SetUserActiveUseCase setUserActiveUseCase;
+    private final ResetUserPasswordUseCase resetUserPasswordUseCase;
     private final ChangePasswordUseCase changePasswordUseCase;
     private final SetupPasswordUseCase setupPasswordUseCase;
-    private final ResetEmployeePasswordUseCase resetEmployeePasswordUseCase;
+
+    // --- Compte courant ---
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<UserResponse>> getMe(@AuthenticationPrincipal UserPrincipal principal) {
-        return userRepository.findByPublicIdWithCashRegister(principal.userId())
-                .map(user -> ResponseEntity.ok(ApiResponse.success(UserMapper.toResponse(user, principal.tenantSlug()))))
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(ApiResponse.success(getUserUseCase.execute(principal.userId())));
     }
+
+    @PutMapping("/me/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal UserPrincipal principal,
+                                                            @Valid @RequestBody ChangePasswordRequest request) {
+        changePasswordUseCase.execute(principal.userId(), request.currentPassword(), request.newPassword());
+        return ResponseEntity.ok(ApiResponse.message(ErrorMessages.PASSWORD_CHANGED_SUCCESS));
+    }
+
+    @PutMapping("/me/setup-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> setupPassword(@AuthenticationPrincipal UserPrincipal principal,
+                                                           @Valid @RequestBody SetupPasswordRequest request) {
+        setupPasswordUseCase.execute(principal.userId(), request.newPassword());
+        return ResponseEntity.ok(ApiResponse.message(ErrorMessages.PASSWORD_CHANGED_SUCCESS));
+    }
+
+    // --- Administration ---
 
     @GetMapping
     @PreAuthorize("hasAuthority('user:view')")
     public ResponseEntity<ApiResponse<PageResponse<UserResponse>>> listUsers(
-            @PageableDefault(size = 20) Pageable pageable,
-            @RequestParam(required = false) Role role) {
-        var page = role != null
-                ? userRepository.findAllByDeletedFalseAndRole(role, pageable)
-                : userRepository.findAllByDeletedFalseWithCashRegister(pageable);
-        return ResponseEntity.ok(ApiResponse.success(PageResponse.from(page.map(UserMapper::toResponse))));
+            @RequestParam(required = false) Role role,
+            @PageableDefault(size = 20, sort = "createdAt") Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(listUsersUseCase.execute(role, pageable)));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('user:view')")
+    public ResponseEntity<ApiResponse<UserResponse>> getById(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success(getUserUseCase.execute(id)));
     }
 
     @PostMapping
     @PreAuthorize("hasAuthority('user:create')")
     public ResponseEntity<ApiResponse<UserResponse>> create(@Valid @RequestBody CreateUserRequest request) {
-        UserResponse response = createUserUseCase.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(createUserUseCase.execute(request)));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('user:update')")
-    public ResponseEntity<ApiResponse<UserResponse>> update(@PathVariable String id,
-                                                             @Valid @RequestBody UpdateUserRequest request) {
-        UserResponse response = updateUserUseCase.execute(id, request);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<UserResponse>> update(@AuthenticationPrincipal UserPrincipal principal,
+                                                            @PathVariable String id,
+                                                            @Valid @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(updateUserUseCase.execute(principal.userId(), id, request)));
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('user:delete')")
-    public ResponseEntity<ApiResponse<Void>> deactivate(@PathVariable String id) {
-        deactivateUserUseCase.execute(id);
+    @PatchMapping("/{id}/activate")
+    @PreAuthorize("hasAuthority('user:update')")
+    public ResponseEntity<ApiResponse<Void>> activate(@AuthenticationPrincipal UserPrincipal principal,
+                                                      @PathVariable String id) {
+        setUserActiveUseCase.execute(principal.userId(), id, true);
+        return ResponseEntity.ok(ApiResponse.message(ErrorMessages.USER_ACTIVATED));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("hasAuthority('user:update')")
+    public ResponseEntity<ApiResponse<Void>> deactivate(@AuthenticationPrincipal UserPrincipal principal,
+                                                        @PathVariable String id) {
+        setUserActiveUseCase.execute(principal.userId(), id, false);
         return ResponseEntity.ok(ApiResponse.message(ErrorMessages.USER_DEACTIVATED));
     }
 
-    @PatchMapping("/{id}/toggle-active")
-    @PreAuthorize("hasAuthority('user:update')")
-    public ResponseEntity<ApiResponse<Void>> toggleActive(@PathVariable String id) {
-        // Simple logic here: find, flip active, save
-        var user = userRepository.findByPublicId(id)
-                .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
-        user.setActive(!user.getActive());
-        userRepository.save(user);
-        return ResponseEntity.ok(ApiResponse.message(user.getActive() ? ErrorMessages.USER_ACTIVATED : ErrorMessages.USER_DEACTIVATED));
-    }
-
-    @PutMapping("/me/setup-password")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<Void>> setupPassword(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @Valid @RequestBody SetupPasswordRequest request) {
-        setupPasswordUseCase.execute(principal.userId(), request.newPassword());
-        return ResponseEntity.ok(ApiResponse.message(ErrorMessages.PASSWORD_CHANGED_SUCCESS));
-    }
-
-    @PutMapping("/me/change-password")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<ApiResponse<Void>> changePassword(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @Valid @RequestBody ChangePasswordRequest request) {
-        changePasswordUseCase.execute(principal.userId(), request.currentPassword(), request.newPassword());
-        return ResponseEntity.ok(ApiResponse.message(ErrorMessages.PASSWORD_CHANGED_SUCCESS));
-    }
-
-    /**
-     * OWNER/MANAGER réinitialise le mot de passe d'un employé.
-     * Retourne le mot de passe temporaire en clair pour le communiquer à l'employé.
-     */
     @PostMapping("/{id}/reset-password")
     @PreAuthorize("hasAuthority('user:update')")
-    public ResponseEntity<ApiResponse<ResetEmployeePasswordResponse>> resetEmployeePassword(
-            @PathVariable String id) {
-        String tempPassword = resetEmployeePasswordUseCase.execute(id);
-        return ResponseEntity.ok(ApiResponse.success(new ResetEmployeePasswordResponse(tempPassword)));
+    public ResponseEntity<ApiResponse<TemporaryPasswordResponse>> resetPassword(@PathVariable String id) {
+        return ResponseEntity.ok(ApiResponse.success(
+                new TemporaryPasswordResponse(resetUserPasswordUseCase.execute(id))));
     }
 }
-

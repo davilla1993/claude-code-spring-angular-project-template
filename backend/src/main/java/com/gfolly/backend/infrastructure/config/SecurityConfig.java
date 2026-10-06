@@ -1,13 +1,18 @@
 package com.gfolly.backend.infrastructure.config;
 
-import com.gfolly.backend.iam.infrastructure.security.ImpersonationWriteGuardFilter;
 import com.gfolly.backend.iam.infrastructure.security.JwtAuthenticationFilter;
+import com.gfolly.backend.iam.infrastructure.security.JwtService;
 import com.gfolly.backend.infrastructure.security.RateLimitFilter;
+import com.gfolly.backend.shared.api.ApiResponse;
+import com.gfolly.backend.shared.util.ErrorMessages;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,59 +25,53 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import tools.jackson.databind.ObjectMapper;
 
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final ImpersonationWriteGuardFilter impersonationWriteGuardFilter;
-
-    @Value("${app.cors.allowed-origins}")
-    private String allowedOrigins;
+    /** Endpoints accessibles sans authentification (tous en POST). */
+    private static final String[] PUBLIC_AUTH_ENDPOINTS = {
+            "/api/auth/register",
+            "/api/auth/login",
+            "/api/auth/refresh",
+            "/api/auth/logout",
+            "/api/auth/verify-email",
+            "/api/auth/resend-verification",
+            "/api/auth/forgot-password",
+            "/api/auth/reset-password"
+    };
 
     @Bean
-    public RateLimitFilter rateLimitFilter() {
-        return new RateLimitFilter();
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   JwtService jwtService,
+                                                   ObjectMapper objectMapper) throws Exception {
         http
+                // CSRF désactivé : API stateless dont les cookies sont SameSite=Strict (jamais envoyés en cross-site).
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults())
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"success\": false, \"message\": \"Session expirée ou non autorisée\"}");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"success\": false, \"message\": \"Accès refusé\"}");
-                        })
-                )
+                        .authenticationEntryPoint((request, response, e) ->
+                                writeError(response, HttpStatus.UNAUTHORIZED, ErrorMessages.AUTHENTICATION_REQUIRED, objectMapper))
+                        .accessDeniedHandler((request, response, e) ->
+                                writeError(response, HttpStatus.FORBIDDEN, ErrorMessages.ACCESS_DENIED, objectMapper)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/config").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
-                        // Autoriser l'accès public aux fichiers statiques et à l'index.html
-                        .requestMatchers("/", "/index.html", "/*.js", "/*.css", "/*.png", "/*.svg", "/*.ico", "/assets/**").permitAll()
-                        // Tout ce qui n'est pas /api/** est considéré comme une route frontend et doit être accessible
-                        .requestMatchers(request -> !request.getServletPath().startsWith("/api/")).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(rateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(impersonationWriteGuardFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(HttpMethod.POST, PUBLIC_AUTH_ENDPOINTS).permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated())
+                // Filtres instanciés ici (et non déclarés en beans) pour ne pas être enregistrés une seconde fois
+                // comme filtres servlet globaux par Spring Boot.
+                .addFilterBefore(new RateLimitFilter(objectMapper), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -83,16 +82,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/api/**", config);
         return source;
     }
-}
 
+    private static void writeError(HttpServletResponse response, HttpStatus status, String message,
+                                   ObjectMapper objectMapper) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
+        objectMapper.writeValue(response.getWriter(), ApiResponse.error(message));
+    }
+}

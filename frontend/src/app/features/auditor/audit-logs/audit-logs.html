@@ -1,0 +1,84 @@
+<div class="page-header">
+  <h1>Journal d'audit</h1>
+</div>
+
+<form class="card filters" [formGroup]="filters" (ngSubmit)="applyFilters()" aria-label="Filtres du journal d'audit">
+  <div class="form-row">
+    <div class="field">
+      <label for="audit-email">Email de l'utilisateur</label>
+      <input id="audit-email" class="input" formControlName="userEmail" />
+    </div>
+    <div class="field">
+      <label for="audit-entity">Type d'entité</label>
+      <input id="audit-entity" class="input" formControlName="entityType" placeholder="ex : USER" />
+    </div>
+    <div class="field">
+      <label for="audit-status">Statut</label>
+      <select id="audit-status" class="select" formControlName="status">
+        <option value="">Tous</option>
+        <option value="SUCCESS">Succès</option>
+        <option value="FAILED">Échec</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="audit-from">Du</label>
+      <input id="audit-from" class="input" type="datetime-local" formControlName="from" />
+    </div>
+    <div class="field">
+      <label for="audit-to">Au</label>
+      <input id="audit-to" class="input" type="datetime-local" formControlName="to" />
+    </div>
+  </div>
+  <div class="form-actions">
+    <button type="submit" class="btn">Filtrer</button>
+    <button type="button" class="btn btn--secondary" (click)="resetFilters()">Réinitialiser</button>
+  </div>
+</form>
+
+@if (error(); as message) {
+  <div class="alert alert--error" role="alert">
+    <p>{{ message }}</p>
+    <button type="button" class="btn btn--link" (click)="load(page()?.page ?? 0)">Réessayer</button>
+  </div>
+} @else if (loading() && !page()) {
+  <p class="loading-state" role="status">Chargement…</p>
+} @else if (page(); as result) {
+  @if (result.content.length === 0) {
+    <p class="empty-state">Aucune entrée ne correspond à ces filtres.</p>
+  } @else {
+    <div class="table-wrapper" [attr.aria-busy]="loading()">
+      <table class="table">
+        <caption class="visually-hidden">Entrées du journal d'audit, les plus récentes en premier</caption>
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Utilisateur</th>
+            <th scope="col">Action</th>
+            <th scope="col">Entité</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Détails</th>
+            <th scope="col">IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of result.content; track log.id) {
+            <tr>
+              <td>{{ log.actionDate | date: 'short' }}</td>
+              <td>{{ log.userEmail ?? '—' }}</td>
+              <td>{{ log.action }}</td>
+              <td>{{ log.entityType }}@if (log.entityId) {<br /><span class="muted entity-id">{{ log.entityId }}</span>}</td>
+              <td>
+                <span class="badge" [class.badge--success]="log.status === 'SUCCESS'" [class.badge--danger]="log.status === 'FAILED'">
+                  {{ log.status === 'SUCCESS' ? 'Succès' : 'Échec' }}
+                </span>
+              </td>
+              <td>{{ log.details ?? log.errorMessage ?? '—' }}</td>
+              <td>{{ log.ipAddress ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [page]="result" (pageChange)="load($event)" />
+  }
+}

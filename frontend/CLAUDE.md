@@ -38,6 +38,16 @@ Accessibilité :
 - responsive
 - pas de composants fourre-tout: codes html, css, typescript bien séparés dans différents fichiers
 
+Socle existant (à réutiliser, ne pas dupliquer) :
+- `core/api/*` : services typés par ressource (`AuthApi`, `UsersApi`, `AuditApi`), enveloppe `ApiResponse` dépliée par `unwrap()`.
+- `core/services/session-store` : utilisateur courant (signals) ; `hasPermission()` pour adapter l'UI uniquement.
+- `core/interceptors` : cookies + refresh automatique sur 401 (un seul refresh à la fois, `TokenRefresher`).
+- `core/guards` : `authGuard`, `guestGuard`, `firstLoginGuard`, `permissionGuard('code')`.
+- `shared` : `ToastStore`, pipes `fieldError` / `confirmFieldError`, `Pagination`, modèles.
+- Confirmations : `await inject(ConfirmDialogService).confirm({ title, message, confirmLabel, danger })` (modale `<dialog>` native) — ne jamais utiliser `window.confirm`.
+- Styles : tokens et classes de base dans `src/styles.scss` (`.btn`, `.field`, `.card`, `.table`, `.alert`...).
+- Commandes : `npm start` (proxy `/api` → `localhost:8080`), `npm test -- --watch=false`, `npm run build`.
+
 Performance :
 - éviter subscriptions inutiles
 - state global inutile

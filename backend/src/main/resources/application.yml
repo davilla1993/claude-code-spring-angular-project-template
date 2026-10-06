@@ -1,27 +1,28 @@
+# Configuration de base : valeurs sûres par défaut, secrets fournis par variables d'environnement.
+# Pour le développement local : profil "dev" (application-dev.yml).
 spring:
   application:
     name: backend-template
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/template_db}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/project_db}
     username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
+    password: ${DATABASE_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: ${HIBERNATE_DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:false}
+    show-sql: false
     open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-        tenant_identifier_resolver: com.gfolly.backend.infrastructure.multitenant.CurrentTenantIdentifierResolverImpl
+
+  threads:
+    virtual:
+      enabled: true
 
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:5MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:5MB}
 
   mail:
     host: ${MAIL_HOST:localhost}
@@ -31,38 +32,43 @@ spring:
     properties:
       mail:
         smtp:
-          auth: false
+          auth: ${MAIL_SMTP_AUTH:false}
           starttls:
-            enable: false
+            enable: ${MAIL_SMTP_STARTTLS:false}
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
 
 server:
   port: ${BACKEND_PORT:8080}
-  servlet:
-    context-path: /
+  # Derrière un reverse proxy, passer à "native" ou "framework" pour obtenir l'IP réelle du client.
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
 
 app:
   jwt:
-    secret: ${JWT_SECRET:my-super-secret-key-that-should-be-changed-in-production-and-is-quite-long}
-    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400000}
-    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
+    # Obligatoire, au moins 32 caractères (HS256). Aucune valeur par défaut hors profil dev.
+    secret: ${JWT_SECRET}
+    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}       # 15 minutes
+    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}  # 7 jours
+
+  security:
+    cookie-secure: ${COOKIE_SECURE:true}
+    registration-enabled: ${REGISTRATION_ENABLED:true}
+    token-cleanup-cron: ${TOKEN_CLEANUP_CRON:0 0 3 * * *}
+
+  cors:
+    # Liste séparée par des virgules (origines exactes, schéma inclus). Utilisée aussi pour les WebSockets.
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
 
   email:
-    from: ${MAIL_FROM:noreply@template.com}
+    from: ${MAIL_FROM:noreply@example.com}
     from-name: ${MAIL_FROM_NAME:TemplateApp}
-    verification-url: ${EMAIL_VERIFICATION_URL:http://localhost:4200/verify-email}
-    reset-password-url: ${EMAIL_RESET_PASSWORD_URL:http://localhost:4200/reset-password}
-
-  uploads-dir: ${UPLOADS_DIR:./uploads}
 
   storage:
-    provider: ${STORAGE_PROVIDER:local}
+    uploads-dir: ${UPLOADS_DIR:./uploads}
+    allowed-extensions: ${UPLOAD_ALLOWED_EXTENSIONS:jpg,jpeg,png,gif,webp,pdf}
 
 logging:
   level:
     root: INFO
     com.gfolly.backend: INFO
-    org.springframework.security: INFO
-    org.hibernate.SQL: DEBUG

@@ -4,7 +4,6 @@ import com.gfolly.backend.iam.domain.EmailVerificationToken;
 import com.gfolly.backend.iam.domain.User;
 import com.gfolly.backend.iam.domain.exception.EmailAlreadyVerifiedException;
 import com.gfolly.backend.iam.domain.exception.InvalidVerificationCodeException;
-import com.gfolly.backend.iam.domain.exception.UserNotFoundException;
 import com.gfolly.backend.iam.infrastructure.repository.EmailVerificationTokenRepository;
 import com.gfolly.backend.iam.infrastructure.repository.UserRepository;
 import com.gfolly.backend.shared.util.ErrorMessages;
@@ -21,26 +20,24 @@ public class VerifyEmailUseCase {
 
     @Transactional
     public void execute(String userId, String code) {
-        User user = userRepository.findByPublicIdGlobal(userId)
-                .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
+        User user = userRepository.findByPublicIdAndDeletedFalse(userId)
+                .orElseThrow(() -> new InvalidVerificationCodeException(ErrorMessages.CODE_INVALID));
 
-        if (Boolean.TRUE.equals(user.getEmailVerified())) {
+        if (user.isEmailVerified()) {
             throw new EmailAlreadyVerifiedException(ErrorMessages.EMAIL_ALREADY_VERIFIED);
         }
 
         EmailVerificationToken token = tokenRepository.findTopByUserIdOrderByCreatedAtDesc(userId)
-                .orElseThrow(() -> new InvalidVerificationCodeException(ErrorMessages.LINK_EXPIRED_OR_INVALID));
+                .orElseThrow(() -> new InvalidVerificationCodeException(ErrorMessages.CODE_INVALID));
 
         if (!token.isValid()) {
-            throw new InvalidVerificationCodeException(ErrorMessages.LINK_RESEND_REQUIRED);
+            throw new InvalidVerificationCodeException(ErrorMessages.CODE_EXPIRED);
         }
-
-        if (!token.getCode().equals(code)) {
-            throw new InvalidVerificationCodeException(ErrorMessages.LINK_EXPIRED_OR_INVALID);
+        if (!token.matches(code)) {
+            throw new InvalidVerificationCodeException(ErrorMessages.CODE_INVALID);
         }
 
         token.setUsed(true);
-        userRepository.markEmailVerified(user.getPublicId());
+        user.setEmailVerified(true);
     }
 }
-

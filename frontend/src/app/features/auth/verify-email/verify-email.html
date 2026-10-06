@@ -1,0 +1,42 @@
+<section class="card auth-card" aria-labelledby="verify-title">
+  <h1 id="verify-title">Vérifiez votre adresse email</h1>
+
+  @if (!userId()) {
+    <div class="alert alert--warning" role="alert">
+      <p>Ce lien est incomplet. Connectez-vous : un nouveau code vous sera envoyé automatiquement.</p>
+    </div>
+    <p><a class="btn" routerLink="/auth/login">Aller à la connexion</a></p>
+  } @else {
+    <p class="muted">
+      Saisissez le code à 6 chiffres envoyé{{ email() ? ' à ' + email() : '' }}. Il est valable 15 minutes.
+    </p>
+
+    @if (error(); as message) {
+      <div class="alert alert--error" role="alert"><p>{{ message }}</p></div>
+    }
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="verify-code">Code de vérification</label>
+        @let codeError = form.controls.code | fieldError;
+        <input id="verify-code" class="input" formControlName="code" inputmode="numeric" autocomplete="one-time-code"
+               maxlength="6" [attr.aria-invalid]="!!codeError" [attr.aria-describedby]="codeError ? 'verify-code-error' : null" />
+        @if (codeError) {
+          <p id="verify-code-error" class="field-error">{{ codeError }}</p>
+        }
+      </div>
+
+      <button type="submit" class="btn btn--block" [disabled]="submitting()">
+        {{ submitting() ? 'Vérification…' : 'Vérifier' }}
+      </button>
+    </form>
+
+    @if (email()) {
+      <p>
+        <button type="button" class="btn btn--link" (click)="resend()" [disabled]="resending()">
+          Renvoyer un code
+        </button>
+      </p>
+    }
+  }
+</section>

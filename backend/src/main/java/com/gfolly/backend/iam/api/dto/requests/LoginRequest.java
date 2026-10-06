@@ -1,17 +1,10 @@
 package com.gfolly.backend.iam.api.dto.requests;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record LoginRequest(
-
-        @NotBlank
-        String email,
-
-        @NotBlank
-        String password,
-
-        /** Null ou vide = portail OWNER. Non-null = connexion depuis le sous-domaine (employés). */
-        String subdomain
+        @NotBlank @Email @Size(max = 255) String email,
+        @NotBlank @Size(max = 72) String password
 ) {}
-
-

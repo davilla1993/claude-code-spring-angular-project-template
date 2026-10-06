@@ -1,7 +1,4 @@
-# Infrastructure for the project
-# Default versions: Postgres 15, Redis 7, MailHog latest
-
-version: '3.8'
+# Infrastructure de développement local : PostgreSQL + MailHog (capture des emails).
 
 services:
   db:
@@ -9,28 +6,21 @@ services:
     container_name: project-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
       POSTGRES_DB: ${DB_NAME:-project_db}
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7-alpine
-    container_name: project-redis
-    restart: always
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-
   mailhog:
     image: mailhog/mailhog
     container_name: project-mailhog
     restart: always
     ports:
-      - "${MAILHOG_SMTP_PORT:-1025}:1025" # SMTP server
-      - "${MAILHOG_HTTP_PORT:-8025}:8025" # Web UI
+      - "${MAIL_PORT:-1025}:1025" # SMTP
+      - "${MAILHOG_HTTP_PORT:-8025}:8025" # Interface web : http://localhost:8025
 
 volumes:
   postgres_data:

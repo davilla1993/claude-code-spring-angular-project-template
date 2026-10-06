@@ -7,6 +7,7 @@ import com.gfolly.backend.system.application.GetAuditLogsUseCase;
 import com.gfolly.backend.system.domain.AuditLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +34,9 @@ public class AuditLogController {
             @RequestParam(required = false) AuditLog.ActionStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @PageableDefault(size = 20, sort = "actionDate") Pageable pageable) {
+            @PageableDefault(size = 20, sort = "actionDate", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseEntity.ok(ApiResponse.success(
                 getAuditLogsUseCase.execute(userEmail, entityType, status, from, to, pageable)));
     }
 }
-

@@ -3,6 +3,8 @@ package com.gfolly.backend.shared.api;
 import com.gfolly.backend.iam.domain.exception.*;
 import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,14 +14,19 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    // --- Erreurs de requête ---
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
@@ -37,9 +44,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(ErrorMessages.MALFORMED_REQUEST_BODY));
     }
 
-    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
-    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(ErrorMessages.ACCESS_DENIED));
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error(ErrorMessages.missingParameter(ex.getParameterName())));
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingPart(MissingServletRequestPartException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error(ErrorMessages.missingParameter(ex.getRequestPartName())));
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, PropertyReferenceException.class})
+    public ResponseEntity<ApiResponse<Void>> handleInvalidParameter(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(ApiResponse.error(ErrorMessages.INVALID_PARAMETER));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -47,16 +66,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ApiResponse<Void>> handleIllegalState(IllegalStateException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingParam(MissingServletRequestParameterException ex) {
-        log.warn("Missing request parameter: {}", ex.getParameterName());
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.error(ErrorMessages.missingParameter(ex.getParameterName())));
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE)
+                .body(ApiResponse.error(ErrorMessages.FILE_SIZE_EXCEEDED));
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
@@ -65,53 +78,53 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorMessages.ENDPOINT_NOT_FOUND));
     }
 
-    @ExceptionHandler({InvalidCredentialsException.class})
+    // --- Authentification / autorisation ---
+
+    @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(ex.getMessage()));
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<ApiResponse<java.util.Map<String, String>>> handleEmailNotVerified(EmailNotVerifiedException ex) {
-        var data = java.util.Map.of("userId", ex.getUserId());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(ex.getMessage(), data));
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleEmailNotVerified(EmailNotVerifiedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(ex.getMessage(), Map.of("userId", ex.getUserId())));
     }
 
-    @ExceptionHandler(EmailAlreadyVerifiedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleEmailAlreadyVerified(EmailAlreadyVerifiedException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ApiResponse<Void>> handleAccessDenied(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(ErrorMessages.ACCESS_DENIED));
     }
 
-    @ExceptionHandler(InvalidVerificationCodeException.class)
-    public ResponseEntity<ApiResponse<Void>> handleInvalidVerificationCode(InvalidVerificationCodeException ex) {
-        return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(com.gfolly.backend.iam.domain.exception.TooManyRequestsException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTooManyRequests(
-            com.gfolly.backend.iam.domain.exception.TooManyRequestsException ex) {
-        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler({TenantNotFoundException.class, UserNotFoundException.class})
-    public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
-    }
-
-    @ExceptionHandler(TenantInactiveException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTenantInactive(TenantInactiveException ex) {
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbiddenOperation(ForbiddenOperationException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler({EmailAlreadyExistsException.class, SlugAlreadyExistsException.class})
+    @ExceptionHandler({InvalidVerificationCodeException.class, InvalidPasswordException.class})
+    public ResponseEntity<ApiResponse<Void>> handleInvalidUserInput(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(ApiResponse.error(ex.getMessage()));
+    }
+
+    // --- Ressources / conflits ---
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler({EmailAlreadyExistsException.class, EmailAlreadyVerifiedException.class, IllegalStateException.class})
     public ResponseEntity<ApiResponse<Void>> handleConflict(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
-        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                .body(ApiResponse.error(ErrorMessages.FILE_SIZE_EXCEEDED));
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDataIntegrity(DataIntegrityViolationException ex) {
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(ErrorMessages.DUPLICATE_ENTRY));
     }
+
+    // --- Fallback ---
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
@@ -120,5 +133,3 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorMessages.INTERNAL_SERVER_ERROR));
     }
 }
-
-

@@ -1,0 +1,5 @@
+app:
+  jwt:
+    secret: test-only-secret-0123456789-abcdefghijklmnopqrstuvwxyz
+  storage:
+    uploads-dir: ${java.io.tmpdir}/backend-template-test-uploads

@@ -1,6 +1,6 @@
 package com.gfolly.backend.system.domain;
 
-import com.gfolly.backend.shared.domain.TenantAwareEntity;
+import com.gfolly.backend.shared.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,47 +8,47 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "audit_logs", indexes = {
-        @Index(name = "idx_user_email", columnList = "userEmail"),
-        @Index(name = "idx_action_date", columnList = "actionDate"),
-        @Index(name = "idx_entity_type", columnList = "entityType"),
-        @Index(name = "idx_action_status", columnList = "status")
+        @Index(name = "idx_audit_user_email", columnList = "user_email"),
+        @Index(name = "idx_audit_action_date", columnList = "action_date"),
+        @Index(name = "idx_audit_entity_type", columnList = "entity_type"),
+        @Index(name = "idx_audit_status", columnList = "status")
 })
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class AuditLog extends TenantAwareEntity {
+public class AuditLog extends BaseEntity {
 
-    @Column(name = "userEmail", length = 255)
+    @Column(name = "user_email")
     private String userEmail;
 
     @Column(nullable = false, length = 100)
     private String action;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "entity_type", nullable = false, length = 50)
     private String entityType;
 
-    @Column(length = 100)
+    @Column(name = "entity_id", length = 100)
     private String entityId;
 
     @Column(length = 2000)
     private String details;
 
-    @Column(length = 50)
+    @Column(name = "ip_address", length = 50)
     private String ipAddress;
 
     @Column(name = "user_agent", length = 500)
     private String userAgent;
 
-    @Column(nullable = false)
+    @Column(name = "action_date", nullable = false)
     private LocalDateTime actionDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ActionStatus status;
 
-    @Column(length = 1000)
+    @Column(name = "error_message", length = 1000)
     private String errorMessage;
 
     public enum ActionStatus {
@@ -56,5 +56,3 @@ public class AuditLog extends TenantAwareEntity {
         FAILED
     }
 }
-
-

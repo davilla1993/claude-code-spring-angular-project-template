@@ -1,0 +1,28 @@
+<header class="header">
+  <div class="container header__inner">
+    <a class="header__brand" [routerLink]="session.isAuthenticated() ? '/app' : '/'">{{ appName }}</a>
+
+    <nav aria-label="Navigation principale">
+      <ul class="header__nav">
+        @if (session.user(); as user) {
+          @if (!user.firstLogin) {
+            <li><a routerLink="/app" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Tableau de bord</a></li>
+            @if (session.hasPermission('user:view')) {
+              <li><a routerLink="/app/admin/users" routerLinkActive="active">Utilisateurs</a></li>
+            }
+            @if (session.hasPermission('audit:log:view')) {
+              <li><a routerLink="/app/audit" routerLinkActive="active">Journal d'audit</a></li>
+            }
+            <li><a routerLink="/app/account" routerLinkActive="active">Mon compte</a></li>
+          }
+          <li>
+            <button type="button" class="btn btn--secondary btn--sm" (click)="logout()">Se déconnecter</button>
+          </li>
+        } @else {
+          <li><a routerLink="/auth/login" routerLinkActive="active">Se connecter</a></li>
+          <li><a class="btn btn--sm" routerLink="/auth/register">Créer un compte</a></li>
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

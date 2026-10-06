@@ -1,0 +1,96 @@
+<div class="page-header">
+  <h1>Utilisateurs</h1>
+  @if (session.hasPermission('user:create')) {
+    <a class="btn" routerLink="/app/admin/users/new">Nouvel utilisateur</a>
+  }
+</div>
+
+@if (temporaryPassword(); as temp) {
+  <div class="alert alert--info temp-password" role="status">
+    <p>
+      Mot de passe temporaire de <strong>{{ temp.user.firstName }} {{ temp.user.lastName }}</strong> :
+      <code>{{ temp.password }}</code>
+    </p>
+    <p class="muted">Transmettez-le de façon sécurisée. Il ne sera plus affiché ; l'utilisateur devra le changer à sa prochaine connexion.</p>
+    <div class="form-actions">
+      <button type="button" class="btn btn--secondary btn--sm" (click)="copyTemporaryPassword(temp.password)">Copier</button>
+      <button type="button" class="btn btn--link" (click)="temporaryPassword.set(null)">Masquer</button>
+    </div>
+  </div>
+}
+
+<div class="toolbar">
+  <div class="field">
+    <label for="users-role-filter">Rôle</label>
+    <select id="users-role-filter" class="select" [ngModel]="roleFilter()" (ngModelChange)="onRoleFilterChange($event)">
+      <option value="">Tous les rôles</option>
+      @for (role of roles; track role) {
+        <option [value]="role">{{ roleLabels[role] }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (error(); as message) {
+  <div class="alert alert--error" role="alert">
+    <p>{{ message }}</p>
+    <button type="button" class="btn btn--link" (click)="load(page()?.page ?? 0)">Réessayer</button>
+  </div>
+} @else if (loading() && !page()) {
+  <p class="loading-state" role="status">Chargement…</p>
+} @else if (page(); as result) {
+  @if (result.content.length === 0) {
+    <p class="empty-state">Aucun utilisateur ne correspond à ce filtre.</p>
+  } @else {
+    <div class="table-wrapper" [attr.aria-busy]="loading()">
+      <table class="table">
+        <caption class="visually-hidden">Liste des utilisateurs</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rôle</th>
+            <th scope="col">Statut</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of result.content; track user.publicId) {
+            <tr>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ roleLabels[user.role] }}</td>
+              <td>
+                <span class="badge" [class.badge--success]="user.active" [class.badge--danger]="!user.active">
+                  {{ user.active ? 'Actif' : 'Désactivé' }}
+                </span>
+                @if (!user.emailVerified) {
+                  <span class="badge">Email non vérifié</span>
+                }
+              </td>
+              <td>
+                @if (session.hasPermission('user:update')) {
+                  <div class="table-actions">
+                    <a class="btn btn--secondary btn--sm" [routerLink]="['/app/admin/users', user.publicId]"
+                       [attr.aria-label]="'Modifier ' + user.firstName + ' ' + user.lastName">Modifier</a>
+                    @if (!isSelf(user)) {
+                      <button type="button" class="btn btn--secondary btn--sm" (click)="toggleActive(user)"
+                              [attr.aria-label]="(user.active ? 'Désactiver ' : 'Activer ') + user.firstName + ' ' + user.lastName">
+                        {{ user.active ? 'Désactiver' : 'Activer' }}
+                      </button>
+                      <button type="button" class="btn btn--secondary btn--sm" (click)="resetPassword(user)"
+                              [attr.aria-label]="'Réinitialiser le mot de passe de ' + user.firstName + ' ' + user.lastName">
+                        Réinitialiser le mot de passe
+                      </button>
+                    }
+                  </div>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [page]="result" (pageChange)="load($event)" />
+  }
+}

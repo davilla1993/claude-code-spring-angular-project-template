@@ -7,36 +7,33 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-// Étend BaseEntity (pas TenantAwareEntity) pour éviter le filtre Hibernate lors
-// de la résolution du token — le tenantId est géré manuellement.
+/**
+ * Refresh token persisté. Seul le hash SHA-256 est stocké : une fuite de la table
+ * ne permet pas de réutiliser les tokens.
+ */
 @Entity
-@Table(name = "refresh_tokens")
+@Table(name = "refresh_tokens", indexes = @Index(name = "idx_refresh_tokens_user_id", columnList = "user_id"))
 @Getter
 @Setter
 public class RefreshToken extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String token;
+    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
+    private String tokenHash;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, length = 36)
     private String userId;
-
-    @Column(name = "tenant_id", nullable = false)
-    private String tenantId;
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
     @Column(nullable = false)
-    private Boolean revoked = false;
+    private boolean revoked = false;
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }
 
     public boolean isValid() {
-        return !Boolean.TRUE.equals(revoked) && !isExpired();
+        return !revoked && !isExpired();
     }
 }
-
-

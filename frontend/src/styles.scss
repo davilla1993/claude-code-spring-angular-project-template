@@ -1,1 +1,312 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Styles globaux du socle : tokens de design + composants de base.
+ * Le design system définitif est défini au bootstrap du projet (docs/DESIGN_SYSTEM.md) :
+ * re-thémer en modifiant les tokens ci-dessous, ou remplacer par une librairie UI.
+ */
+
+// ---------------------------------------------------------------------------
+// Tokens
+// ---------------------------------------------------------------------------
+:root {
+  --color-primary: #2557d6;
+  --color-primary-hover: #1d46ad;
+  --color-on-primary: #ffffff;
+  --color-text: #1f2937;
+  --color-text-muted: #5b6474;
+  --color-bg: #f5f7fb;
+  --color-surface: #ffffff;
+  --color-border: #d4d9e2;
+  --color-success: #1e7d45;
+  --color-danger: #b42318;
+  --color-warning: #a15c07;
+  --color-info: #2557d6;
+  --color-focus: #0b1f4d; // contraste ≥ 3:1 sur les fonds clairs (WCAG 2.2 — 1.4.11)
+
+  --font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.75rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 0.5rem;
+  --shadow: 0 1px 3px rgb(16 24 40 / 12%), 0 1px 2px rgb(16 24 40 / 8%);
+  --content-width: 72rem;
+}
+
+// ---------------------------------------------------------------------------
+// Base
+// ---------------------------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-block-size: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin-block: 0 var(--space-4);
+}
+
+h1 { font-size: var(--font-size-xl); }
+h2 { font-size: var(--font-size-lg); }
+
+a {
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.container {
+  inline-size: 100%;
+  max-inline-size: var(--content-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Boutons
+// ---------------------------------------------------------------------------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: 2.5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+
+  &:hover:not(:disabled) { background: var(--color-primary-hover); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  &--secondary {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+    &:hover:not(:disabled) { background: var(--color-bg); }
+  }
+
+  &--danger {
+    background: var(--color-danger);
+    &:hover:not(:disabled) { background: #8f1c13; }
+  }
+
+  &--link {
+    background: transparent;
+    color: var(--color-primary);
+    padding-inline: 0;
+    min-block-size: auto;
+    font-weight: 500;
+    text-decoration: underline;
+    &:hover:not(:disabled) { background: transparent; }
+  }
+
+  &--block { inline-size: 100%; }
+  &--sm { min-block-size: 2rem; padding: var(--space-1) var(--space-3); font-size: var(--font-size-sm); }
+}
+
+// ---------------------------------------------------------------------------
+// Formulaires
+// ---------------------------------------------------------------------------
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-row {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  label { font-weight: 600; }
+}
+
+.input,
+.select {
+  inline-size: 100%;
+  min-block-size: 2.5rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface);
+
+  &[aria-invalid='true'] { border-color: var(--color-danger); }
+}
+
+.field-hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.field-error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+// ---------------------------------------------------------------------------
+// Surfaces et retours
+// ---------------------------------------------------------------------------
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-6);
+  box-shadow: var(--shadow);
+}
+
+.auth-card {
+  max-inline-size: 28rem;
+  margin: var(--space-8) auto;
+}
+
+.form-card {
+  max-inline-size: 40rem;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--space-6);
+
+  h1 { margin: 0; }
+}
+
+.alert {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid currentColor;
+  background: var(--color-surface);
+
+  &--error { color: var(--color-danger); }
+  &--success { color: var(--color-success); }
+  &--info { color: var(--color-info); }
+  &--warning { color: var(--color-warning); }
+
+  p { margin: 0; color: var(--color-text); }
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+
+  &--success { color: var(--color-success); border-color: currentColor; }
+  &--danger { color: var(--color-danger); border-color: currentColor; }
+}
+
+.empty-state,
+.loading-state {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Tableaux
+// ---------------------------------------------------------------------------
+.table-wrapper {
+  // relative : les éléments .visually-hidden (absolus) restent contenus dans la zone de défilement
+  // au lieu d'élargir la page sur mobile.
+  position: relative;
+  overflow-x: auto;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: var(--space-3) var(--space-4);
+    text-align: start;
+    border-block-end: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+
+  th {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+  }
+
+  tr:last-child td { border-block-end: 0; }
+}
+
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

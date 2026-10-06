@@ -1,0 +1,17 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-end: var(--space-4);
+
+  .field { min-inline-size: 12rem; }
+}
+
+.temp-password {
+  margin-block-end: var(--space-4);
+
+  code {
+    font-size: var(--font-size-lg);
+    user-select: all;
+  }
+}

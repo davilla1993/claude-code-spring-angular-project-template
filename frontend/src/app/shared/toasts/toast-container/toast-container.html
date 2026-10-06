@@ -1,0 +1,8 @@
+<div class="toasts" aria-live="polite" aria-atomic="false">
+  @for (toast of store.toasts(); track toast.id) {
+    <div [class]="'toast toast--' + toast.kind" [attr.role]="toast.kind === 'error' ? 'alert' : 'status'">
+      <span>{{ toast.message }}</span>
+      <button type="button" class="toast__close" (click)="store.dismiss(toast.id)" aria-label="Fermer la notification">×</button>
+    </div>
+  }
+</div>

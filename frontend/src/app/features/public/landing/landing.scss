@@ -1,0 +1,14 @@
+.hero {
+  max-inline-size: 40rem;
+  margin: var(--space-8) auto;
+  text-align: center;
+}
+
+.hero__lead {
+  font-size: var(--font-size-lg);
+}
+
+.hero__actions {
+  justify-content: center;
+  margin-block-start: var(--space-6);
+}

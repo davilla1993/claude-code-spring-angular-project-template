@@ -1,0 +1,18 @@
+# Profil de développement local : ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+# Ne jamais activer ce profil en production.
+spring:
+  datasource:
+    password: ${DATABASE_PASSWORD:password}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-0123456789}
+
+logging:
+  level:
+    com.gfolly.backend: DEBUG

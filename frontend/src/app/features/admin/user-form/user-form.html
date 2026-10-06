@@ -1,0 +1,84 @@
+<div class="page-header">
+  <h1>{{ isEdit() ? "Modifier l'utilisateur" : 'Nouvel utilisateur' }}</h1>
+</div>
+
+<section class="card form-card">
+  @if (error(); as message) {
+    <div class="alert alert--error" role="alert"><p>{{ message }}</p></div>
+  }
+
+  @if (loading()) {
+    <p class="loading-state" role="status">Chargement…</p>
+  } @else {
+    <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-row">
+        <div class="field">
+          <label for="user-first-name">Prénom</label>
+          @let firstNameError = form.controls.firstName | fieldError;
+          <input id="user-first-name" class="input" formControlName="firstName" autocomplete="off"
+                 [attr.aria-invalid]="!!firstNameError" [attr.aria-describedby]="firstNameError ? 'user-first-name-error' : null" />
+          @if (firstNameError) {
+            <p id="user-first-name-error" class="field-error">{{ firstNameError }}</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="user-last-name">Nom</label>
+          @let lastNameError = form.controls.lastName | fieldError;
+          <input id="user-last-name" class="input" formControlName="lastName" autocomplete="off"
+                 [attr.aria-invalid]="!!lastNameError" [attr.aria-describedby]="lastNameError ? 'user-last-name-error' : null" />
+          @if (lastNameError) {
+            <p id="user-last-name-error" class="field-error">{{ lastNameError }}</p>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="user-email">Adresse email</label>
+        @let emailError = form.controls.email | fieldError;
+        <input id="user-email" class="input" type="email" formControlName="email" autocomplete="off"
+               [attr.aria-invalid]="!!emailError" [attr.aria-describedby]="emailError ? 'user-email-error' : null" />
+        @if (emailError) {
+          <p id="user-email-error" class="field-error">{{ emailError }}</p>
+        }
+      </div>
+
+      @if (!isEdit()) {
+        <div class="field">
+          <label for="user-password">Mot de passe temporaire</label>
+          @let passwordError = form.controls.temporaryPassword | fieldError;
+          <input id="user-password" class="input" type="text" formControlName="temporaryPassword" autocomplete="off"
+                 [attr.aria-invalid]="!!passwordError"
+                 [attr.aria-describedby]="passwordError ? 'user-password-error' : 'user-password-hint'" />
+          @if (passwordError) {
+            <p id="user-password-error" class="field-error">{{ passwordError }}</p>
+          } @else {
+            <p id="user-password-hint" class="field-hint">
+              {{ passwordRules }} L'utilisateur vérifiera son email puis le remplacera à sa première connexion.
+            </p>
+          }
+        </div>
+      }
+
+      <div class="field">
+        <label for="user-role">Rôle</label>
+        <select id="user-role" class="select" formControlName="role"
+                [attr.aria-describedby]="isSelf() ? 'user-role-hint' : null">
+          @for (role of roles; track role) {
+            <option [value]="role">{{ roleLabels[role] }}</option>
+          }
+        </select>
+        @if (isSelf()) {
+          <p id="user-role-hint" class="field-hint">Vous ne pouvez pas modifier votre propre rôle.</p>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn" [disabled]="submitting()">
+          {{ submitting() ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+        <a class="btn btn--secondary" routerLink="/app/admin/users">Annuler</a>
+      </div>
+    </form>
+  }
+</section>

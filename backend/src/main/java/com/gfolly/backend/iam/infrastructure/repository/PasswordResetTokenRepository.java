@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface PasswordResetTokenRepository extends JpaRepository<PasswordResetToken, Long> {
@@ -15,5 +16,8 @@ public interface PasswordResetTokenRepository extends JpaRepository<PasswordRese
     @Modifying
     @Query("DELETE FROM PasswordResetToken t WHERE t.userId = :userId")
     void deleteAllByUserId(@Param("userId") String userId);
-}
 
+    @Modifying
+    @Query("DELETE FROM PasswordResetToken t WHERE t.expiresAt < :now")
+    int deleteExpired(@Param("now") LocalDateTime now);
+}

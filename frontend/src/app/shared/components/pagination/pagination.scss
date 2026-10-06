@@ -1,0 +1,13 @@
+.pagination {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  margin-block-start: var(--space-4);
+}
+
+.pagination__total {
+  margin-block: var(--space-2) 0;
+  text-align: center;
+  font-size: var(--font-size-sm);
+}

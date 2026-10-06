@@ -37,6 +37,15 @@ DB :
 
 Tests unitaires et tests d'intégration lorsque les frontières le justifient.
 
+## Socle existant
+
+Le backend fournit déjà authentification, utilisateurs, audit, stockage de fichiers, WebSocket et rate limiting
+(voir `docs/ARCHITECTURE.md` [socle], `docs/API_CONTRACT.md`, `docs/SECURITY.md`).
+- Réutiliser ces composants ; ne pas les dupliquer ni contourner `SecurityConfig`.
+- Nouvelles permissions : étendre `iam/domain/Permission` et `Role`.
+- Commandes : `./mvnw test` (le test de contexte nécessite Docker, sinon il est ignoré) ;
+  `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev` (après `docker compose up -d` à la racine).
+
 ## Backend Architecture Rules
 
 - Use DDD-light.

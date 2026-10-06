@@ -7,8 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record ResetPasswordRequest(
-        @NotBlank @Email String email,
-        @NotBlank @Size(min = 6, max = 6) @Pattern(regexp = "\\d{6}") String code,
+        @NotBlank @Email @Size(max = 255) String email,
+        @NotBlank @Pattern(regexp = "\\d{6}", message = "Le code doit être composé de 6 chiffres") String code,
         @NotBlank @Pattern(regexp = PasswordStrength.PATTERN, message = PasswordStrength.MESSAGE) String newPassword
 ) {}
-

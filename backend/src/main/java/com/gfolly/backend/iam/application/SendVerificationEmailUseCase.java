@@ -8,37 +8,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class SendVerificationEmailUseCase {
 
-    private static final int CODE_LENGTH = 6;
-    private static final int EXPIRY_MINUTES = 15;
-
     private final EmailVerificationTokenRepository tokenRepository;
     private final EmailService emailService;
 
+    /**
+     * REQUIRES_NEW : le code doit être persisté même si l'appelant échoue ensuite
+     * (le login lève EmailNotVerifiedException juste après cet appel).
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void execute(String userId, String email, String firstName) {
         tokenRepository.deleteAllByUserId(userId);
 
-        String code = generateCode();
-
+        String code = OneTimeCodes.generate();
         EmailVerificationToken token = new EmailVerificationToken();
         token.setUserId(userId);
         token.setCode(code);
-        token.setExpiresAt(LocalDateTime.now().plusMinutes(EXPIRY_MINUTES));
+        token.setExpiresAt(OneTimeCodes.expiry());
         tokenRepository.save(token);
 
         emailService.sendVerificationCode(email, firstName, code);
     }
-
-    private String generateCode() {
-        int num = new SecureRandom().nextInt(900_000) + 100_000;
-        return String.valueOf(num);
-    }
 }
-

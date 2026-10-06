@@ -7,8 +7,12 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class AuditLogSpecification {
+/**
+ * Filtres de recherche des logs d'audit. Le tri est porté par le Pageable.
+ */
+public final class AuditLogSpecification {
 
     public static Specification<AuditLog> searchAuditLogs(
             String userEmail,
@@ -17,46 +21,35 @@ public class AuditLogSpecification {
             LocalDateTime startDate,
             LocalDateTime endDate) {
 
-        return (root, query, criteriaBuilder) -> {
+        return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.isFalse(root.get("deleted")));
 
-            // Always filter out deleted records
-            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
-
-            // Filter by user email (partial match)
-            if (userEmail != null && !userEmail.trim().isEmpty()) {
-                predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("userEmail")),
-                        "%" + userEmail.toLowerCase() + "%"
-                ));
+            if (userEmail != null && !userEmail.isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("userEmail")),
+                        "%" + escapeLike(userEmail.trim().toLowerCase(Locale.ROOT)) + "%", '\\'));
             }
-
-            // Filter by entity type (exact match)
-            if (entityType != null && !entityType.trim().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("entityType"), entityType));
+            if (entityType != null && !entityType.isBlank()) {
+                predicates.add(cb.equal(root.get("entityType"), entityType));
             }
-
-            // Filter by status
             if (status != null) {
-                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+                predicates.add(cb.equal(root.get("status"), status));
             }
-
-            // Filter by start date (greater than or equal)
             if (startDate != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("actionDate"), startDate));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("actionDate"), startDate));
             }
-
-            // Filter by end date (less than or equal)
             if (endDate != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("actionDate"), endDate));
+                predicates.add(cb.lessThanOrEqualTo(root.get("actionDate"), endDate));
             }
 
-            // Order by action date descending
-            query.orderBy(criteriaBuilder.desc(root.get("actionDate")));
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    /** Échappe les jokers LIKE pour que la saisie utilisateur soit traitée littéralement. */
+    private static String escapeLike(String value) {
+        return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+    }
+
+    private AuditLogSpecification() {}
 }
-
-

@@ -37,3 +37,6 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Fichiers déposés (stockage local)
+uploads/

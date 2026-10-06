@@ -3,12 +3,11 @@ package com.gfolly.backend.system.application;
 import com.gfolly.backend.shared.api.PageResponse;
 import com.gfolly.backend.system.api.dto.responses.AuditLogResponse;
 import com.gfolly.backend.system.domain.AuditLog;
+import com.gfolly.backend.system.infrastructure.mapper.response.AuditLogResponseMapper;
 import com.gfolly.backend.system.infrastructure.repository.AuditLogRepository;
 import com.gfolly.backend.system.infrastructure.specification.AuditLogSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,28 +28,7 @@ public class GetAuditLogsUseCase {
             LocalDateTime endDate,
             Pageable pageable) {
 
-        Specification<AuditLog> spec = AuditLogSpecification.searchAuditLogs(
-                userEmail, entityType, status, startDate, endDate);
-
-        Page<AuditLogResponse> page = auditLogRepository.findAll(spec, pageable)
-                .map(this::toResponse);
-
-        return PageResponse.from(page);
-    }
-
-    private AuditLogResponse toResponse(AuditLog log) {
-        return new AuditLogResponse(
-                log.getPublicId(),
-                log.getUserEmail(),
-                log.getAction(),
-                log.getEntityType(),
-                log.getEntityId(),
-                log.getDetails(),
-                log.getIpAddress(),
-                log.getStatus(),
-                log.getErrorMessage(),
-                log.getActionDate()
-        );
+        var spec = AuditLogSpecification.searchAuditLogs(userEmail, entityType, status, startDate, endDate);
+        return PageResponse.from(auditLogRepository.findAll(spec, pageable).map(AuditLogResponseMapper::toResponse));
     }
 }
-
