@@ -62,7 +62,9 @@ Voir `docs/SECURITY.md`.
 ## Deployment
 
 Variables d'environnement : voir `.env.example` et `backend/src/main/resources/application.yml`.
-Infrastructure locale : `docker compose up -d` (PostgreSQL + MailHog).
+Profils Spring : `dev` (poste local, valeurs en clair dans `application-dev.yml`) et `prod` (`application-prod.yml`,
+variables d'environnement obligatoires listées dans `.env.example`). Aucun profil par défaut : sans profil, le démarrage échoue.
+Prérequis locaux : PostgreSQL (base `template_db`) et MailHog (SMTP 1025, interface 8025).
 
 ## Observability
 

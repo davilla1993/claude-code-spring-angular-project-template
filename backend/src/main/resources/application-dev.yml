@@ -1,17 +1,36 @@
-# Profil de développement local : ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
-# Ne jamais activer ce profil en production.
+# Profil de développement local (valeurs en clair, propres au poste de dev).
+# Lancement : ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev  (IntelliJ : Active profiles = dev)
+# Ne jamais activer ce profil en production : utiliser "prod".
 spring:
   datasource:
-    password: ${DATABASE_PASSWORD:password}
+    url: jdbc:postgresql://localhost:5432/template_db
+    username: postgres
+    password: toor
+
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
+  # MailHog : SMTP localhost:1025, emails visibles sur http://localhost:8025
+  mail:
+    host: localhost
+    port: 1025
+
 app:
   jwt:
-    secret: ${JWT_SECRET:dev-only-insecure-secret-change-me-0123456789}
+    secret: dPYqiFRpdlbgafsRl0Ye8KSSURU2zNPzdyF94PDKSzGpFVAnK9Jn/mIfzNGP6vGnH4M5eAFYDV1MOcTn9N9Zmw
+
+  cors:
+    allowed-origins: http://localhost:4200
+
+  email:
+    from: noreply@localhost
+    from-name: TemplateApp (dev)
+
+  storage:
+    uploads-dir: ./uploads
 
 logging:
   level:

@@ -1,0 +1,43 @@
+# Profil de production : SPRING_PROFILES_ACTIVE=prod
+# Toutes les valeurs sensibles ou propres à l'environnement viennent de variables d'environnement
+# SANS valeur par défaut : une variable manquante empêche le démarrage (fail fast).
+# Liste des variables : .env.example à la racine du dépôt.
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:true}
+
+server:
+  port: ${BACKEND_PORT:8080}
+  # Derrière un reverse proxy : "native" ou "framework" pour obtenir l'IP réelle du client (audit).
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}   # au moins 32 caractères aléatoires
+
+  security:
+    registration-enabled: ${REGISTRATION_ENABLED:true}
+
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+  email:
+    from: ${MAIL_FROM}
+    from-name: ${MAIL_FROM_NAME}
+
+  storage:
+    uploads-dir: ${UPLOADS_DIR}

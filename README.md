@@ -36,11 +36,12 @@ Frontend Angular correspondant : écrans d'authentification, administration des 
 Détails : `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/SECURITY.md`.
 
 Lancement local :
+Prérequis : PostgreSQL local (base `template_db`) et MailHog (SMTP `localhost:1025`, interface http://localhost:8025).
+Les valeurs locales (base, JWT de dev, SMTP, CORS) sont dans `backend/src/main/resources/application-dev.yml` : à adapter à votre poste.
 ```bash
-cp .env.example .env
-docker compose up -d                                        # PostgreSQL + MailHog (http://localhost:8025)
-cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev     # IntelliJ : Active profiles = dev
 ```
+En production : profil `prod` (`SPRING_PROFILES_ACTIVE=prod`) et variables d'environnement listées dans `.env.example`.
 Frontend (autre terminal) :
 ```bash
 cd frontend && npm install && npm start     # http://localhost:4200 — /api proxifié vers le backend

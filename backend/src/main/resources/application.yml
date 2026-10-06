@@ -1,17 +1,13 @@
-# Configuration de base : valeurs sûres par défaut, secrets fournis par variables d'environnement.
-# Pour le développement local : profil "dev" (application-dev.yml).
+# Configuration commune à tous les environnements. Aucun identifiant ni secret ici.
+# Profils : "dev" (poste local, valeurs en clair) et "prod" (variables d'environnement obligatoires).
+# Aucun profil par défaut : sans profil, le démarrage échoue (secret JWT absent) plutôt que de tourner mal configuré.
 spring:
   application:
     name: backend-template
 
-  datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/project_db}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD}
-
   jpa:
     hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+      ddl-auto: update
     show-sql: false
     open-in-view: false
 
@@ -21,52 +17,32 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: ${UPLOAD_MAX_FILE_SIZE:5MB}
-      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:5MB}
+      max-file-size: 5MB
+      max-request-size: 5MB
 
   mail:
-    host: ${MAIL_HOST:localhost}
-    port: ${MAIL_PORT:1025}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: ${MAIL_SMTP_AUTH:false}
-          starttls:
-            enable: ${MAIL_SMTP_STARTTLS:false}
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
 
 server:
-  port: ${BACKEND_PORT:8080}
-  # Derrière un reverse proxy, passer à "native" ou "framework" pour obtenir l'IP réelle du client.
-  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+  port: 8080
 
 app:
   jwt:
-    # Obligatoire, au moins 32 caractères (HS256). Aucune valeur par défaut hors profil dev.
-    secret: ${JWT_SECRET}
-    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:900000}       # 15 minutes
-    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}  # 7 jours
+    access-token-expiration: 900000       # 15 minutes
+    refresh-token-expiration: 604800000   # 7 jours
 
   security:
-    cookie-secure: ${COOKIE_SECURE:true}
-    registration-enabled: ${REGISTRATION_ENABLED:true}
-    token-cleanup-cron: ${TOKEN_CLEANUP_CRON:0 0 3 * * *}
-
-  cors:
-    # Liste séparée par des virgules (origines exactes, schéma inclus). Utilisée aussi pour les WebSockets.
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
-
-  email:
-    from: ${MAIL_FROM:noreply@example.com}
-    from-name: ${MAIL_FROM_NAME:TemplateApp}
+    cookie-secure: true
+    registration-enabled: true
+    token-cleanup-cron: "0 0 3 * * *"
 
   storage:
-    uploads-dir: ${UPLOADS_DIR:./uploads}
-    allowed-extensions: ${UPLOAD_ALLOWED_EXTENSIONS:jpg,jpeg,png,gif,webp,pdf}
+    allowed-extensions: jpg,jpeg,png,gif,webp,pdf
 
 logging:
   level:
