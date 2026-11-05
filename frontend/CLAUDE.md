@@ -38,6 +38,14 @@ Accessibilité :
 - responsive
 - pas de composants fourre-tout: codes html, css, typescript bien séparés dans différents fichiers
 
+Confirmation des actions :
+- Toute action de l'utilisateur est confirmée avant son exécution : création, modification, suppression, changement de mot de passe, déconnexion, etc.
+- Sans confirmation : les actions qui ne changent rien (navigation, filtres, pagination, copie, affichage ou masquage) et les formulaires du parcours d'authentification avant l'ouverture de la session (connexion, inscription, vérification de l'email, mot de passe oublié).
+- Un seul composant dans toute l'application : `ConfirmDialogService`. Le personnaliser par ses options (`title`, `message`, `confirmLabel`, `cancelLabel`, `danger`), et l'enrichir si une option manque.
+- Interdit : créer une autre modale de confirmation ou utiliser `window.confirm`.
+- Le message indique précisément l'action et ses conséquences. `danger: true` pour une action destructrice ou difficile à annuler.
+- La confirmation est une aide à l'utilisateur, pas un contrôle de sécurité : le serveur vérifie toujours la requête.
+
 Socle existant (à réutiliser, ne pas dupliquer) :
 - `core/api/*` : services typés par ressource (`AuthApi`, `UsersApi`, `AuditApi`), enveloppe `ApiResponse` dépliée par `unwrap()`.
 - `core/services/session-store` : utilisateur courant (signals) ; `hasPermission()` pour adapter l'UI uniquement.
@@ -45,7 +53,7 @@ Socle existant (à réutiliser, ne pas dupliquer) :
 - `core/guards` : `authGuard` (exige aussi un profil actif), `guestGuard`, `firstLoginGuard`, `profileSelectionGuard`, `permissionGuard('code')`.
 - Profils : `/auth/select-profile` choisit ou change le profil ; `SessionSync` recharge les autres onglets après un changement.
 - `shared` : `ToastStore`, pipes `fieldError` / `confirmFieldError`, `Pagination`, modèles.
-- Confirmations : `await inject(ConfirmDialogService).confirm({ title, message, confirmLabel, danger })` (modale `<dialog>` native) — ne jamais utiliser `window.confirm`.
+- Confirmations : `await inject(ConfirmDialogService).confirm({ title, message, confirmLabel, cancelLabel, danger })` (modale `<dialog>` native), voir « Confirmation des actions ».
 - Styles : tokens et classes de base dans `src/styles.scss` (`.btn`, `.field`, `.card`, `.table`, `.alert`...).
 - Commandes : `npm start` (proxy `/api` → `localhost:8080`), `npm test -- --watch=false`, `npm run build`.
 

@@ -15,6 +15,7 @@ Contrôle le backend et le frontend avec la même exigence, selon les « Règles
 - **Code :** correction, maintenabilité, architecture, duplication, gestion des erreurs, tests, synchronisation du contrat API.
 - **Single Responsibility :** classes, méthodes, composants et services qui mêlent plusieurs responsabilités, logique métier dans un controller ou un template.
 - **Services externes branchables :** SDK importé hors de son adaptateur, type ou exception du fournisseur exposé par un port, `if` sur le fournisseur dans le métier, frontend qui connaît le fournisseur. Les dépendances entre modules de l'application ne sont pas des constats. Pour chaque cas, indique ce qu'il faudrait modifier en changeant de fournisseur.
+- **Confirmation des actions (si UI) :** action sans confirmation ou modale dupliquée, selon `frontend/CLAUDE.md`.
 - **Accessibilité (si UI) :** clavier, focus, HTML sémantique, noms accessibles, contraste, erreurs de formulaires, responsive, états UI.
 - **Performance et rapidité :** SQL, N+1, pagination, concurrence, rendu Angular, appels API dupliqués, lazy loading, taille du bundle.
 
