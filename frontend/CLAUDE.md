@@ -39,7 +39,7 @@ Accessibilité :
 - pas de composants fourre-tout: codes html, css, typescript bien séparés dans différents fichiers
 
 Confirmation des actions :
-- Toute action de l'utilisateur est confirmée avant son exécution : création, modification, suppression, changement de mot de passe, déconnexion, etc.
+- Toute opération d'écriture est confirmée avant son exécution : création, validation, modification, suppression.
 - Sans confirmation : les actions qui ne changent rien (navigation, filtres, pagination, copie, affichage ou masquage) et les formulaires du parcours d'authentification avant l'ouverture de la session (connexion, inscription, vérification de l'email, mot de passe oublié).
 - Un seul composant dans toute l'application : `ConfirmDialogService`. Le personnaliser par ses options (`title`, `message`, `confirmLabel`, `cancelLabel`, `danger`), et l'enrichir si une option manque.
 - Interdit : créer une autre modale de confirmation ou utiliser `window.confirm`.
