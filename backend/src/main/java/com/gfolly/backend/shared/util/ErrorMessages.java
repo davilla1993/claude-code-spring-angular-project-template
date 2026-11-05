@@ -43,6 +43,7 @@ public final class ErrorMessages {
     // Ressources
     public static final String USER_NOT_FOUND     = "Utilisateur introuvable.";
     public static final String ENDPOINT_NOT_FOUND = "L'endpoint demandé est introuvable.";
+    public static final String METHOD_NOT_ALLOWED = "Cette méthode n'est pas autorisée sur cet endpoint.";
 
     // Conflits
     public static final String EMAIL_ALREADY_EXISTS = "Cette adresse email est déjà utilisée.";
@@ -55,6 +56,7 @@ public final class ErrorMessages {
 
     // Fichiers
     public static final String FILE_REQUIRED          = "Un fichier est requis pour cette opération.";
+    public static final String FILE_NOT_FOUND         = "Fichier introuvable.";
     public static final String FILE_UPLOAD_FAILED     = "Le chargement du fichier a échoué. Veuillez réessayer.";
     public static final String FILE_SIZE_EXCEEDED     = "La taille du fichier dépasse la limite autorisée.";
     public static final String UNSUPPORTED_FILE_TYPE  = "Ce type de fichier n'est pas autorisé.";

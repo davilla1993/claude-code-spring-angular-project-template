@@ -1,6 +1,7 @@
 package com.gfolly.backend.shared.api;
 
 import com.gfolly.backend.iam.domain.exception.*;
+import com.gfolly.backend.infrastructure.storage.StoredFileNotFoundException;
 import com.gfolly.backend.shared.util.ErrorMessages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -78,6 +80,13 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ErrorMessages.ENDPOINT_NOT_FOUND));
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .headers(ex.getHeaders())
+                .body(ApiResponse.error(ErrorMessages.METHOD_NOT_ALLOWED));
+    }
+
     // --- Authentification / autorisation ---
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -108,8 +117,8 @@ public class GlobalExceptionHandler {
 
     // --- Ressources / conflits ---
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNotFound(UserNotFoundException ex) {
+    @ExceptionHandler({UserNotFoundException.class, StoredFileNotFoundException.class})
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
     }
 

@@ -1,74 +1,64 @@
 package com.gfolly.backend.iam.infrastructure.email;
 
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import com.gfolly.backend.infrastructure.email.EmailMessage;
+import com.gfolly.backend.infrastructure.email.EmailPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.nio.charset.StandardCharsets;
+import java.util.regex.Pattern;
 
 /**
- * Envoi asynchrone des emails transactionnels.
+ * Rédaction et envoi asynchrone des emails transactionnels, quel que soit le fournisseur branché sur {@link EmailPort}.
  * Templates Thymeleaf : src/main/resources/templates/email/*.html
  */
 @Service
 @Slf4j
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-    private final ITemplateEngine templateEngine;
-    private final String from;
-    private final String fromName;
+    /** Une seule adresse : ni retour à la ligne, ni séparateur. Contrôle indépendant du fournisseur. */
+    private static final Pattern SINGLE_ADDRESS = Pattern.compile("[^\\s,;<>\"]+@[^\\s,;<>\"]+");
 
-    public EmailService(JavaMailSender mailSender,
+    private final EmailPort emailPort;
+    private final ITemplateEngine templateEngine;
+    private final String appName;
+
+    public EmailService(EmailPort emailPort,
                         ITemplateEngine templateEngine,
-                        @Value("${app.email.from}") String from,
-                        @Value("${app.email.from-name}") String fromName) {
-        this.mailSender = mailSender;
+                        @Value("${app.email.from-name}") String appName) {
+        this.emailPort = emailPort;
         this.templateEngine = templateEngine;
-        this.from = from;
-        this.fromName = fromName;
+        this.appName = appName;
     }
 
     @Async
     public void sendVerificationCode(String toEmail, String firstName, String code) {
         sendCode(toEmail, firstName, code, "email/verification-code",
-                "Vérification de votre adresse email — " + fromName);
+                "Vérification de votre adresse email — " + appName);
     }
 
     @Async
     public void sendPasswordResetCode(String toEmail, String firstName, String code) {
         sendCode(toEmail, firstName, code, "email/reset-password",
-                "Réinitialisation de votre mot de passe — " + fromName);
+                "Réinitialisation de votre mot de passe — " + appName);
     }
 
     private void sendCode(String toEmail, String firstName, String code, String template, String subject) {
         try {
+            if (toEmail == null || !SINGLE_ADDRESS.matcher(toEmail).matches()) {
+                throw new IllegalArgumentException("Invalid email recipient");
+            }
             Context ctx = new Context();
             ctx.setVariable("firstName", firstName);
             ctx.setVariable("code", code);
-            ctx.setVariable("appName", fromName);
-            send(toEmail, subject, templateEngine.process(template, ctx));
+            ctx.setVariable("appName", appName);
+            emailPort.send(new EmailMessage(toEmail, subject, templateEngine.process(template, ctx)));
         } catch (Exception e) {
             // Exécution asynchrone : l'erreur ne peut pas remonter à l'appelant, on la journalise.
             log.error("Failed to send email '{}': {}", template, e.getMessage(), e);
         }
-    }
-
-    private void send(String toEmail, String subject, String html) throws Exception {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
-        helper.setFrom(new InternetAddress(from, fromName));
-        helper.setTo(toEmail);
-        helper.setSubject(subject);
-        helper.setText(html, true);
-        mailSender.send(message);
-        log.info("Email sent — subject: {}", subject);
     }
 }

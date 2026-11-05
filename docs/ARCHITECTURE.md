@@ -14,7 +14,7 @@ Spring Boot 4 / Java 25, monolithe modulaire DDD-light, **mono-tenant**. Package
 | `iam` | Identité : utilisateurs, rôles/permissions, authentification JWT, emails transactionnels |
 | `system` | Journal d'audit |
 | `shared` | `ApiResponse`, `PageResponse`, `GlobalExceptionHandler`, `BaseEntity`, utilitaires sécurité |
-| `infrastructure` | Configuration transverse : sécurité, CORS, WebSocket, async, stockage de fichiers, rate limiting |
+| `infrastructure` | Configuration transverse : sécurité, CORS, WebSocket, async, rate limiting. Ports et adaptateurs des services externes : stockage de fichiers (avec son endpoint de lecture, `UploadsController`) et email |
 
 Chaque module métier suit : `api` (controllers + `dto/requests|responses`) → `application` (un use case par classe) → `domain` (entités, enums, exceptions) → `infrastructure` (repositories, `mapper/request|response`, adaptateurs).
 
@@ -23,7 +23,8 @@ Conventions du socle à réutiliser :
 - Réponses : toujours `ApiResponse<T>` ; listes paginées via `PageResponse.from(page)`.
 - Erreurs : exception métier dédiée + handler dans `GlobalExceptionHandler`, messages dans `ErrorMessages`.
 - Audit : `AuditLogService.log(action, entityType, entityId, details, status)`.
-- Fichiers : injecter `StoragePort`.
+- Fichiers : injecter `FileStorageService`, qui porte les contrôles communs. Le fournisseur se branche sur `StoragePort` (`LocalFileStorageAdapter`).
+- Emails : ajouter une méthode à `EmailService`, qui rédige le message. Le fournisseur se branche sur `EmailPort` (`SmtpEmailAdapter`).
 
 ## Frontend architecture [socle]
 

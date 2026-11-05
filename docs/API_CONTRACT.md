@@ -52,7 +52,7 @@ Sans profil actif (utilisateur à plusieurs rôles, juste après la connexion), 
 
 ### Fichiers — `/api/uploads/{clé}` [socle]
 
-Lecture authentifiée des fichiers déposés via `StoragePort` (pas d'endpoint d'upload générique : à ajouter par fonctionnalité).
+`GET` : lecture authentifiée des fichiers déposés via `FileStorageService` (pas d'endpoint d'upload générique : à ajouter par fonctionnalité). 200 avec le contenu du fichier, 401 sans session, 403 sans profil actif, 404 si la clé est invalide ou le fichier introuvable, 500 si le stockage est en panne. Le fichier est toujours renvoyé en entier : l'en-tête `Range` est ignoré.
 
 ### WebSocket — `/api/ws` [socle]
 
@@ -77,7 +77,7 @@ Toutes les réponses utilisent l'enveloppe `ApiResponse` :
 ```
 
 Champs `null` omis. `errors` présent uniquement pour les erreurs de validation (400).
-Codes : 400 validation/paramètre, 401 non authentifié, 403 interdit, 404 introuvable, 409 conflit, 413 fichier trop volumineux, 429 rate limit, 500 erreur interne (message générique).
+Codes : 400 validation/paramètre, 401 non authentifié, 403 interdit, 404 introuvable, 405 méthode non autorisée (avec l'en-tête `Allow`), 409 conflit, 413 fichier trop volumineux, 429 rate limit, 500 erreur interne (message générique).
 
 ## Pagination [socle]
 

@@ -54,8 +54,12 @@ CORS limité aux origines exactes de `CORS_ALLOWED_ORIGINS` (aussi utilisées po
 
 ## File handling [socle]
 
-- `LocalFileStorageAdapter` : noms générés (UUID), liste blanche d'extensions (`UPLOAD_ALLOWED_EXTENSIONS`, sans HTML/SVG), suppression confinée au répertoire de stockage, taille max 5 Mo.
-- Fichiers servis sous `/api/uploads/**`, authentifiés.
+- `FileStorageService`, quel que soit le fournisseur : noms générés (UUID), liste blanche d'extensions à l'écriture comme à la lecture (`app.storage.allowed-extensions`, sans HTML/SVG), clés mal formées refusées avant d'atteindre le fournisseur.
+- Taille max 5 Mo, appliquée par `spring.servlet.multipart` avant tout fournisseur.
+- Emails : `EmailService` refuse un destinataire qui n'est pas une adresse unique, quel que soit le fournisseur.
+- `LocalFileStorageAdapter` : tout accès confiné au répertoire de stockage.
+- Fichiers servis par `UploadsController` sous `/api/uploads/{clé}`, authentifiés. Le type de contenu vient de l'extension contrôlée, jamais du client.
+- Toute session avec un profil actif peut lire un fichier dont elle connaît la clé. Un fichier réservé à certains utilisateurs demande un contrôle ABAC dans l'endpoint de sa fonctionnalité.
 - Le contenu réel des fichiers (magic bytes) n'est pas vérifié : à ajouter si le projet le requiert.
 
 ## Rate limiting [socle]
