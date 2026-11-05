@@ -11,8 +11,9 @@ Ne jamais sacrifier la sécurité ou la correction pour aller plus vite.
 
 ## Structure
 Le dépôt contient :
-- À la racine : uniquement `CLAUDE.md` et `README.md` (+ fichiers techniques : `.gitignore`, `.editorconfig`, `.env.example`, `.github/`)
-- `docs/` : documentation centrale, dont `cahier-des-charges.md` (besoin du projet), `AGENTS.md` (rôles et workflows des agents),
+- À la racine : uniquement `CLAUDE.md` et `README.md` (+ fichiers techniques : `.gitignore`, `.editorconfig`, `.env.example`, `.github/`, `.claude/`)
+- `.claude/agents/` : définitions des sous-agents
+- `docs/` : documentation centrale, dont `cahier-des-charges.md` (besoin du projet), `AGENTS.md` (équipe et workflows des agents),
   `PREPROD.md` (checklist de mise en production), `CONTRIBUTING.md`
 - `backend/` et `frontend/` (code source, chacun avec son `CLAUDE.md`)
 
@@ -21,7 +22,12 @@ Ne pas ajouter de fichier à la racine : toute nouvelle documentation va dans `d
 ## Core Architecture Principles
 - **DDD-light**: Pragmatic approach. No Value Objects by default. Avoid unnecessary ceremony.
 - **DTOs**: Project-owned DTOs and explicit mappers. No external mapping libraries unless approved.
-- **Single Responsibility**: Avoid god classes/methods. Small, cohesive, testable units.
+- **Single Responsibility**: Backend and frontend. Avoid god classes/methods/components. Small, cohesive, testable units.
+- **Backend et frontend** : chaque tâche et chaque agent traitent les deux côtés ; aucun n'est secondaire.
+- **Zéro confiance** : toute donnée du client est hostile ; le serveur vérifie tout à chaque requête. Un contrôle uniquement côté Angular n'est pas un contrôle de sécurité.
+- **Services externes branchables** : tout service externe (stockage, email, paiement...) passe par un port du projet ; changer de fournisseur revient à ajouter un adaptateur et à changer la configuration.
+- **Performance et accessibilité** : exigences de chaque livraison, pas des finitions.
+- Le détail de ces règles est dans `docs/PROJECT_RULES.md` (« Règles transverses »).
 - **Séparation des profils** : RBAC/ABAC ; un utilisateur à plusieurs rôles travaille avec un seul profil actif à la fois, sans cumul de permissions (voir `docs/PROJECT_RULES.md`).
 
 ## Workflow & Guidelines
@@ -33,7 +39,7 @@ Lors d'un nouveau projet, suivre strictement le bootstrap défini dans `docs/DEV
 Pour chaque feature non triviale :
 1. Read relevant documentation $\rightarrow$ 2. Inspect existing code $\rightarrow$ 3. Identify impacted modules $\rightarrow$ 4. Short plan $\rightarrow$ 5. Smallest consistent change $\rightarrow$ 6. Test $\rightarrow$ 7. Diff review.
 
-Les agents, les workflows et le découpage en lots sont définis dans `docs/AGENTS.md`. Ne lancer que les agents prévus par le workflow de la tâche.
+L'équipe, les workflows et le découpage en lots sont définis dans `docs/AGENTS.md`, les consignes des sous-agents dans `.claude/agents/`. Ne lancer que les agents prévus par le workflow de la tâche.
 
 ## Monorepo Management
 Claude Code is launched from the root. For cross-cutting work, maintain root context. API changes must consider both backend and frontend.

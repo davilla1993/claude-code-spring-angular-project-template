@@ -7,6 +7,8 @@ Template d'initialisation pour projets professionnels en monorepo.
 project/
 ├── CLAUDE.md
 ├── README.md
+├── .claude/
+│   └── agents/                 (architecte, testeur, reviewer, security-auditor)
 ├── docs/
 │   ├── cahier-des-charges.md   (à ajouter pour chaque projet)
 │   ├── AGENTS.md

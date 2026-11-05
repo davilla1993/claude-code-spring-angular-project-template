@@ -32,6 +32,52 @@ Le backend suit une approche DDD-light.
 - Préférer plusieurs méthodes simples et cohérentes à une méthode longue et polyvalente.
 - Éviter les abstractions prématurées.
 
+## Règles transverses (backend et frontend)
+
+Ces règles valent pour les deux côtés. Une tâche n'est pas terminée si un seul côté a été traité : tout changement d'API, de règle ou de permission est vérifié dans le backend, le frontend et leurs tests.
+
+### Single Responsibility côté frontend
+
+- Un composant, un service, un guard ou un pipe a une seule responsabilité identifiable.
+- HTML, CSS et TypeScript sont dans des fichiers séparés.
+- Un composant affiche et réagit ; les appels HTTP vont dans `core/api`, l'état partagé dans un service dédié.
+- Pas de logique métier dans les templates.
+
+### Zéro confiance envers l'utilisateur
+
+- Toute donnée venant du client est considérée comme hostile : corps, paramètres, en-têtes, cookies, identifiants, fichiers et champs masqués.
+- Tout est refusé par défaut : chaque endpoint exige une autorisation explicite, sauf ceux déclarés publics.
+- Le serveur vérifie chaque requête : authentification, permission du profil actif, droit sur la ressource visée et validation des entrées.
+- Le serveur recalcule ce qu'il peut déduire lui-même : un auteur, un rôle, un statut ou un montant envoyé par le client n'est jamais cru sur parole.
+- Le frontend améliore l'expérience mais ne protège rien : guards, masquage et validation Angular ne remplacent jamais le contrôle serveur.
+- Les réponses et les erreurs n'exposent que le nécessaire.
+
+### Services externes branchables (ports et adaptateurs)
+
+Un service ou composant externe doit pouvoir être remplacé sans modifier la structure du code. Exemple : stocker les fichiers sur le disque local, puis sur MinIO, puis dans un bucket compatible S3 (Amazon, Backblaze...).
+
+- **Périmètre :** stockage, email, SMS, paiement, API tierces et tout autre fournisseur remplaçable. Les dépendances entre modules de l'application sont normales et ne sont pas concernées, pas plus que le framework ni la base de données.
+- **Port :** le code de l'application dépend d'une interface du projet, jamais d'un SDK ni d'un adaptateur concret.
+- **Vocabulaire du projet :** le port n'expose aucun type, exception, identifiant ou URL propre à un fournisseur.
+- **Adaptateur :** une implémentation par fournisseur, seul endroit où le SDK est importé. Des fournisseurs compatibles partagent le même adaptateur et ne diffèrent que par la configuration.
+- **Choix par configuration :** le fournisseur actif se choisit par une propriété (ex. `app.storage.type`), jamais par un `if` dans le code métier. Ses identifiants suivent les règles des secrets (`application-prod.yml`, `.env.example`).
+- **Contrôles hors de l'adaptateur :** l'autorisation et la validation communes (type, taille...) ne se perdent pas en changeant de fournisseur.
+- **Frontend :** il passe par l'API du projet et ignore quel fournisseur est utilisé. Une bibliothèque tierce côté navigateur reste isolée derrière un service.
+- **Changer de fournisseur :** ajouter un adaptateur et changer la configuration suffit, sans toucher au métier, à l'API ni au frontend. La migration des données existantes est une opération à part.
+- **Tests :** le métier se teste avec une fausse implémentation du port, et tous les adaptateurs passent les mêmes tests de comportement.
+- **Pas d'anticipation :** on crée le port dès la première intégration, avec le seul adaptateur nécessaire. Les autres s'ajoutent le jour où le besoin existe.
+
+### Performance et rapidité
+
+- **Backend :** pas de N+1, pagination des listes, index justifiés, requêtes limitées aux données utiles.
+- **Frontend :** lazy loading, `OnPush` et signals lorsque c'est possible, `track` sur les listes, pas d'appel API dupliqué, bundle surveillé.
+- Mesurer avant d'optimiser : pas de cache ni d'abstraction sans besoin constaté.
+
+### Accessibilité
+
+- HTML sémantique, navigation complète au clavier, focus visible et géré, noms accessibles, contraste suffisant.
+- Erreurs de formulaire reliées à leur champ, responsive, états de chargement, d'erreur et vides présents.
+
 ## Naming
 ## Package/module structure
 ## API conventions
