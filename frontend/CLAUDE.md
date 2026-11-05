@@ -12,7 +12,7 @@ Privilégier :
 - réutilisation réelle
 
 Workflow UI important :
-UI/UX Designer → Frontend Engineer → Accessibility & Design QA
+Architecte (UX) → Senior Developer → Reviewer (accessibilité)
 
 Avant toute nouvelle UI :
 - inspecter les composants existants

@@ -30,6 +30,8 @@
 Règles : un utilisateur ne peut ni modifier son propre rôle, ni se désactiver. Le premier ADMIN est créé manuellement (SQL) pour chaque projet.
 Étendre `Permission` et `Role` (`iam/domain`) pour les besoins du projet.
 
+**Écart à combler :** le socle ne gère qu'un rôle par utilisateur et aucun choix de profil. La règle cible est dans `PROJECT_RULES.md` (« Autorisation et séparation des profils »).
+
 ## Sensitive data
 
 ## Secrets [socle]

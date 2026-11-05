@@ -20,12 +20,12 @@ Read all project artifacts:
 Identify: Tech versions, architecture, dependencies, build/test commands, DB, Auth, API conventions, Angular architecture, design system.
 
 ### Phase 2 — REQUIREMENTS
-Use **Requirements Engineer**.
+Use **Architecte**.
 Analyze: Personas, Use Cases, Functional/Non-functional requirements, Business rules, Security, Acceptance criteria, Edge cases, Assumptions, Risks.
 *Never invent a business requirement.*
 
 ### Phase 3 — ARCHITECTURE
-Use **Software Architect**.
+Use **Architecte**.
 Update `docs/ARCHITECTURE.md`.
 Describe: System architecture, Backend/Frontend specifics, Database, Integrations, Auth/Authz, Deployment.
 Critical decisions must be documented in `docs/adr/`.
@@ -51,7 +51,7 @@ Update `docs/API_CONTRACT.md`. OpenAPI is the source of truth. Every API change 
 Update `docs/SECURITY.md`. Cover: Auth, RBAC/ABAC, Sensitive data, Secret management, OWASP, Uploads, Rate limiting, Audit.
 
 ### Phase 8 — DESIGN SYSTEM
-Use **UI/UX Designer**. Update `docs/DESIGN_SYSTEM.md`: Info architecture, User journeys, Visual hierarchy, Typography, Spacing, Colors, Components, Accessibility.
+Use **Architecte**. Update `docs/DESIGN_SYSTEM.md`: Info architecture, User journeys, Visual hierarchy, Typography, Spacing, Colors, Components, Accessibility.
 
 ### Phase 9 — IMPLEMENTATION PLAN
 Generate `docs/IMPLEMENTATION_PLAN.md`. For each feature: Objective, Backend/Frontend/DB changes, API, Security, Tests, Acceptance criteria. Respect dependency order.

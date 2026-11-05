@@ -22,6 +22,7 @@ Ne pas ajouter de fichier à la racine : toute nouvelle documentation va dans `d
 - **DDD-light**: Pragmatic approach. No Value Objects by default. Avoid unnecessary ceremony.
 - **DTOs**: Project-owned DTOs and explicit mappers. No external mapping libraries unless approved.
 - **Single Responsibility**: Avoid god classes/methods. Small, cohesive, testable units.
+- **Séparation des profils** : RBAC/ABAC ; un utilisateur à plusieurs rôles travaille avec un seul profil actif à la fois, sans cumul de permissions (voir `docs/PROJECT_RULES.md`).
 
 ## Workflow & Guidelines
 ### Bootstrap Process
@@ -30,7 +31,9 @@ Lors d'un nouveau projet, suivre strictement le bootstrap défini dans `docs/DEV
 
 ### Implementation Process
 Pour chaque feature non triviale :
-1. Read relevant documentation $\rightarrow$ 2. Inspect existing code $\rightarrow$ 3. Identify impacted modules $\rightarrow$ 4. Select agents $\rightarrow$ 5. Short plan $\rightarrow$ 6. Smallest consistent change $\rightarrow$ 7. Test $\rightarrow$ 8. Diff review $\rightarrow$ 9. Code review $\rightarrow$ 10. Security review $\rightarrow$ 11. UI/UX QA.
+1. Read relevant documentation $\rightarrow$ 2. Inspect existing code $\rightarrow$ 3. Identify impacted modules $\rightarrow$ 4. Short plan $\rightarrow$ 5. Smallest consistent change $\rightarrow$ 6. Test $\rightarrow$ 7. Diff review.
+
+Les agents, les workflows et le découpage en lots sont définis dans `docs/AGENTS.md`. Ne lancer que les agents prévus par le workflow de la tâche.
 
 ## Monorepo Management
 Claude Code is launched from the root. For cross-cutting work, maintain root context. API changes must consider both backend and frontend.

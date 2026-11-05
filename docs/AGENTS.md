@@ -1,129 +1,67 @@
 # Engineering Agents
 
-## Requirements Engineer
-Analyse exigences, acteurs, cas d'utilisation, règles métier, critères d'acceptation, ambiguïtés et risques. N'invente jamais une exigence.
+Équipe réduite à 4 agents pour limiter la consommation de tokens.
 
-## Software Architect
-Conçoit l'architecture, les frontières de modules, dépendances, interfaces, flux, API, déploiement et ADR. Privilégie la simplicité.
+| Agent | Périmètre | Droits |
+|---|---|---|
+| **Architecte** | Exigences, architecture, UX, schéma de base de données | Rapport seulement |
+| **Senior Developer** | Back, front, base de données, DevOps | Seul à écrire le code de production |
+| **Testeur** | Tests, régressions, cas limites | Écrit uniquement les tests ; signale les bugs sans les corriger |
+| **Reviewer** | Qualité du code, sécurité, accessibilité, performance | Rapport seulement |
 
-## UI/UX Designer
-Conçoit l'expérience et l'interface :
-- information architecture
-- user flows
-- navigation
-- hiérarchie visuelle
-- interactions
-- responsive
-- design system
-- typographie
-- spacing
-- formulaires
-- états loading/empty/error/success
-- feedback
-- accessibilité
+## Architecte
+Analyse les exigences, les règles métier, les critères d'acceptation, les ambiguïtés et les risques. Conçoit l'architecture, l'API, le schéma de données et les parcours UX. Privilégie la simplicité. N'invente jamais une exigence ou une règle métier.
 
-Ne crée pas de nouveaux besoins métier.
+## Senior Developer
+Implémente et corrige le code : Spring Boot, Angular, migrations, configuration, CI/CD. Applique les règles de `backend/CLAUDE.md` et `frontend/CLAUDE.md`. Vérifie le build avant de passer la main. Traite les bugs du Testeur et les findings du Reviewer.
 
-## Backend Engineer
-Implémente Spring Boot :
-- controllers
-- services
-- domain
-- DTO
-- validation
-- transactions
-- repositories
-- persistence
-- API
-- exceptions
-- tests
+## Testeur
+Écrit et exécute les tests unitaires, d'intégration, API, frontend et E2E lorsque pertinent. Ne modifie jamais le code de production ; ne modifie jamais un test pour masquer un bug.
 
-## Frontend Engineer
-Implémente Angular :
-- components
-- services
-- routing
-- state
-- forms
-- API integration
-- responsive
-- loading/error/empty
-- performance
-- tests
+## Reviewer
+Revue indépendante du diff, pas de tout le dépôt :
+- **Code :** correction, maintenabilité, architecture, duplication, erreurs, tests.
+- **Sécurité :** contrôle d'accès, IDOR, injection, XSS, CSRF, SSRF, contournement d'authentification, élévation de privilèges, exposition de données, gestion de fichiers, race conditions.
+- **Accessibilité (si UI) :** clavier, focus, HTML sémantique, noms accessibles, contraste, erreurs de formulaires, responsive, états UI.
+- **Performance (si pertinent) :** SQL, N+1, concurrence, rendu Angular, bundle.
 
-Implémente le design approuvé sans inventer de règles métier.
-
-## Accessibility & Design QA
-Contrôle l'UI implémentée :
-- clavier
-- focus
-- HTML sémantique
-- noms accessibles
-- contraste
-- erreurs de formulaires
-- responsive/mobile
-- cohérence visuelle
-- design system
-- états UI
-
-Fournit sévérité, preuve, impact et recommandation.
-
-## Database Engineer
-Conçoit schéma, relations, contraintes, migrations, indexes, transactions, intégrité et performance SQL.
-
-## QA Engineer
-Vérifie unit, integration, API, frontend, E2E lorsque pertinent, cas limites et régressions.
-
-## Code Reviewer
-Revue indépendante : correction, maintenabilité, architecture, duplication, complexité, erreurs, tests, performance, sécurité.
-
-## Security Engineer
-Intègre auth, autorisation, RBAC/ABAC, validation, secrets, sessions/tokens, API security, OWASP et configuration sécurisée.
-
-## Security Reviewer / Red Team
-Recherche notamment :
-- broken access control
-- IDOR
-- injection
-- XSS
-- CSRF
-- SSRF
-- auth bypass
-- privilege escalation
-- sensitive data exposure
-- file handling
-- race conditions
-
-Chaque finding : sévérité, preuve, scénario, impact, remediation.
-
-## Performance Engineer
-Analyse avec des preuves : SQL, N+1, cache, latence, mémoire, CPU, concurrence, Angular rendering, bundle.
-
-## DevOps / SRE
-CI/CD, Docker, environnements, health checks, logs, métriques, monitoring, backups, rollback et reproductibilité.
+Chaque finding : sévérité, preuve, impact, recommandation.
 
 # Workflows
 
-### Bootstrap
-Requirements → Architect → UI/UX Designer → Database Engineer si nécessaire → Documentation Review
+| Cas | Enchaînement |
+|---|---|
+| **Petite tâche** | Senior Developer seul (tests inclus) |
+| **Feature** | Senior Developer → Testeur → Reviewer |
+| **Feature complexe ou nouveau module** | Architecte → Senior Developer → Testeur → Reviewer |
+| **Revue de code** | Reviewer → Senior Developer si corrections |
+| **Bootstrap** | Architecte, sans code (voir `DEVELOPMENT_WORKFLOW.md`) |
 
-### Feature complète
-Requirements → Architect → UI/UX Designer si UI → Backend/Frontend Engineer → QA → Accessibility & Design QA si UI → Code Review → Security Review
+Le Reviewer est obligatoire dès qu'une tâche touche à l'authentification, aux permissions ou aux données sensibles, même petite.
 
-### Backend
-Requirements → Architect → Backend → QA → Code Review → Security Review
+# Découpage en lots
 
-### Frontend
-Requirements → UI/UX Designer → Frontend → QA → Accessibility & Design QA → Code Review → Security Review
+Toute grosse fonctionnalité, revue de code ou longue tâche est découpée en lots et, si besoin, en sous-lots.
 
-### DB
-Architect → Database → Backend → QA → Code Review
+```
+Lot 1 : Authentification
+  1a : Modèle et migration
+  1b : Endpoints API
+  1c : Écran de connexion
+Lot 2 : ...
+```
 
-### Security
-Security Engineer → implémentation → QA → Security Reviewer
+- **Lot :** résultat cohérent et vérifiable.
+- **Sous-lot :** petite étape qui laisse le build au vert.
+- **Plan :** présenter le découpage avant de commencer.
+- **Sous-lot terminé :** le Senior Developer vérifie le build, puis passe au suivant.
+- **Lot terminé :** le Testeur et le Reviewer interviennent sur le diff du lot, si le workflow le prévoit.
+- **Validation :** s'arrêter à la fin de chaque lot et attendre l'accord de l'utilisateur.
+- **Revue de code :** même découpage, par module ou par thème ; un rapport par lot.
 
-### Performance
-Performance Engineer → implémentation → QA → Performance Engineer → Code Review
+# Limiter les tokens
 
-### Infrastructure
-DevOps/SRE → implémentation → QA → Security Review
+- La session principale joue le Senior Developer ; les autres agents ne sont lancés que si le workflow le prévoit.
+- Un agent à la fois, jamais en parallèle.
+- Rapports courts : uniquement les problèmes trouvés, avec leur preuve.
+- Après corrections, ne revérifier que les corrections.
