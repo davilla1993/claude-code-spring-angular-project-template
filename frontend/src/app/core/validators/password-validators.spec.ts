@@ -4,11 +4,11 @@ import { matchingFields, passwordStrength } from './password-validators';
 describe('passwordStrength', () => {
   const validate = (value: string) => passwordStrength()(new FormControl(value));
 
-  it.each(['Secret#123', 'Aa1!aaaa', 'A1!' + 'a'.repeat(69)])('accepts %s', (value) => {
+  it.each(['Secret#123', 'Aa1!aaaa', 'A1!' + 'a'.repeat(22)])('accepts %s', (value) => {
     expect(validate(value)).toBeNull();
   });
 
-  it.each(['Ab1!xyz', 'nouppercase#1', 'NOLOWERCASE#1', 'NoDigits#!', 'NoSpecial123', 'A1!' + 'a'.repeat(70)])(
+  it.each(['Ab1!xyz', 'nouppercase#1', 'NOLOWERCASE#1', 'NoDigits#!', 'NoSpecial123', 'A1!' + 'a'.repeat(23)])(
     'rejects %s',
     (value) => {
       expect(validate(value)).toEqual({ passwordStrength: true });

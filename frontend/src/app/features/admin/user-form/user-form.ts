@@ -5,6 +5,7 @@ import { UsersApi } from '../../../core/api/users-api';
 import { SessionStore } from '../../../core/services/session-store';
 import { apiErrorMessage } from '../../../core/utils/api-error';
 import { PASSWORD_RULES, passwordStrength } from '../../../core/validators/password-validators';
+import { personName } from '../../../core/validators/person-name-validators';
 import { Role, ROLE_LABELS, ROLES } from '../../../shared/models/user.model';
 import { FieldErrorPipe } from '../../../shared/pipes/field-error-pipe';
 import { ToastStore } from '../../../shared/toasts/toast-store';
@@ -34,8 +35,8 @@ export class UserForm implements OnInit {
   protected readonly passwordRules = PASSWORD_RULES;
 
   protected readonly form = inject(NonNullableFormBuilder).group({
-    firstName: ['', [Validators.required, Validators.maxLength(100)]],
-    lastName: ['', [Validators.required, Validators.maxLength(100)]],
+    firstName: ['', [Validators.required, personName()]],
+    lastName: ['', [Validators.required, personName()]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
     temporaryPassword: ['', [Validators.required, passwordStrength()]],
     roles: [['USER'] as Role[], [Validators.required]],

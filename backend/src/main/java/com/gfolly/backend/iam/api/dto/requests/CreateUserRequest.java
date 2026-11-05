@@ -1,7 +1,8 @@
 package com.gfolly.backend.iam.api.dto.requests;
 
 import com.gfolly.backend.iam.domain.Role;
-import com.gfolly.backend.shared.util.PasswordStrength;
+import com.gfolly.backend.shared.util.PasswordPolicy;
+import com.gfolly.backend.shared.util.PersonName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,9 +17,9 @@ import java.util.Set;
  * l'utilisateur devra le remplacer à sa première connexion.
  */
 public record CreateUserRequest(
-        @NotBlank @Size(max = 100) String firstName,
-        @NotBlank @Size(max = 100) String lastName,
+        @NotBlank @Pattern(regexp = PersonName.PATTERN, message = PersonName.MESSAGE) String firstName,
+        @NotBlank @Pattern(regexp = PersonName.PATTERN, message = PersonName.MESSAGE) String lastName,
         @NotBlank @Email @Size(max = 255) String email,
-        @NotBlank @Pattern(regexp = PasswordStrength.PATTERN, message = PasswordStrength.MESSAGE) String temporaryPassword,
+        @NotBlank @Pattern(regexp = PasswordPolicy.PATTERN, message = PasswordPolicy.MESSAGE) String temporaryPassword,
         @NotEmpty Set<@NotNull Role> roles
 ) {}

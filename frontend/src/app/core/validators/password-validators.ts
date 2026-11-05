@@ -1,13 +1,13 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
- * Miroir de la règle backend (shared/util/PasswordStrength) pour un retour immédiat à l'utilisateur.
+ * Miroir de la règle backend (shared/util/PasswordPolicy) pour un retour immédiat à l'utilisateur.
  * Le backend reste l'autorité : toute évolution doit être faite des deux côtés.
  */
-export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_+=[\]{};':"\\|,.<>/?]).{8,72}$/;
+export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_+=[\]{};':"\\|,.<>/?]).{8,25}$/;
 
 export const PASSWORD_RULES =
-  'Entre 8 et 72 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.';
+  'Entre 8 et 25 caractères, dont une majuscule, une minuscule, un chiffre et un caractère spécial.';
 
 export function passwordStrength(): ValidatorFn {
   return (control: AbstractControl<string | null>): ValidationErrors | null => {

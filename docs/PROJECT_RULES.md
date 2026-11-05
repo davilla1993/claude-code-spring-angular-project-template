@@ -36,6 +36,12 @@ Le backend suit une approche DDD-light.
 ## Package/module structure
 ## API conventions
 ## Validation
+
+Chaque règle est appliquée côté serveur et reprise côté frontend pour un retour immédiat. Toute évolution se fait des deux côtés.
+
+- **Prénom et nom :** 2 à 25 caractères, espaces de début et de fin non comptés (`PersonName`).
+- **Mot de passe :** 8 à 25 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial (`PasswordPolicy`).
+
 ## Error handling
 ## Logging
 ## Database

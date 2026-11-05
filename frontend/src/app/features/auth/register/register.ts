@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthApi } from '../../../core/api/auth-api';
 import { apiErrorMessage } from '../../../core/utils/api-error';
 import { matchingFields, PASSWORD_RULES, passwordStrength } from '../../../core/validators/password-validators';
+import { personName } from '../../../core/validators/person-name-validators';
 import { ConfirmFieldErrorPipe } from '../../../shared/pipes/confirm-field-error-pipe';
 import { FieldErrorPipe } from '../../../shared/pipes/field-error-pipe';
 import { ToastStore } from '../../../shared/toasts/toast-store';
@@ -21,8 +22,8 @@ export class Register {
   protected readonly passwordRules = PASSWORD_RULES;
   protected readonly form = inject(NonNullableFormBuilder).group(
     {
-      firstName: ['', [Validators.required, Validators.maxLength(100)]],
-      lastName: ['', [Validators.required, Validators.maxLength(100)]],
+      firstName: ['', [Validators.required, personName()]],
+      lastName: ['', [Validators.required, personName()]],
       email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
       password: ['', [Validators.required, passwordStrength()]],
       confirmPassword: ['', [Validators.required]],

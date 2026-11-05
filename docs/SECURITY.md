@@ -12,7 +12,7 @@
 - Session unique : un utilisateur n'a qu'une session ouverte (`User.currentSessionId`, repris dans le JWT par le claim `sid`). Une nouvelle connexion ferme la précédente. Le logout, la désactivation, le changement de rôle et la réinitialisation du mot de passe la ferment aussi. Effet immédiat : chaque requête authentifiée compare `sid` à la base (une lecture via l'index unique de `public_id`).
 - Login : message identique pour email inconnu / mauvais mot de passe, temps de réponse constant (hash factice), état du compte (désactivé, non vérifié) révélé seulement après un mot de passe correct.
 - Email vérifié obligatoire pour se connecter (code à 6 chiffres, 15 min, comparaison en temps constant).
-- Mots de passe : BCrypt (coût 12), 8–72 caractères avec majuscule, minuscule, chiffre et caractère spécial.
+- Mots de passe : BCrypt (coût 12), 8 à 25 caractères avec majuscule, minuscule, chiffre et caractère spécial (`PasswordPolicy`).
 
 ## Authorization [socle]
 

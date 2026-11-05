@@ -1,6 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { PASSWORD_RULES } from '../../core/validators/password-validators';
+import { PERSON_NAME_RULES } from '../../core/validators/person-name-validators';
 
 /**
  * Message d'erreur d'un champ de formulaire, uniquement une fois le champ touché.
@@ -18,6 +19,7 @@ export class FieldErrorPipe implements PipeTransform {
     if (errors['required']) return 'Ce champ est obligatoire.';
     if (errors['email']) return 'Adresse email invalide.';
     if (errors['passwordStrength']) return PASSWORD_RULES;
+    if (errors['personName']) return PERSON_NAME_RULES;
     if (errors['maxlength']) return `${errors['maxlength'].requiredLength} caractères maximum.`;
     if (errors['minlength']) return `${errors['minlength'].requiredLength} caractères minimum.`;
     if (errors['pattern']) return 'Format invalide.';
