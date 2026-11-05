@@ -39,9 +39,12 @@ class RefreshTokenUseCaseTest {
         user.setEmail("jane@example.com");
         user.setFirstName("Jane");
         user.setLastName("Doe");
-        user.setRole(Role.USER);
+        user.getRoles().add(Role.USER);
+
+        user.setCurrentSessionId("session");
 
         stored = new RefreshToken();
+        stored.setSessionId("session");
         stored.setTokenHash(OpaqueTokens.hash(RAW_TOKEN));
         stored.setUserId(user.getPublicId());
         stored.setExpiresAt(LocalDateTime.now().plusDays(1));
@@ -52,12 +55,50 @@ class RefreshTokenUseCaseTest {
 
     @Test
     void validTokenIsRotated() {
-        when(authTokenService.issueTokens(user)).thenReturn(new TokenPair("new-access", "new-refresh"));
+        when(authTokenService.issueTokens(user, Role.USER)).thenReturn(new TokenPair("new-access", "new-refresh"));
 
         AuthSession session = useCase.execute(RAW_TOKEN);
 
         assertThat(stored.isRevoked()).isTrue();
         assertThat(session.tokens().refreshToken()).isEqualTo("new-refresh");
+    }
+
+    @Test
+    void activeProfileIsKeptWhileTheRoleIsHeld() {
+        user.getRoles().add(Role.ADMIN);
+        stored.setActiveRole(Role.ADMIN);
+        when(authTokenService.issueTokens(user, Role.ADMIN)).thenReturn(new TokenPair("new-access", "new-refresh"));
+
+        AuthSession session = useCase.execute(RAW_TOKEN);
+
+        verify(authTokenService).issueTokens(user, Role.ADMIN);
+        assertThat(session.user().activeRole()).isEqualTo(Role.ADMIN);
+        assertThat(session.user().permissions()).contains("user:view");
+    }
+
+    @Test
+    void removedRoleFallsBackOnTheSoleRemainingRole() {
+        stored.setActiveRole(Role.ADMIN); // l'utilisateur ne détient plus que USER
+        when(authTokenService.issueTokens(user, Role.USER)).thenReturn(new TokenPair("new-access", "new-refresh"));
+
+        AuthSession session = useCase.execute(RAW_TOKEN);
+
+        verify(authTokenService).issueTokens(user, Role.USER);
+        assertThat(session.user().activeRole()).isEqualTo(Role.USER);
+        assertThat(session.user().permissions()).isEmpty();
+    }
+
+    @Test
+    void sessionWithoutProfileStaysWithoutProfileWithSeveralRoles() {
+        user.getRoles().add(Role.ADMIN);
+        stored.setActiveRole(null);
+        when(authTokenService.issueTokens(user, null)).thenReturn(new TokenPair("new-access", "new-refresh"));
+
+        AuthSession session = useCase.execute(RAW_TOKEN);
+
+        verify(authTokenService).issueTokens(user, null);
+        assertThat(session.user().activeRole()).isNull();
+        assertThat(session.user().permissions()).isEmpty();
     }
 
     @Test
@@ -85,10 +126,21 @@ class RefreshTokenUseCaseTest {
     }
 
     @Test
+    void tokenOfAReplacedSessionIsRefusedWithoutClosingTheOpenSession() {
+        stored.setRevoked(true);
+        user.setCurrentSessionId("newer-session");
+
+        assertThatThrownBy(() -> useCase.execute(RAW_TOKEN)).isInstanceOf(InvalidCredentialsException.class);
+
+        assertThat(user.getCurrentSessionId()).isEqualTo("newer-session");
+        verify(refreshTokenRepository, never()).revokeAllByUserId(any());
+    }
+
+    @Test
     void deactivatedUserCannotRefresh() {
         user.setActive(false);
 
         assertThatThrownBy(() -> useCase.execute(RAW_TOKEN)).isInstanceOf(InvalidCredentialsException.class);
-        verify(authTokenService, never()).issueTokens(any());
+        verify(authTokenService, never()).issueTokens(any(), any());
     }
 }

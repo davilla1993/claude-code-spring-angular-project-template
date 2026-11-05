@@ -35,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
+    private final CurrentSessionChecker currentSessionChecker;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -55,20 +56,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void authenticate(Claims claims) {
-        Role role;
-        try {
-            role = Role.valueOf(claims.get(JwtService.CLAIM_ROLE, String.class));
-        } catch (IllegalArgumentException | NullPointerException e) {
-            log.warn("JWT with unknown role for user {}", claims.getSubject());
+        // Une seule session par utilisateur : un token d'une session fermée ou remplacée est refusé immédiatement.
+        if (!currentSessionChecker.isCurrent(claims.getSubject(), claims.get(JwtService.CLAIM_SESSION, String.class))) {
             return;
+        }
+
+        String activeRole = claims.get(JwtService.CLAIM_ROLE, String.class);
+        Role role = null;
+        if (activeRole != null) {
+            try {
+                role = Role.valueOf(activeRole);
+            } catch (IllegalArgumentException e) {
+                log.warn("JWT with unknown role for user {}", claims.getSubject());
+                return;
+            }
         }
 
         UserPrincipal principal = new UserPrincipal(
                 claims.getSubject(),
                 claims.get(JwtService.CLAIM_EMAIL, String.class),
-                claims.get(JwtService.CLAIM_FULL_NAME, String.class));
+                claims.get(JwtService.CLAIM_FULL_NAME, String.class),
+                activeRole);
 
-        var authentication = new UsernamePasswordAuthenticationToken(principal, null, authoritiesOf(role));
+        // Sans profil actif : authentifié sans aucune permission, le temps de choisir un profil.
+        List<GrantedAuthority> authorities = role != null ? authoritiesOf(role) : List.of();
+        var authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

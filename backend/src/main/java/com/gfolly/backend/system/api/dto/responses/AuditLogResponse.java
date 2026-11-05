@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record AuditLogResponse(
         String id,
         String userEmail,
+        String activeProfile,
         String action,
         String entityType,
         String entityId,

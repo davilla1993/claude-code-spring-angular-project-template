@@ -14,7 +14,7 @@ public final class UserRequestMapper {
     /** Inscription publique : rôle USER, email à vérifier. */
     public static User toNewUser(RegisterRequest request, String passwordHash) {
         User user = baseUser(request.firstName(), request.lastName(), request.email(), passwordHash);
-        user.setRole(Role.USER);
+        user.getRoles().add(Role.USER);
         user.setFirstLogin(false);
         return user;
     }
@@ -22,7 +22,7 @@ public final class UserRequestMapper {
     /** Création par un administrateur : mot de passe temporaire à remplacer à la première connexion. */
     public static User toNewUser(CreateUserRequest request, String passwordHash) {
         User user = baseUser(request.firstName(), request.lastName(), request.email(), passwordHash);
-        user.setRole(request.role());
+        user.getRoles().addAll(request.roles());
         user.setFirstLogin(true);
         return user;
     }

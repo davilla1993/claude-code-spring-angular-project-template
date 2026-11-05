@@ -19,4 +19,15 @@ public final class SecurityUtils {
         }
         return SYSTEM;
     }
+
+    /**
+     * Retourne le profil actif de la session courante, ou null s'il n'y en a pas.
+     */
+    public static String getCurrentActiveProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal principal) {
+            return principal.activeRole();
+        }
+        return null;
+    }
 }

@@ -23,6 +23,10 @@ public class AuditLog extends BaseEntity {
     @Column(name = "user_email")
     private String userEmail;
 
+    /** Profil actif de l'auteur au moment de l'action ; null sans session ou sans profil choisi. */
+    @Column(name = "active_profile", length = 20)
+    private String activeProfile;
+
     @Column(nullable = false, length = 100)
     private String action;
 

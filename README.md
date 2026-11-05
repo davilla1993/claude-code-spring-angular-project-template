@@ -48,7 +48,7 @@ Frontend (autre terminal) :
 ```bash
 cd frontend && npm install && npm start     # http://localhost:4200 — /api proxifié vers le backend
 ```
-Le premier compte ADMIN est à créer manuellement (inscription puis `UPDATE users SET role = 'ADMIN' WHERE email = '...'`).
+Le premier compte ADMIN est à créer manuellement (inscription puis `UPDATE user_roles SET role = 'ADMIN' WHERE user_id = (SELECT id FROM users WHERE email = '...')`).
 
 ## ⚠️ CI désactivée dans le template
 Le workflow `.github/workflows/ci.yml` est **entièrement commenté** pour ne pas se déclencher à chaque push sur le dépôt du template.

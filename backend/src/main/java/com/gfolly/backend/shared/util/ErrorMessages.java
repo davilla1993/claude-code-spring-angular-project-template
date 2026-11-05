@@ -38,6 +38,7 @@ public final class ErrorMessages {
     public static final String ACCESS_DENIED          = "Vous n'avez pas la permission d'accéder à cette ressource.";
     public static final String CANNOT_CHANGE_OWN_ROLE = "Vous ne pouvez pas modifier votre propre rôle.";
     public static final String CANNOT_DEACTIVATE_SELF = "Vous ne pouvez pas désactiver votre propre compte.";
+    public static final String PROFILE_NOT_HELD       = "Ce profil ne vous est pas attribué.";
 
     // Ressources
     public static final String USER_NOT_FOUND     = "Utilisateur introuvable.";

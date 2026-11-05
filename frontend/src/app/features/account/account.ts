@@ -5,7 +5,7 @@ import { UsersApi } from '../../core/api/users-api';
 import { SessionStore } from '../../core/services/session-store';
 import { apiErrorMessage } from '../../core/utils/api-error';
 import { matchingFields, PASSWORD_RULES, passwordStrength } from '../../core/validators/password-validators';
-import { ROLE_LABELS } from '../../shared/models/user.model';
+import { ROLE_LABELS, roleNames } from '../../shared/models/user.model';
 import { ConfirmFieldErrorPipe } from '../../shared/pipes/confirm-field-error-pipe';
 import { FieldErrorPipe } from '../../shared/pipes/field-error-pipe';
 import { ToastStore } from '../../shared/toasts/toast-store';
@@ -23,6 +23,7 @@ export class Account {
   protected readonly session = inject(SessionStore);
 
   protected readonly roleLabels = ROLE_LABELS;
+  protected readonly roleNames = roleNames;
   protected readonly passwordRules = PASSWORD_RULES;
   protected readonly form = inject(NonNullableFormBuilder).group(
     {

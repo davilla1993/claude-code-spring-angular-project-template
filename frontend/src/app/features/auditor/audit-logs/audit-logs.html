@@ -53,6 +53,7 @@
           <tr>
             <th scope="col">Date</th>
             <th scope="col">Utilisateur</th>
+            <th scope="col">Profil</th>
             <th scope="col">Action</th>
             <th scope="col">Entité</th>
             <th scope="col">Statut</th>
@@ -65,6 +66,7 @@
             <tr>
               <td>{{ log.actionDate | date: 'short' }}</td>
               <td>{{ log.userEmail ?? '—' }}</td>
+              <td>{{ log.activeProfile ?? '—' }}</td>
               <td>{{ log.action }}</td>
               <td>{{ log.entityType }}@if (log.entityId) {<br /><span class="muted entity-id">{{ log.entityId }}</span>}</td>
               <td>

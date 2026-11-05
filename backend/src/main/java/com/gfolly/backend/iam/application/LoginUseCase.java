@@ -2,6 +2,7 @@ package com.gfolly.backend.iam.application;
 
 import com.gfolly.backend.iam.api.dto.requests.LoginRequest;
 import com.gfolly.backend.iam.application.dto.AuthSession;
+import com.gfolly.backend.iam.domain.Role;
 import com.gfolly.backend.iam.domain.User;
 import com.gfolly.backend.iam.domain.exception.EmailNotVerifiedException;
 import com.gfolly.backend.iam.domain.exception.InvalidCredentialsException;
@@ -55,8 +56,12 @@ public class LoginUseCase {
             throw new EmailNotVerifiedException(ErrorMessages.EMAIL_NOT_VERIFIED, user.getPublicId());
         }
 
-        AuthSession session = new AuthSession(authTokenService.issueTokens(user), UserResponseMapper.toResponse(user));
-        auditLogService.logAs(email, "LOGIN", "USER", user.getPublicId(), null, AuditLog.ActionStatus.SUCCESS);
+        // Un seul rôle : profil activé directement. Plusieurs rôles : l'utilisateur choisira après la connexion.
+        Role activeRole = user.soleRole().orElse(null);
+        AuthSession session = new AuthSession(authTokenService.startExclusiveSession(user, activeRole),
+                UserResponseMapper.toResponse(user, activeRole));
+        auditLogService.logAs(email, activeRole != null ? activeRole.name() : null, "LOGIN", "USER", user.getPublicId(),
+                null, AuditLog.ActionStatus.SUCCESS);
         return session;
     }
 

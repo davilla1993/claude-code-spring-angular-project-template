@@ -187,6 +187,18 @@ a {
   &[aria-invalid='true'] { border-color: var(--color-danger); }
 }
 
+.checkbox-group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.checkbox {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
 .field-hint {
   margin: 0;
   font-size: var(--font-size-sm);

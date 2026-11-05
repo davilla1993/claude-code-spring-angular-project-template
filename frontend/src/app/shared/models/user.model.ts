@@ -7,6 +7,11 @@ export const ROLE_LABELS: Record<Role, string> = {
   USER: 'Utilisateur',
 };
 
+/** Libellés de plusieurs rôles, pour l'affichage. */
+export function roleNames(roles: readonly Role[]): string {
+  return roles.map((role) => ROLE_LABELS[role]).join(', ');
+}
+
 /** Codes de permission renvoyés par le backend (iam/domain/Permission). */
 export type Permission = 'user:create' | 'user:update' | 'user:view' | 'audit:log:view';
 
@@ -15,7 +20,10 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: Role;
+  roles: Role[];
+  /** Profil actif de la session ; null hors session ou tant qu'aucun profil n'est choisi. */
+  activeRole: Role | null;
+  /** Permissions du seul profil actif. */
   permissions: Permission[];
   active: boolean;
   emailVerified: boolean;
@@ -28,11 +36,11 @@ export interface CreateUserPayload {
   lastName: string;
   email: string;
   temporaryPassword: string;
-  role: Role;
+  roles: Role[];
 }
 
 export interface UpdateUserPayload {
   firstName: string;
   lastName: string;
-  role: Role;
+  roles: Role[];
 }

@@ -28,22 +28,27 @@ Rate limiting sur `register`, `login`, `verify-email`, `resend-verification`, `f
 
 | Méthode | Endpoint | Autorisation | Description |
 |---|---|---|---|
-| GET | `/me` | authentifié | Utilisateur courant |
+| GET | `/me` | authentifié | Utilisateur courant, avec son profil actif |
 | PUT | `/me/change-password` | authentifié | `{currentPassword, newPassword}` — 400 si mot de passe actuel faux |
 | PUT | `/me/setup-password` | authentifié | `{newPassword}` — remplace le mot de passe temporaire (`firstLogin=true`), 409 sinon |
-| GET | `?role=&page=&size=&sort=` | `user:view` | Liste paginée |
+| GET | `?role=&page=&size=&sort=` | `user:view` | Liste paginée. `sort` : `createdAt`, `email`, `firstName`, `lastName`, `active` ; 400 sinon |
 | GET | `/{id}` | `user:view` | Détail d'un utilisateur — 404 si introuvable |
-| POST | `/` | `user:create` | `{firstName, lastName, email, temporaryPassword, role}` → 201 |
-| PUT | `/{id}` | `user:update` | `{firstName, lastName, role}` — 403 si on modifie son propre rôle |
+| POST | `/` | `user:create` | `{firstName, lastName, email, temporaryPassword, roles[]}` (au moins un rôle) → 201 |
+| PUT | `/{id}` | `user:update` | `{firstName, lastName, roles[]}` (au moins un rôle) — 403 si on modifie ses propres rôles |
 | PATCH | `/{id}/activate` · `/{id}/deactivate` | `user:update` | 403 si on se désactive soi-même ; désactivation = sessions révoquées |
 | POST | `/{id}/reset-password` | `user:update` | → `{temporaryPassword}` ; `firstLogin=true`, sessions révoquées |
 
-`UserResponse` : `{publicId, email, firstName, lastName, role, permissions[], active, emailVerified, firstLogin, createdAt}`.
-`permissions` (codes du rôle, ex : `user:view`) sert uniquement à adapter l'interface ; l'autorisation reste vérifiée côté serveur.
+`UserResponse` : `{publicId, email, firstName, lastName, roles[], activeRole, permissions[], active, emailVerified, firstLogin, createdAt}`.
+`activeRole` et `permissions` ne sont renseignés que pour la session courante (`login`, `refresh`, `/me`, `PUT /api/auth/active-profile`) : `activeRole` vaut `null` et `permissions` est vide hors session ou tant qu'aucun profil n'est choisi.
+`permissions` (codes du profil actif, ex : `user:view`) sert uniquement à adapter l'interface ; l'autorisation reste vérifiée côté serveur. Les permissions de plusieurs rôles ne se cumulent jamais.
+
+Choix ou changement de profil : `PUT /api/auth/active-profile` (authentifié), `{role}` — réémet les cookies → `UserResponse` ; 403 si le rôle n'appartient pas à l'utilisateur, 401 sans refresh token valide. Le cookie `refresh_token` est requis : un client qui n'utilise que l'en-tête Bearer ne peut pas choisir de profil.
+
+Sans profil actif (utilisateur à plusieurs rôles, juste après la connexion), seuls `/api/users/me`, `/api/users/me/**` et `/api/auth/active-profile` sont accessibles ; le reste renvoie 403, hors endpoints publics.
 
 ### Audit — `/api/audit-logs` [socle]
 
-`GET ?userEmail=&entityType=&status=SUCCESS|FAILED&from=&to=&page=&size=&sort=` — permission `audit:log:view`. Tri par défaut : `actionDate,desc`.
+`GET ?userEmail=&entityType=&status=SUCCESS|FAILED&from=&to=&page=&size=&sort=` — permission `audit:log:view`. Tri par défaut : `actionDate,desc`. Chaque entrée indique `activeProfile`, le profil actif de l'auteur au moment de l'action.
 
 ### Fichiers — `/api/uploads/{clé}` [socle]
 
@@ -59,8 +64,9 @@ Préfixes : `/app` (entrant), `/topic` (broadcast), `/user/queue` (ciblé, princ
 - Tokens transmis **uniquement** par cookies `HttpOnly; Secure; SameSite=Strict` :
   `access_token` (JWT, 15 min, `Path=/api`) et `refresh_token` (opaque, 7 jours, `Path=/api/auth`).
 - Le frontend n'a jamais accès aux tokens : il appelle l'API avec `withCredentials: true`.
-- Sur 401 : appeler `POST /api/auth/refresh` une seule fois (requêtes concurrentes à sérialiser : un refresh token réutilisé révoque toutes les sessions), puis rejouer la requête ; si le refresh échoue → écran de connexion.
+- Sur 401 : appeler `POST /api/auth/refresh` une seule fois (requêtes concurrentes à sérialiser : un refresh token réutilisé ferme la session), puis rejouer la requête ; si le refresh échoue → écran de connexion.
 - `Authorization: Bearer <jwt>` est accepté pour les clients non-navigateur.
+- Session unique : une nouvelle connexion ferme la session précédente de l'utilisateur ; ses tokens reçoivent aussitôt 401.
 
 ## Error model [socle]
 

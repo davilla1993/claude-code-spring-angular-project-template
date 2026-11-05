@@ -16,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.TreeSet;
+
 @Service
 @RequiredArgsConstructor
 public class UpdateUserUseCase {
@@ -32,23 +36,28 @@ public class UpdateUserUseCase {
         User user = userRepository.findByPublicIdAndDeletedFalse(targetId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
-        Role previousRole = user.getRole();
-        boolean roleChanged = previousRole != request.role();
-        if (roleChanged && actorId.equals(targetId)) {
+        Set<Role> previousRoles = new TreeSet<>(user.getRoles());
+        Set<Role> requestedRoles = new TreeSet<>(request.roles());
+        boolean rolesChanged = !previousRoles.equals(requestedRoles);
+        if (rolesChanged && actorId.equals(targetId)) {
             throw new ForbiddenOperationException(ErrorMessages.CANNOT_CHANGE_OWN_ROLE);
         }
 
         user.setFirstName(request.firstName().trim());
         user.setLastName(request.lastName().trim());
-        user.setRole(request.role());
 
-        if (roleChanged) {
-            // Force une reconnexion pour que les nouveaux droits soient appliqués à l'expiration de l'access token.
+        if (rolesChanged) {
+            user.getRoles().clear();
+            user.getRoles().addAll(requestedRoles);
+            // Une collection modifiée seule ne déclenche pas d'UPDATE sur users : sans cela, updated_at et updated_by resteraient inchangés.
+            user.setUpdatedAt(LocalDateTime.now());
+            // Ferme la session : les nouveaux droits s'appliquent dès la reconnexion.
             refreshTokenRepository.revokeAllByUserId(targetId);
+            user.setCurrentSessionId(null);
         }
 
         auditLogService.log("USER_UPDATE", "USER", targetId,
-                roleChanged ? "role " + previousRole + " -> " + request.role() : null,
+                rolesChanged ? "roles " + previousRoles + " -> " + requestedRoles : null,
                 AuditLog.ActionStatus.SUCCESS);
 
         return UserResponseMapper.toResponse(user);

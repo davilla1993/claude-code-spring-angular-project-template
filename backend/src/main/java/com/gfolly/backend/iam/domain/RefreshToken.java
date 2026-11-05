@@ -26,8 +26,21 @@ public class RefreshToken extends BaseEntity {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
+    /** Profil actif de la session, conservé à la rotation ; null tant qu'aucun profil n'est choisi. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "active_role", length = 20)
+    private Role activeRole;
+
     @Column(nullable = false)
     private boolean revoked = false;
+
+    /** Session à laquelle appartient ce token : il ne vaut que tant qu'elle reste la session ouverte de l'utilisateur. */
+    @Column(name = "session_id", length = 36)
+    private String sessionId;
+
+    public boolean belongsToSession(String currentSessionId) {
+        return sessionId != null && sessionId.equals(currentSessionId);
+    }
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);

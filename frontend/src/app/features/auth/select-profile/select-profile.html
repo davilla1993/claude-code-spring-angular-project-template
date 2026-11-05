@@ -1,0 +1,25 @@
+<section class="card auth-card" aria-labelledby="select-profile-title">
+  <h1 id="select-profile-title">Choisissez votre profil</h1>
+  <p>Vous travaillez avec un seul profil à la fois. Vous pourrez en changer à tout moment.</p>
+
+  @if (error(); as message) {
+    <div class="alert alert--error" role="alert"><p>{{ message }}</p></div>
+  }
+
+  @if (session.user(); as user) {
+    <ul class="profile-list">
+      @for (role of user.roles; track role) {
+        <li>
+          <button type="button" class="btn profile-list__choice" [class.btn--secondary]="role !== user.activeRole"
+                  [attr.aria-current]="role === user.activeRole ? 'true' : null"
+                  [disabled]="submitting()" (click)="choose(role)">
+            {{ roleLabels[role] }}
+            @if (role === user.activeRole) {
+              <span>(profil actuel)</span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

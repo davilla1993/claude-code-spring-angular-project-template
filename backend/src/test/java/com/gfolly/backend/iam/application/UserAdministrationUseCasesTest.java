@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,16 +47,16 @@ class UserAdministrationUseCasesTest {
     void adminCannotChangeOwnRole() {
         String id = admin.getPublicId();
 
-        assertThatThrownBy(() -> updateUser.execute(id, id, new UpdateUserRequest("A", "B", Role.USER)))
+        assertThatThrownBy(() -> updateUser.execute(id, id, new UpdateUserRequest("A", "B", Set.of(Role.USER))))
                 .isInstanceOf(ForbiddenOperationException.class);
-        assertThat(admin.getRole()).isEqualTo(Role.ADMIN);
+        assertThat(admin.getRoles()).containsExactly(Role.ADMIN);
     }
 
     @Test
     void adminCanEditOwnNameWithoutChangingRole() {
         String id = admin.getPublicId();
 
-        var response = updateUser.execute(id, id, new UpdateUserRequest(" New ", " Name ", Role.ADMIN));
+        var response = updateUser.execute(id, id, new UpdateUserRequest(" New ", " Name ", Set.of(Role.ADMIN)));
 
         assertThat(response.firstName()).isEqualTo("New");
         verify(refreshTokenRepository, never()).revokeAllByUserId(anyString());
@@ -63,10 +64,47 @@ class UserAdministrationUseCasesTest {
 
     @Test
     void roleChangeOnAnotherUserRevokesTheirSessions() {
-        updateUser.execute(admin.getPublicId(), other.getPublicId(), new UpdateUserRequest("A", "B", Role.ADMIN));
+        updateUser.execute(admin.getPublicId(), other.getPublicId(), new UpdateUserRequest("A", "B", Set.of(Role.ADMIN)));
 
-        assertThat(other.getRole()).isEqualTo(Role.ADMIN);
+        assertThat(other.getRoles()).containsExactly(Role.ADMIN);
         verify(refreshTokenRepository).revokeAllByUserId(other.getPublicId());
+    }
+
+    @Test
+    void addingSecondRoleToAnotherUserReplacesRolesAndRevokesSessions() {
+        var response = updateUser.execute(admin.getPublicId(), other.getPublicId(),
+                new UpdateUserRequest("A", "B", Set.of(Role.USER, Role.ADMIN)));
+
+        assertThat(other.getRoles()).containsExactlyInAnyOrder(Role.ADMIN, Role.USER);
+        assertThat(response.roles()).containsExactly(Role.ADMIN, Role.USER);
+        assertThat(response.permissions()).isEmpty();
+        assertThat(other.getUpdatedAt()).isNotNull();
+        verify(refreshTokenRepository).revokeAllByUserId(other.getPublicId());
+    }
+
+    @Test
+    void sameRoleSetDoesNotRevokeSessions() {
+        other.getRoles().add(Role.ADMIN);
+
+        updateUser.execute(admin.getPublicId(), other.getPublicId(),
+                new UpdateUserRequest("A", "B", Set.of(Role.ADMIN, Role.USER)));
+
+        assertThat(other.getRoles()).containsExactlyInAnyOrder(Role.ADMIN, Role.USER);
+        assertThat(other.getFirstName()).isEqualTo("A");
+        verify(refreshTokenRepository, never()).revokeAllByUserId(anyString());
+    }
+
+    @Test
+    void adminCannotAddRoleToThemselves() {
+        String id = admin.getPublicId();
+        var request = new UpdateUserRequest("A", "B", Set.of(Role.ADMIN, Role.USER));
+
+        assertThatThrownBy(() -> updateUser.execute(id, id, request))
+                .isInstanceOf(ForbiddenOperationException.class);
+
+        assertThat(admin.getRoles()).containsExactly(Role.ADMIN);
+        assertThat(admin.getFirstName()).isEqualTo("First");
+        verify(refreshTokenRepository, never()).revokeAllByUserId(anyString());
     }
 
     @Test
@@ -91,7 +129,7 @@ class UserAdministrationUseCasesTest {
         user.setEmail(role.name().toLowerCase() + "@example.com");
         user.setFirstName("First");
         user.setLastName("Last");
-        user.setRole(role);
+        user.getRoles().add(role);
         return user;
     }
 }

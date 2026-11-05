@@ -3,6 +3,8 @@ export type AuditStatus = 'SUCCESS' | 'FAILED';
 export interface AuditLog {
   id: string;
   userEmail: string | null;
+  /** Profil actif de l'auteur au moment de l'action. */
+  activeProfile: string | null;
   action: string;
   entityType: string;
   entityId: string | null;

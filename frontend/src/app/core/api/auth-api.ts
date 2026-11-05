@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../../shared/models/api-response.model';
-import { User } from '../../shared/models/user.model';
+import { Role, User } from '../../shared/models/user.model';
 import { apiUrl, unwrap } from './api-url';
 
 export interface RegisterPayload {
@@ -36,6 +36,11 @@ export class AuthApi {
 
   refresh(): Observable<User> {
     return this.http.post<ApiResponse<User>>(apiUrl('/auth/refresh'), null).pipe(unwrap());
+  }
+
+  /** Choisit ou change le profil de la session : les cookies sont réémis par le serveur. */
+  selectProfile(role: Role): Observable<User> {
+    return this.http.put<ApiResponse<User>>(apiUrl('/auth/active-profile'), { role }).pipe(unwrap());
   }
 
   logout(): Observable<void> {

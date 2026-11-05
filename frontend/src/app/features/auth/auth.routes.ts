@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { firstLoginGuard, guestGuard } from '../../core/guards/auth-guard';
+import { firstLoginGuard, guestGuard, profileSelectionGuard } from '../../core/guards/auth-guard';
 import { APP_NAME } from '../../shared/constants/app.constants';
 
 export const AUTH_ROUTES: Routes = [
@@ -38,6 +38,12 @@ export const AUTH_ROUTES: Routes = [
     title: `Définir votre mot de passe — ${APP_NAME}`,
     canActivate: [firstLoginGuard],
     loadComponent: () => import('./setup-password/setup-password').then((m) => m.SetupPassword),
+  },
+  {
+    path: 'select-profile',
+    title: `Choisir un profil — ${APP_NAME}`,
+    canActivate: [profileSelectionGuard],
+    loadComponent: () => import('./select-profile/select-profile').then((m) => m.SelectProfile),
   },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
 ];

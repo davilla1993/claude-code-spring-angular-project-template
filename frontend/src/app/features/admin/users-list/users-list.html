@@ -49,7 +49,7 @@
           <tr>
             <th scope="col">Nom</th>
             <th scope="col">Email</th>
-            <th scope="col">Rôle</th>
+            <th scope="col">Rôles</th>
             <th scope="col">Statut</th>
             <th scope="col"><span class="visually-hidden">Actions</span></th>
           </tr>
@@ -59,7 +59,7 @@
             <tr>
               <td>{{ user.firstName }} {{ user.lastName }}</td>
               <td>{{ user.email }}</td>
-              <td>{{ roleLabels[user.role] }}</td>
+              <td>{{ roleNames(user.roles) }}</td>
               <td>
                 <span class="badge" [class.badge--success]="user.active" [class.badge--danger]="!user.active">
                   {{ user.active ? 'Actif' : 'Désactivé' }}

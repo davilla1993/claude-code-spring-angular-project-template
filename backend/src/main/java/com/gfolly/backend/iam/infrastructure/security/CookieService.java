@@ -16,7 +16,7 @@ import java.util.Optional;
  * Gestion des cookies d'authentification (HttpOnly, SameSite=Strict).
  * <ul>
  *   <li>access_token : envoyé sur tout /api</li>
- *   <li>refresh_token : envoyé uniquement sur /api/auth (refresh et logout)</li>
+ *   <li>refresh_token : envoyé uniquement sur /api/auth (refresh, logout et choix du profil)</li>
  * </ul>
  */
 @Service

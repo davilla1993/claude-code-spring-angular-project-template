@@ -4,6 +4,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuthApi } from '../../../core/api/auth-api';
 import { SessionStore } from '../../../core/services/session-store';
+import { SessionSync } from '../../../core/services/session-sync';
 import { apiErrorData, apiErrorMessage } from '../../../core/utils/api-error';
 import { safeRedirect } from '../../../core/utils/safe-redirect';
 import { User } from '../../../shared/models/user.model';
@@ -18,6 +19,7 @@ import { ToastStore } from '../../../shared/toasts/toast-store';
 export class Login implements OnInit {
   private readonly authApi = inject(AuthApi);
   private readonly session = inject(SessionStore);
+  private readonly sessionSync = inject(SessionSync);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
 
@@ -56,6 +58,7 @@ export class Login implements OnInit {
 
   private onLoggedIn(user: User): void {
     this.session.setUser(user);
+    this.sessionSync.announceSessionChange();
     void this.router.navigateByUrl(user.firstLogin ? '/auth/setup-password' : safeRedirect(this.returnUrl()));
   }
 

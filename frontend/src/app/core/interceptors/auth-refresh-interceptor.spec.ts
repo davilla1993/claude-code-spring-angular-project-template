@@ -76,6 +76,17 @@ describe('authRefreshInterceptor', () => {
     expect(status).toBe(401);
   });
 
+  it('refreshes for the profile selection, which needs a valid access token', () => {
+    let result: unknown;
+    http.put('/api/auth/active-profile', { role: 'USER' }).subscribe((body) => (result = body));
+
+    backend.expectOne('/api/auth/active-profile').flush(null, { status: 401, statusText: 'Unauthorized' });
+    backend.expectOne('/api/auth/refresh').flush({ success: true, data: aUser() });
+    backend.expectOne('/api/auth/active-profile').flush({ success: true });
+
+    expect(result).toEqual({ success: true });
+  });
+
   it('lets non-401 errors through untouched', () => {
     let status: number | undefined;
     http.get('/api/users').subscribe({ error: (err) => (status = err.status) });

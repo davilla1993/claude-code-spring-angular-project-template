@@ -1,5 +1,7 @@
 package com.gfolly.backend.infrastructure.config;
 
+import com.gfolly.backend.iam.domain.Role;
+import com.gfolly.backend.iam.infrastructure.security.CurrentSessionChecker;
 import com.gfolly.backend.iam.infrastructure.security.JwtAuthenticationFilter;
 import com.gfolly.backend.iam.infrastructure.security.JwtService;
 import com.gfolly.backend.infrastructure.security.RateLimitFilter;
@@ -28,6 +30,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -47,9 +50,13 @@ public class SecurityConfig {
             "/api/auth/reset-password"
     };
 
+    /** Une session n'a l'autorité ROLE_x que si x est son profil actif. */
+    private static final String[] ALL_ROLES = Arrays.stream(Role.values()).map(Role::name).toArray(String[]::new);
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtService jwtService,
+                                                   CurrentSessionChecker currentSessionChecker,
                                                    ObjectMapper objectMapper) throws Exception {
         http
                 // CSRF désactivé : API stateless dont les cookies sont SameSite=Strict (jamais envoyés en cross-site).
@@ -67,11 +74,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, PUBLIC_AUTH_ENDPOINTS).permitAll()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated())
+                        // Compte courant et choix du profil : seuls accès possibles sans profil actif.
+                        .requestMatchers("/api/users/me", "/api/users/me/**", "/api/auth/active-profile").authenticated()
+                        .anyRequest().hasAnyRole(ALL_ROLES))
                 // Filtres instanciés ici (et non déclarés en beans) pour ne pas être enregistrés une seconde fois
                 // comme filtres servlet globaux par Spring Boot.
                 .addFilterBefore(new RateLimitFilter(objectMapper), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, currentSessionChecker), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -15,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.TreeSet;
+
 /**
  * Création d'un compte par un administrateur, avec mot de passe temporaire.
  * À la première connexion, l'utilisateur vérifie son email puis définit son mot de passe.
@@ -37,7 +39,7 @@ public class CreateUserUseCase {
                 UserRequestMapper.toNewUser(request, passwordEncoder.encode(request.temporaryPassword())));
 
         auditLogService.log("USER_CREATE", "USER", user.getPublicId(),
-                "email=" + user.getEmail() + ", role=" + user.getRole(), AuditLog.ActionStatus.SUCCESS);
+                "email=" + user.getEmail() + ", roles=" + new TreeSet<>(user.getRoles()), AuditLog.ActionStatus.SUCCESS);
 
         return UserResponseMapper.toResponse(user);
     }

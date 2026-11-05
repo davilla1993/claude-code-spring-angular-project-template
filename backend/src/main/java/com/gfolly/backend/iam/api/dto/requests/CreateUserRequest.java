@@ -4,9 +4,12 @@ import com.gfolly.backend.iam.domain.Role;
 import com.gfolly.backend.shared.util.PasswordStrength;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
+import java.util.Set;
 
 /**
  * Création d'un compte par un administrateur. Le mot de passe est temporaire :
@@ -17,5 +20,5 @@ public record CreateUserRequest(
         @NotBlank @Size(max = 100) String lastName,
         @NotBlank @Email @Size(max = 255) String email,
         @NotBlank @Pattern(regexp = PasswordStrength.PATTERN, message = PasswordStrength.MESSAGE) String temporaryPassword,
-        @NotNull Role role
+        @NotEmpty Set<@NotNull Role> roles
 ) {}

@@ -43,6 +43,7 @@ public class ResetUserPasswordUseCase {
         user.setPasswordHash(passwordEncoder.encode(temporaryPassword));
         user.setFirstLogin(true);
         refreshTokenRepository.revokeAllByUserId(targetId);
+        user.setCurrentSessionId(null);
 
         auditLogService.log("USER_PASSWORD_RESET", "USER", targetId, null, AuditLog.ActionStatus.SUCCESS);
         return temporaryPassword;

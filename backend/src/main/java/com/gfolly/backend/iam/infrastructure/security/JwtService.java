@@ -1,5 +1,6 @@
 package com.gfolly.backend.iam.infrastructure.security;
 
+import com.gfolly.backend.iam.domain.Role;
 import com.gfolly.backend.iam.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 /**
  * Émission et validation des access tokens JWT (HS256).
- * Les permissions ne sont pas embarquées : elles sont dérivées du rôle à chaque requête.
+ * Le token porte le profil actif ; les permissions ne sont pas embarquées : elles sont dérivées de ce profil à chaque requête.
  */
 @Service
 @Slf4j
@@ -25,6 +26,7 @@ public class JwtService {
     public static final String CLAIM_EMAIL = "email";
     public static final String CLAIM_FULL_NAME = "fullName";
     public static final String CLAIM_ROLE = "role";
+    public static final String CLAIM_SESSION = "sid";
 
     private final SecretKey secretKey;
     private final long accessTokenExpirationMs;
@@ -37,13 +39,20 @@ public class JwtService {
         this.accessTokenExpirationMs = accessTokenExpirationMs;
     }
 
-    public String generateAccessToken(User user) {
+    /**
+     * @param activeRole profil actif de la session ; null tant qu'aucun profil n'est choisi (token sans permission)
+     */
+    public String generateAccessToken(User user, Role activeRole) {
         Date now = new Date();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(user.getPublicId())
                 .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIM_FULL_NAME, user.getFullName())
-                .claim(CLAIM_ROLE, user.getRole().name())
+                .claim(CLAIM_SESSION, user.getCurrentSessionId());
+        if (activeRole != null) {
+            builder.claim(CLAIM_ROLE, activeRole.name());
+        }
+        return builder
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + accessTokenExpirationMs))
                 .signWith(secretKey)

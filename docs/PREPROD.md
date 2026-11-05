@@ -34,7 +34,7 @@ Cocher chaque point ; un point non applicable doit être justifié.
       avec des migrations (Flyway/Liquibase) avant d'avoir des données réelles.
 - [ ] Sauvegardes de la base planifiées **et** restauration testée.
 - [ ] `UPLOADS_DIR` sur un volume persistant, inclus dans les sauvegardes ; extensions autorisées (`app.storage.allowed-extensions` dans `application.yml`) adaptées au besoin.
-- [ ] Premier compte ADMIN créé (inscription puis `UPDATE users SET role = 'ADMIN' WHERE email = '…'`).
+- [ ] Premier compte ADMIN créé (inscription puis `UPDATE user_roles SET role = 'ADMIN' WHERE user_id = (SELECT id FROM users WHERE email = '…')`).
 - [ ] Aucune donnée de test ou de développement importée en production.
 - [ ] Durée de conservation du journal d'audit définie (RGPD).
 

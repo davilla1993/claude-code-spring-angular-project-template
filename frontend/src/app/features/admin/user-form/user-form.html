@@ -9,7 +9,7 @@
 
   @if (loading()) {
     <p class="loading-state" role="status">Chargement…</p>
-  } @else {
+  } @else if (!loadFailed()) {
     <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div class="form-row">
         <div class="field">
@@ -60,18 +60,25 @@
         </div>
       }
 
-      <div class="field">
-        <label for="user-role">Rôle</label>
-        <select id="user-role" class="select" formControlName="role"
-                [attr.aria-describedby]="isSelf() ? 'user-role-hint' : null">
-          @for (role of roles; track role) {
-            <option [value]="role">{{ roleLabels[role] }}</option>
-          }
-        </select>
-        @if (isSelf()) {
-          <p id="user-role-hint" class="field-hint">Vous ne pouvez pas modifier votre propre rôle.</p>
+      @let rolesError = form.controls.roles | fieldError;
+      <fieldset class="field checkbox-group"
+                [attr.aria-describedby]="rolesError ? 'user-roles-error' : isSelf() ? 'user-roles-hint' : null">
+        <legend>Rôles</legend>
+        @for (role of roles; track role) {
+          <label class="checkbox">
+            <input type="checkbox" [checked]="form.controls.roles.value.includes(role)"
+                   [disabled]="form.controls.roles.disabled"
+                   (change)="toggleRole(role, $any($event.target).checked)" />
+            {{ roleLabels[role] }}
+          </label>
         }
-      </div>
+        @if (rolesError) {
+          <p id="user-roles-error" class="field-error">{{ rolesError }}</p>
+        }
+        @if (isSelf()) {
+          <p id="user-roles-hint" class="field-hint">Vous ne pouvez pas modifier vos propres rôles.</p>
+        }
+      </fieldset>
 
       <div class="form-actions">
         <button type="submit" class="btn" [disabled]="submitting()">

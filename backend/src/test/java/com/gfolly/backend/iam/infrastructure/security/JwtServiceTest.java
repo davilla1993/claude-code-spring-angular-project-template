@@ -19,7 +19,7 @@ class JwtServiceTest {
     void generatedTokenCanBeParsedBack() {
         User user = user();
 
-        Claims claims = jwtService.parseAccessToken(jwtService.generateAccessToken(user)).orElseThrow();
+        Claims claims = jwtService.parseAccessToken(jwtService.generateAccessToken(user, Role.ADMIN)).orElseThrow();
 
         assertThat(claims.getSubject()).isEqualTo(user.getPublicId());
         assertThat(claims.get(JwtService.CLAIM_EMAIL, String.class)).isEqualTo("jane@example.com");
@@ -28,17 +28,28 @@ class JwtServiceTest {
     }
 
     @Test
+    void tokenHasNoRoleClaimWithoutActiveProfile() {
+        User user = user();
+        user.getRoles().add(Role.USER);
+
+        Claims claims = jwtService.parseAccessToken(jwtService.generateAccessToken(user, null)).orElseThrow();
+
+        assertThat(claims).doesNotContainKey(JwtService.CLAIM_ROLE);
+        assertThat(claims.getSubject()).isEqualTo(user.getPublicId());
+    }
+
+    @Test
     void tokenSignedWithAnotherKeyIsRejected() {
         JwtService other = new JwtService("another-secret-0123456789-abcdefghijklmnopqrstuvwxyz", 60_000);
 
-        assertThat(jwtService.parseAccessToken(other.generateAccessToken(user()))).isEmpty();
+        assertThat(jwtService.parseAccessToken(other.generateAccessToken(user(), Role.ADMIN))).isEmpty();
     }
 
     @Test
     void expiredTokenIsRejected() {
         JwtService expiring = new JwtService(SECRET, -1_000);
 
-        assertThat(jwtService.parseAccessToken(expiring.generateAccessToken(user()))).isEmpty();
+        assertThat(jwtService.parseAccessToken(expiring.generateAccessToken(user(), Role.ADMIN))).isEmpty();
     }
 
     @Test
@@ -57,7 +68,7 @@ class JwtServiceTest {
         user.setEmail("jane@example.com");
         user.setFirstName("Jane");
         user.setLastName("Doe");
-        user.setRole(Role.ADMIN);
+        user.getRoles().add(Role.ADMIN);
         return user;
     }
 }

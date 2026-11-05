@@ -16,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -45,7 +47,7 @@ class LoginUseCaseTest {
         user.setEmail("jane@example.com");
         user.setFirstName("Jane");
         user.setLastName("Doe");
-        user.setRole(Role.USER);
+        user.getRoles().add(Role.USER);
         user.setPasswordHash(passwordEncoder.encode(PASSWORD));
         user.setEmailVerified(true);
     }
@@ -53,14 +55,41 @@ class LoginUseCaseTest {
     @Test
     void successfulLoginIssuesTokensAndNormalizesEmail() {
         when(userRepository.findByEmailAndDeletedFalse("jane@example.com")).thenReturn(Optional.of(user));
-        when(authTokenService.issueTokens(user)).thenReturn(new TokenPair("access", "refresh"));
+        when(authTokenService.startExclusiveSession(user, Role.USER)).thenReturn(new TokenPair("access", "refresh"));
 
         AuthSession session = loginUseCase.execute(new LoginRequest("  Jane@Example.COM ", PASSWORD));
 
         assertThat(session.tokens().accessToken()).isEqualTo("access");
         assertThat(session.user().email()).isEqualTo("jane@example.com");
-        verify(auditLogService).logAs(eq("jane@example.com"), eq("LOGIN"), any(), any(), any(),
+        verify(auditLogService).logAs(eq("jane@example.com"), eq("USER"), eq("LOGIN"), any(), any(), any(),
                 eq(AuditLog.ActionStatus.SUCCESS));
+    }
+
+    @Test
+    void soleRoleIsActivatedDirectly() {
+        user.setRoles(new HashSet<>(Set.of(Role.ADMIN)));
+        when(userRepository.findByEmailAndDeletedFalse("jane@example.com")).thenReturn(Optional.of(user));
+        when(authTokenService.startExclusiveSession(user, Role.ADMIN)).thenReturn(new TokenPair("access", "refresh"));
+
+        AuthSession session = loginUseCase.execute(new LoginRequest("jane@example.com", PASSWORD));
+
+        verify(authTokenService).startExclusiveSession(user, Role.ADMIN);
+        assertThat(session.user().activeRole()).isEqualTo(Role.ADMIN);
+        assertThat(session.user().permissions()).contains("user:view");
+    }
+
+    @Test
+    void severalRolesLeaveTheSessionWithoutProfileNorPermissions() {
+        user.setRoles(new HashSet<>(Set.of(Role.ADMIN, Role.USER)));
+        when(userRepository.findByEmailAndDeletedFalse("jane@example.com")).thenReturn(Optional.of(user));
+        when(authTokenService.startExclusiveSession(user, null)).thenReturn(new TokenPair("access", "refresh"));
+
+        AuthSession session = loginUseCase.execute(new LoginRequest("jane@example.com", PASSWORD));
+
+        verify(authTokenService).startExclusiveSession(user, null);
+        assertThat(session.user().activeRole()).isNull();
+        assertThat(session.user().permissions()).isEmpty();
+        assertThat(session.user().roles()).containsExactly(Role.ADMIN, Role.USER);
     }
 
     @Test

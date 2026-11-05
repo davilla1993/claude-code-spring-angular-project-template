@@ -7,16 +7,19 @@ import com.gfolly.backend.iam.application.dto.AuthSession;
 import com.gfolly.backend.iam.infrastructure.security.CookieService;
 import com.gfolly.backend.shared.api.ApiResponse;
 import com.gfolly.backend.shared.util.ErrorMessages;
+import com.gfolly.backend.shared.util.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Endpoints publics d'authentification. Les tokens sont transmis uniquement via cookies HttpOnly.
+ * Endpoints d'authentification, publics sauf le choix du profil. Les tokens sont transmis uniquement via cookies HttpOnly.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -31,6 +34,7 @@ public class AuthController {
     private final ResendVerificationEmailUseCase resendVerificationEmailUseCase;
     private final ForgotPasswordUseCase forgotPasswordUseCase;
     private final ResetPasswordUseCase resetPasswordUseCase;
+    private final SelectProfileUseCase selectProfileUseCase;
     private final CookieService cookieService;
 
     @PostMapping("/register")
@@ -56,6 +60,18 @@ public class AuthController {
         logoutUseCase.execute(CookieService.readCookie(request, CookieService.REFRESH_TOKEN_COOKIE).orElse(null));
         cookieService.clearAuthCookies(response);
         return ResponseEntity.ok(ApiResponse.message(ErrorMessages.LOGOUT_SUCCESS));
+    }
+
+    /** Sous /api/auth car le cookie refresh_token, nécessaire à la rotation, n'est envoyé que sur ce chemin. */
+    @PutMapping("/active-profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserResponse>> selectProfile(@AuthenticationPrincipal UserPrincipal principal,
+                                                                   @Valid @RequestBody SelectProfileRequest body,
+                                                                   HttpServletRequest request,
+                                                                   HttpServletResponse response) {
+        String refreshToken = CookieService.readCookie(request, CookieService.REFRESH_TOKEN_COOKIE).orElse(null);
+        AuthSession session = selectProfileUseCase.execute(principal.userId(), refreshToken, body.role());
+        return ResponseEntity.ok(ApiResponse.success(startSession(session, response)));
     }
 
     @PostMapping("/verify-email")

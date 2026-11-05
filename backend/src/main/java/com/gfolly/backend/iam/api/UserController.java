@@ -41,7 +41,7 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<UserResponse>> getMe(@AuthenticationPrincipal UserPrincipal principal) {
-        return ResponseEntity.ok(ApiResponse.success(getUserUseCase.execute(principal.userId())));
+        return ResponseEntity.ok(ApiResponse.success(getUserUseCase.executeForSession(principal)));
     }
 
     @PutMapping("/me/change-password")

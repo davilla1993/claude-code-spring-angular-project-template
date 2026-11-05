@@ -9,6 +9,7 @@ public final class AuditLogResponseMapper {
         return new AuditLogResponse(
                 log.getPublicId(),
                 log.getUserEmail(),
+                log.getActiveProfile(),
                 log.getAction(),
                 log.getEntityType(),
                 log.getEntityId(),

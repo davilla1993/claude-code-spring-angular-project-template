@@ -42,7 +42,8 @@ Socle existant (à réutiliser, ne pas dupliquer) :
 - `core/api/*` : services typés par ressource (`AuthApi`, `UsersApi`, `AuditApi`), enveloppe `ApiResponse` dépliée par `unwrap()`.
 - `core/services/session-store` : utilisateur courant (signals) ; `hasPermission()` pour adapter l'UI uniquement.
 - `core/interceptors` : cookies + refresh automatique sur 401 (un seul refresh à la fois, `TokenRefresher`).
-- `core/guards` : `authGuard`, `guestGuard`, `firstLoginGuard`, `permissionGuard('code')`.
+- `core/guards` : `authGuard` (exige aussi un profil actif), `guestGuard`, `firstLoginGuard`, `profileSelectionGuard`, `permissionGuard('code')`.
+- Profils : `/auth/select-profile` choisit ou change le profil ; `SessionSync` recharge les autres onglets après un changement.
 - `shared` : `ToastStore`, pipes `fieldError` / `confirmFieldError`, `Pagination`, modèles.
 - Confirmations : `await inject(ConfirmDialogService).confirm({ title, message, confirmLabel, danger })` (modale `<dialog>` native) — ne jamais utiliser `window.confirm`.
 - Styles : tokens et classes de base dans `src/styles.scss` (`.btn`, `.field`, `.card`, `.table`, `.alert`...).

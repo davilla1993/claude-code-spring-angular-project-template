@@ -38,6 +38,7 @@ public class SetUserActiveUseCase {
         user.setActive(active);
         if (!active) {
             refreshTokenRepository.revokeAllByUserId(targetId);
+            user.setCurrentSessionId(null);
         }
 
         auditLogService.log(active ? "USER_ACTIVATE" : "USER_DEACTIVATE", "USER", targetId, null,

@@ -8,7 +8,7 @@ import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/
 import { Pagination } from '../../../shared/components/pagination/pagination';
 import { DEFAULT_PAGE_SIZE } from '../../../shared/constants/app.constants';
 import { PageResponse } from '../../../shared/models/api-response.model';
-import { Role, ROLE_LABELS, ROLES, User } from '../../../shared/models/user.model';
+import { Role, ROLE_LABELS, roleNames, ROLES, User } from '../../../shared/models/user.model';
 import { ToastStore } from '../../../shared/toasts/toast-store';
 
 @Component({
@@ -25,6 +25,7 @@ export class UsersList implements OnInit {
 
   protected readonly roles = ROLES;
   protected readonly roleLabels = ROLE_LABELS;
+  protected readonly roleNames = roleNames;
 
   protected readonly roleFilter = signal<Role | ''>('');
   protected readonly page = signal<PageResponse<User> | null>(null);

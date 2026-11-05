@@ -9,7 +9,8 @@ import { TokenRefresher } from '../services/token-refresher';
 /**
  * Sur 401 : tente un refresh (unique, partagé entre requêtes concurrentes) puis rejoue la requête.
  * Si le refresh échoue, la session est vidée et l'utilisateur renvoyé vers la connexion.
- * Les endpoints /auth/* ne déclenchent jamais de refresh (un 401 au login est une vraie erreur).
+ * Les endpoints /auth/* ne déclenchent pas de refresh (un 401 au login est une vraie erreur),
+ * sauf le choix du profil, qui requiert un access token valide.
  */
 export const authRefreshInterceptor: HttpInterceptorFn = (req, next) => {
   const refresher = inject(TokenRefresher);
@@ -18,7 +19,7 @@ export const authRefreshInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: unknown) => {
-      if (!isUnauthorized(error) || req.url.startsWith(apiUrl('/auth/'))) {
+      if (!isUnauthorized(error) || (req.url.startsWith(apiUrl('/auth/')) && req.url !== apiUrl('/auth/active-profile'))) {
         return throwError(() => error);
       }
 

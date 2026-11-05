@@ -38,11 +38,13 @@ export class UserForm implements OnInit {
     lastName: ['', [Validators.required, Validators.maxLength(100)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
     temporaryPassword: ['', [Validators.required, passwordStrength()]],
-    role: ['USER' as Role, [Validators.required]],
+    roles: [['USER'] as Role[], [Validators.required]],
   });
   protected readonly loading = signal(false);
   protected readonly submitting = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** Sans les données de l'utilisateur, envoyer le formulaire écraserait ses rôles par les valeurs par défaut. */
+  protected readonly loadFailed = signal(false);
 
   ngOnInit(): void {
     const id = this.id();
@@ -52,9 +54,16 @@ export class UserForm implements OnInit {
     this.form.controls.email.disable();
     this.form.controls.temporaryPassword.disable();
     if (this.isSelf()) {
-      this.form.controls.role.disable(); // le backend refuse de modifier son propre rôle
+      this.form.controls.roles.disable(); // le backend refuse de modifier ses propres rôles
     }
     this.loadUser(id);
+  }
+
+  protected toggleRole(role: Role, checked: boolean): void {
+    const control = this.form.controls.roles;
+    const selected = checked ? [...control.value, role] : control.value.filter((held) => held !== role);
+    control.setValue(ROLES.filter((candidate) => selected.includes(candidate)));
+    control.markAsTouched();
   }
 
   protected submit(): void {
@@ -65,11 +74,11 @@ export class UserForm implements OnInit {
     this.submitting.set(true);
     this.error.set(null);
 
-    const { firstName, lastName, email, temporaryPassword, role } = this.form.getRawValue();
+    const { firstName, lastName, email, temporaryPassword, roles } = this.form.getRawValue();
     const id = this.id();
     const request = id
-      ? this.usersApi.update(id, { firstName, lastName, role })
-      : this.usersApi.create({ firstName, lastName, email, temporaryPassword, role });
+      ? this.usersApi.update(id, { firstName, lastName, roles })
+      : this.usersApi.create({ firstName, lastName, email, temporaryPassword, roles });
 
     request.subscribe({
       next: () => {
@@ -87,11 +96,12 @@ export class UserForm implements OnInit {
     this.loading.set(true);
     this.usersApi.get(id).subscribe({
       next: (user) => {
-        this.form.patchValue({ firstName: user.firstName, lastName: user.lastName, email: user.email, role: user.role });
+        this.form.patchValue({ firstName: user.firstName, lastName: user.lastName, email: user.email, roles: user.roles });
         this.loading.set(false);
       },
       error: (err: unknown) => {
         this.error.set(apiErrorMessage(err));
+        this.loadFailed.set(true);
         this.loading.set(false);
       },
     });

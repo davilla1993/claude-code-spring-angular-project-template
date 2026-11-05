@@ -52,6 +52,7 @@ Règle applicable à toutes les applications.
 - Les permissions de plusieurs rôles ne se cumulent jamais : seules celles du profil actif s'appliquent, y compris pour l'interface affichée.
 - Après la connexion, un utilisateur ayant plusieurs rôles voit ses profils et choisit celui avec lequel il travaille. Avec un seul rôle, ce profil est activé directement.
 - Pour agir avec un autre profil, l'utilisateur en change explicitement.
+- Un utilisateur n'a qu'**une seule session ouverte**. Une nouvelle connexion ferme la précédente, avec effet immédiat.
 - Le serveur vérifie que le profil demandé appartient à l'utilisateur et applique l'autorisation à partir du profil actif. Le frontend ne fait qu'adapter l'interface.
 - Le journal d'audit enregistre le profil actif de chaque action.
 - Un utilisateur ne peut jamais valider ce qu'il a lui-même créé, quel que soit le profil utilisé. Le serveur applique ce contrôle sur chaque action de validation.

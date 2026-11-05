@@ -35,17 +35,31 @@ public class AuditLogService {
     /** Audit attribué à l'utilisateur authentifié courant. */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void log(String action, String entityType, String entityId, String details, AuditLog.ActionStatus status) {
-        logAs(SecurityUtils.getCurrentUserEmail(), action, entityType, entityId, details, status);
+        write(SecurityUtils.getCurrentUserEmail(), SecurityUtils.getCurrentActiveProfile(),
+                action, entityType, entityId, details, status);
     }
 
-    /** Audit attribué explicitement (ex : connexion, où l'utilisateur n'est pas encore authentifié). */
+    /** Audit attribué explicitement, sans profil (ex : tentative de connexion, où l'auteur n'est pas encore authentifié). */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void logAs(String userEmail, String action, String entityType, String entityId, String details,
                       AuditLog.ActionStatus status) {
+        write(userEmail, null, action, entityType, entityId, details, status);
+    }
+
+    /** Audit attribué explicitement avec son profil (connexion réussie : le contexte de sécurité ne décrit pas cette session). */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void logAs(String userEmail, String activeProfile, String action, String entityType, String entityId,
+                      String details, AuditLog.ActionStatus status) {
+        write(userEmail, activeProfile, action, entityType, entityId, details, status);
+    }
+
+    private void write(String userEmail, String activeProfile, String action, String entityType, String entityId,
+                       String details, AuditLog.ActionStatus status) {
         try {
             HttpServletRequest request = currentRequest();
             AuditLog entry = AuditLog.builder()
                     .userEmail(userEmail)
+                    .activeProfile(activeProfile)
                     .action(action)
                     .entityType(entityType)
                     .entityId(entityId)
