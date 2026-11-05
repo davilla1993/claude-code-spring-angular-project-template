@@ -65,6 +65,28 @@ Règle applicable à toutes les applications.
 
 Exemple : un utilisateur a les rôles d'Ordonnateur délégué et d'Ordonnateur principal. Après sa connexion, il choisit l'un des deux profils et n'accède qu'aux actions de celui-ci, jusqu'à ce qu'il en change.
 
+### Convention ABAC
+
+Le RBAC répond à « ce profil peut-il faire cette action ? », l'ABAC à « sur cette ressource, dans ce contexte ? ». Pas de moteur de règles : ce contrôle reste du code simple.
+
+- **RBAC sur l'endpoint :** `@PreAuthorize("hasAuthority('<permission>')")`.
+- **ABAC dans le use case :** après le chargement de la ressource et avant toute modification, comparer les attributs de l'utilisateur, de la ressource et du contexte.
+- **Refus :** lever `ForbiddenOperationException`, qui renvoie 403. Si l'existence même de la ressource est sensible, renvoyer 404.
+- **Frontend :** il peut masquer une action, mais le contrôle reste côté serveur.
+- **Tests :** chaque règle a un test du cas autorisé et un test du cas refusé.
+
+Exemple réel du socle : `UpdateUserUseCase` refuse de modifier ses propres rôles.
+
+Exemple de la règle anti-auto-validation, à placer dans chaque action de validation d'une application :
+
+```java
+if (actorId.equals(document.getCreatedByUserId())) {
+    throw new ForbiddenOperationException(ErrorMessages.CANNOT_VALIDATE_OWN_WORK);
+}
+```
+
+Stocker sur la ressource le `publicId` de son auteur : `BaseEntity.createdBy` contient un email ou `SYSTEM`, et ne convient pas à cette comparaison. Le message d'erreur est à ajouter à `ErrorMessages`.
+
 ## Angular
 ## Git
 ## Documentation

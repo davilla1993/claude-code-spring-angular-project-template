@@ -12,6 +12,7 @@ project/
 │   ├── AGENTS.md
 │   ├── PREPROD.md
 │   ├── CONTRIBUTING.md
+│   ├── scripts/                (scripts SQL : premier admin, utilisateur de test)
 │   └── ...                     (PRD, ARCHITECTURE, API_CONTRACT, SECURITY...)
 ├── backend/
 │   └── CLAUDE.md
@@ -48,7 +49,7 @@ Frontend (autre terminal) :
 ```bash
 cd frontend && npm install && npm start     # http://localhost:4200 — /api proxifié vers le backend
 ```
-Le premier compte ADMIN est à créer manuellement (inscription puis `UPDATE user_roles SET role = 'ADMIN' WHERE user_id = (SELECT id FROM users WHERE email = '...')`).
+Le premier compte ADMIN se crée avec `docs/scripts/create-admin.sql`. Pour tester le choix du profil, `docs/scripts/create-user-two-roles.sql` crée un utilisateur avec deux rôles.
 
 ## ⚠️ CI désactivée dans le template
 Le workflow `.github/workflows/ci.yml` est **entièrement commenté** pour ne pas se déclencher à chaque push sur le dépôt du template.

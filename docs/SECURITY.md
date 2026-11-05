@@ -29,10 +29,10 @@
 | ADMIN | `user:create`, `user:update`, `user:view`, `audit:log:view` |
 | USER | aucune (accès authentifié simple) |
 
-Règles : un utilisateur ne peut ni modifier son propre rôle, ni se désactiver. Le premier ADMIN est créé manuellement (SQL) pour chaque projet.
+Règles : un utilisateur ne peut ni modifier ses propres rôles, ni se désactiver. Le premier ADMIN est créé manuellement pour chaque projet (`docs/scripts/create-admin.sql`).
 Étendre `Permission` et `Role` (`iam/domain`) pour les besoins du projet.
 
-**Écart à combler :** l'interface de choix du profil et le contrôle ABAC ne sont pas encore en place. La règle cible est dans `PROJECT_RULES.md` (« Autorisation et séparation des profils »).
+La règle et la convention ABAC sont dans `PROJECT_RULES.md` (« Autorisation et séparation des profils »). Le socle n'embarque aucun moteur de règles ; il applique cette convention dans `UpdateUserUseCase` et `SetUserActiveUseCase`.
 
 ## Sensitive data
 
