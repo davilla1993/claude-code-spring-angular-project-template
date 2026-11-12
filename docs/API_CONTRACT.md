@@ -1,6 +1,6 @@
 # API Contract
 
-OpenAPI est la source machine-readable préférée lorsqu'une API REST est utilisée.
+Ce document est la source de vérité de l'API : tout changement d'endpoint, de DTO ou de code d'erreur y est reporté dans la même tâche, côté backend et côté frontend.
 
 > Les sections marquées **[socle]** décrivent l'API fournie par le template (authentification, utilisateurs, audit).
 > Elles doivent être conservées et complétées, pas réécrites, lors du bootstrap.

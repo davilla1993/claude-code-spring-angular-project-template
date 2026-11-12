@@ -8,7 +8,9 @@ project/
 ├── CLAUDE.md
 ├── README.md
 ├── .claude/
-│   └── agents/                 (architecte, testeur, reviewer, security-auditor)
+│   ├── agents/                 (architecte, testeur, reviewer, security-auditor)
+│   ├── skills/                 (bootstrap)
+│   └── settings.json           (permissions partagées : tests ciblés autorisés, suite complète sur accord)
 ├── docs/
 │   ├── cahier-des-charges.md   (à ajouter pour chaque projet)
 │   ├── AGENTS.md
@@ -26,10 +28,12 @@ project/
 1. Créer le projet à partir de ce template (socle backend et frontend inclus).
 2. Ajouter le cahier des charges dans `docs/cahier-des-charges.md`.
 3. Lancer Claude Code à la racine.
-4. Demander le bootstrap du projet.
+4. Lancer le bootstrap avec la commande `/bootstrap` (procédure : `docs/DEVELOPMENT_WORKFLOW.md`). Claude analyse le cahier des charges, écrit la documentation et le plan d'implémentation, puis s'arrête avant tout code pour faire valider ses décisions et ses questions.
 
-Prompt recommandé :
-> Lis intégralement le cahier des charges et les règles du dépôt. Ne code rien. Exécute le bootstrap défini dans CLAUDE.md : analyse, exigences, architecture, documentation et plan d'implémentation. Arrête-toi avant toute implémentation et présente les décisions et questions nécessitant validation.
+## Travailler avec Claude Code
+- **Workflows et agents** : `CLAUDE.md` choisit le workflow selon la taille de la tâche ; les sous-agents (`architecte`, `testeur`, `reviewer`, `security-auditor`) sont dans `.claude/agents/`, l'équipe est décrite dans `docs/AGENTS.md`.
+- **Tests** : seuls les tests de la fonctionnalité touchée sont exécutés. La suite complète n'est lancée qu'avec votre accord ; la CI la joue à chaque push.
+- **JDK 25 requis** pour le backend : avec un JDK plus récent, la compilation échoue sur Lombok.
 
 ## Socle fourni
 Authentification JWT par cookies (inscription, vérification email, mot de passe oublié, refresh, logout),

@@ -1,62 +1,44 @@
-# DEVELOPMENT WORKFLOW
-<!-- This document details the step-by-step process for project initialization (Bootstrap) -->
+# Bootstrap d'un nouveau projet
 
-## Project Initialization (Bootstrap)
+Procédure d'initialisation d'un projet créé à partir du template. Elle se lance par le skill `/bootstrap`.
+Le workflow des tâches courantes (features, revues, audits) est dans `CLAUDE.md`.
 
-### Phase 0 — STOP CODING
-Strictly no business logic, endpoints, entities, functional components, or large refactorings.
+**Aucun code pendant le bootstrap :** ni logique métier, ni endpoint, ni entité, ni composant, ni refactoring. Seuls des fichiers de `docs/` sont écrits.
 
-### Phase 1 — DISCOVERY
-Read all project artifacts:
-- `docs/cahier-des-charges.md`
-- `README.md`
-- `docs/AGENTS.md`
-- `docs/` folder
-- Root configurations
-- `backend/` and `frontend/` structures
-- Dependency manifests
-- Existing tests and CI/CD configs
+## Phase 1 — Découverte (session principale)
+- Lire `docs/cahier-des-charges.md` en entier. S'il est absent ou vide, s'arrêter et le demander.
+- Lire `docs/ARCHITECTURE.md`, `docs/API_CONTRACT.md`, `docs/SECURITY.md` et `docs/DESIGN_SYSTEM.md` : les sections **[socle]** décrivent ce que le template fournit déjà. Ne pas relire le code du socle pour le redécouvrir ; ne vérifier dans le code que ce que le cahier des charges remet en cause.
+- Relever les versions dans `backend/pom.xml` et `frontend/package.json`.
 
-Identify: Tech versions, architecture, dependencies, build/test commands, DB, Auth, API conventions, Angular architecture, design system.
+## Phase 2 — Conception (un seul lancement de l'`architecte`)
+Lui demander, en une fois, un rapport couvrant :
+- **Exigences :** acteurs, cas d'utilisation, exigences fonctionnelles et non fonctionnelles, règles métier, critères d'acceptation, cas limites, hypothèses, risques, questions ouvertes.
+- **Architecture :** modules à créer, ce qui est repris du socle, schéma de données, intégrations (un port par service externe), rôles et permissions, règles ABAC, déploiement.
+- **API :** endpoints à ajouter, avec leur permission.
+- **UX :** parcours, écrans, états, composants à réutiliser ou à créer.
+- **Plan :** découpage en lots et sous-lots, dans l'ordre des dépendances.
 
-### Phase 2 — REQUIREMENTS
-Use **Architecte**.
-Analyze: Personas, Use Cases, Functional/Non-functional requirements, Business rules, Security, Acceptance criteria, Edge cases, Assumptions, Risks.
-*Never invent a business requirement.*
+Aucune exigence ni règle métier n'est inventée : tout manque devient une question ouverte.
 
-### Phase 3 — ARCHITECTURE
-Use **Architecte**.
-Update `docs/ARCHITECTURE.md`.
-Describe: System architecture, Backend/Frontend specifics, Database, Integrations, Auth/Authz, Deployment.
-Critical decisions must be documented in `docs/adr/`.
+## Phase 3 — Documentation (session principale)
+Écrire à partir du rapport, en conservant et en complétant les sections **[socle]** sans les réécrire :
 
-### Phase 4 — DOCUMENTATION
-Generate/Update the core project documents:
-- `docs/PRD.md`
-- `docs/ARCHITECTURE.md`
-- `docs/PROJECT_RULES.md`
-- `docs/API_CONTRACT.md`
-- `docs/SECURITY.md`
-- `docs/DESIGN_SYSTEM.md`
-- `docs/DEVELOPMENT_WORKFLOW.md`
-- `docs/IMPLEMENTATION_PLAN.md`
+| Document | Contenu |
+|---|---|
+| `docs/PRD.md` | Exigences, règles métier, critères d'acceptation, hypothèses, questions ouvertes |
+| `docs/ARCHITECTURE.md` | Vue d'ensemble, modules du projet, base de données, intégrations, déploiement |
+| `docs/adr/ADR-NNN-titre.md` | Une décision structurante par fichier |
+| `docs/API_CONTRACT.md` | Endpoints prévus ; ce document est la source de vérité de l'API |
+| `docs/SECURITY.md` | Modèle de menace, rôles et permissions, données sensibles, hypothèses |
+| `docs/DESIGN_SYSTEM.md` | Architecture de l'information, parcours, composants, règles visuelles |
+| `docs/PROJECT_RULES.md` | « Conventions à compléter au bootstrap », uniquement ce dont le projet a besoin |
+| `docs/IMPLEMENTATION_PLAN.md` | Lots et sous-lots : objectif, backend, frontend, base, API, sécurité, tests, critères d'acceptation |
 
-### Phase 5 — PROJECT RULES
-Refine `docs/PROJECT_RULES.md` with specific conventions: Naming, packages, API, validation, errors, logging, tests, security, DB, Angular, Git.
+N'écrire que ce que le projet apporte : pas de section générique, pas de répétition d'un autre document.
 
-### Phase 6 — API CONTRACT
-Update `docs/API_CONTRACT.md`. OpenAPI is the source of truth. Every API change must be verified on both Spring Boot and Angular sides.
+## Phase 4 — Revue et arrêt
+- Vérifier la cohérence : exigences ↔ architecture, API ↔ écrans, permissions ↔ parcours, hypothèses de sécurité.
+- Rappeler l'action manuelle du nouveau projet : activer la CI (`.github/workflows/ci.yml`, voir `README.md`).
+- Présenter : décisions prises, documents écrits, hypothèses, questions ouvertes, plan d'implémentation.
 
-### Phase 7 — SECURITY
-Update `docs/SECURITY.md`. Cover: Auth, RBAC/ABAC, Sensitive data, Secret management, OWASP, Uploads, Rate limiting, Audit.
-
-### Phase 8 — DESIGN SYSTEM
-Use **Architecte**. Update `docs/DESIGN_SYSTEM.md`: Info architecture, User journeys, Visual hierarchy, Typography, Spacing, Colors, Components, Accessibility.
-
-### Phase 9 — IMPLEMENTATION PLAN
-Generate `docs/IMPLEMENTATION_PLAN.md`. For each feature: Objective, Backend/Frontend/DB changes, API, Security, Tests, Acceptance criteria. Respect dependency order.
-
-### Phase 10 — BOOTSTRAP REVIEW
-Verify: Coherence, contradictions, Backend/Frontend contract, Architecture vs Requirements, Security assumptions.
-Present: Discovered architecture, documents created, decisions, assumptions, open questions, and the implementation plan.
-**STOP. No coding until explicit validation.**
+**S'arrêter. Aucun code avant la validation explicite de l'utilisateur.**
