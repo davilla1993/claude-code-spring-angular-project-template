@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw -q test -Dtest=:*)",
+      "Bash(./mvnw test -Dtest=:*)",
+      "Bash(./mvnw -q compile)",
+      "Bash(./mvnw compile)",
+      "Bash(./mvnw -q test-compile)",
+      "Bash(npm test -- --watch=false --include=:*)",
+      "Bash(npm run build)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
+    ],
+    "ask": [
+      "Bash(./mvnw test)",
+      "Bash(./mvnw -q test)",
+      "Bash(./mvnw verify:*)",
+      "Bash(./mvnw -q verify:*)",
+      "Bash(./mvnw -B verify:*)",
+      "Bash(npm test)",
+      "Bash(npm test -- --watch=false)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.*.local)",
+      "Read(./**/.env)",
+      "Read(./**/.env.local)"
+    ]
+  }
+}
