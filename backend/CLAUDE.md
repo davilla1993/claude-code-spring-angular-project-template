@@ -9,8 +9,8 @@ Modules du socle : `iam` (utilisateurs, rôles, permissions, JWT, sessions), `sy
 
 ## Conventions du socle (à réutiliser, ne pas dupliquer)
 - **Entités :** étendre `BaseEntity` (`publicId` UUID, audit JPA, soft delete). Seul le `publicId` est exposé, jamais l'id technique.
-- **Controllers :** minces. `@Valid` sur chaque DTO de requête, `@PreAuthorize("hasAuthority('<permission>')")` sur chaque endpoint non public, réponse `ApiResponse<T>`.
-- **Listes :** paginées dès leur première version, sans exception : `@PageableDefault(size, sort) Pageable` sur le controller, `Page` dans le repository, `PageResponse.from(page)` en réponse (`docs/PROJECT_RULES.md`, « Pagination dès le départ »). Jamais d'entité JPA en entrée ou en sortie.
+- **Controllers :** minces. `@Valid` sur chaque DTO de requête, `@PreAuthorize("hasAuthority('<permission>')")` sur chaque endpoint non public, réponse `ApiResponse<T>`. Jamais d'entité JPA en entrée ou en sortie.
+- **Listes :** paginées dès leur première version, sans exception : `@PageableDefault(size, sort) Pageable` sur le controller, `Page` dans le repository, `PageResponse.from(page)` en réponse (`docs/PROJECT_RULES.md`, « Pagination dès le départ »).
 - **Autorisation sur la ressource (ABAC) :** dans le use case, après le chargement et avant la modification ; refus par `ForbiddenOperationException` (`docs/PROJECT_RULES.md`, « Convention ABAC »).
 - **Permissions :** étendre `iam/domain/Permission` et `Role`. Seul le profil actif compte. Ne jamais contourner `SecurityConfig`.
 - **Erreurs :** exception métier dédiée + handler dans `GlobalExceptionHandler`, messages dans `ErrorMessages`.
