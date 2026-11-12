@@ -41,6 +41,7 @@ Choisis le workflow le plus léger qui convient, et ne lance que les agents qu'i
 | **Feature complexe, nouveau module ou lot** | `architecte` → toi → `testeur` → `reviewer` |
 | **Revue de code** | `reviewer` → toi si corrections |
 | **Tâche sensible** | Le workflow ci-dessus, puis `security-auditor` en dernier |
+| **Interface** (écran nouveau ou modifié, style, audit UI/UX) | Skill `/ui`, en plus du workflow ci-dessus |
 | **Bootstrap d'un projet** | Skill `/bootstrap` — aucun code de fonctionnalité |
 
 - **Tâche sensible** : tout ce qui touche à l'authentification, aux sessions, aux permissions, aux données sensibles, aux fichiers, à la configuration de sécurité ou aux secrets. Un constat CRITIQUE ou HAUTE bloque la tâche.

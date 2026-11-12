@@ -25,6 +25,7 @@ Contrôle le backend et le frontend avec la même exigence. Si le diff ne touche
 - **Single Responsibility :** classes, méthodes, composants et services qui mêlent plusieurs responsabilités ; logique métier dans un controller ou un template.
 - **Services externes branchables :** SDK importé hors de son adaptateur, type ou exception du fournisseur exposé par un port, `if` sur le fournisseur dans le métier, frontend qui connaît le fournisseur. Les dépendances entre modules de l'application ne sont pas des constats.
 - **Confirmation des actions (si UI) :** opération d'écriture sans confirmation, ou modale dupliquée (`frontend/CLAUDE.md`).
+- **Cohérence visuelle (si UI) :** valeur en dur au lieu d'un token, classe ou composant qui double le socle, écran qui s'écarte de la structure ou des libellés des écrans voisins (`docs/DESIGN_SYSTEM.md`, sections concernées).
 - **Accessibilité (si UI) :** clavier, focus, HTML sémantique, noms accessibles, contraste, erreurs de formulaires, responsive, états de chargement, d'erreur et vides.
 - **Performance :** N+1, liste non paginée, requête trop large, rendu Angular, appels API dupliqués, lazy loading.
 

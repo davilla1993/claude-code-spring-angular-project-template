@@ -9,7 +9,7 @@ project/
 ├── README.md
 ├── .claude/
 │   ├── agents/                 (architecte, testeur, reviewer, security-auditor)
-│   ├── skills/                 (bootstrap)
+│   ├── skills/                 (bootstrap, ui)
 │   └── settings.json           (permissions partagées : tests ciblés autorisés, suite complète sur accord)
 ├── docs/
 │   ├── cahier-des-charges.md   (à ajouter pour chaque projet)

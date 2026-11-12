@@ -30,7 +30,7 @@ Aucune exigence ni règle métier n'est inventée : tout manque devient une ques
 | `docs/adr/ADR-NNN-titre.md` | Une décision structurante par fichier |
 | `docs/API_CONTRACT.md` | Endpoints prévus ; ce document est la source de vérité de l'API |
 | `docs/SECURITY.md` | Modèle de menace, rôles et permissions, données sensibles, hypothèses |
-| `docs/DESIGN_SYSTEM.md` | Architecture de l'information, parcours, composants, règles visuelles |
+| `docs/DESIGN_SYSTEM.md` | Sections **[projet]** : charte (tokens de `styles.scss`), parcours, architecture de l'information |
 | `docs/PROJECT_RULES.md` | « Conventions à compléter au bootstrap », uniquement ce dont le projet a besoin |
 | `docs/IMPLEMENTATION_PLAN.md` | Lots et sous-lots : objectif, backend, frontend, base, API, sécurité, tests, critères d'acceptation |
 

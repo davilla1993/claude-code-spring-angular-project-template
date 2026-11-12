@@ -2,8 +2,8 @@
 
 Angular 22 standalone, zoneless, signals, Reactive Forms, Vitest, pages chargées à la demande (lazy). Suivre les versions réellement présentes dans `package.json`.
 
-## Avant toute nouvelle UI
-Inspecter les composants existants et `docs/DESIGN_SYSTEM.md`, et réutiliser leurs patterns avant d'en créer.
+## Avant tout travail d'interface
+Charger le skill `/ui` : il applique `docs/DESIGN_SYSTEM.md` (une seule façon de faire chaque chose, aucune valeur en dur) et impose la vérification visuelle.
 
 ## Socle existant (à réutiliser, ne pas dupliquer)
 - `core/api/*` : services typés par ressource (`AuthApi`, `UsersApi`, `AuditApi`), enveloppe `ApiResponse` dépliée par `unwrap()`. Tout appel HTTP passe par là, jamais par un composant.
@@ -13,7 +13,7 @@ Inspecter les composants existants et `docs/DESIGN_SYSTEM.md`, et réutiliser le
 - Profils : `/auth/select-profile` choisit ou change le profil ; `SessionSync` recharge les autres onglets après un changement.
 - `core/validators` : mêmes règles que le serveur (nom, mot de passe) ; toute évolution se fait des deux côtés.
 - `shared` : `ToastStore`, pipes `fieldError` / `confirmFieldError`, `Pagination`, modèles.
-- Styles : tokens et classes de base dans `src/styles.scss` (`.btn`, `.field`, `.card`, `.table`, `.alert`...).
+- Styles : tokens et classes de base dans `src/styles.scss` (`.btn`, `.field`, `.card`, `.table`, `.alert`...) ; règles d'usage dans `docs/DESIGN_SYSTEM.md`.
 
 ## Règles
 - **Composants :** une responsabilité ; HTML, SCSS et TypeScript dans des fichiers séparés ; pas de logique métier dans les templates ; état partagé dans un service dédié.
