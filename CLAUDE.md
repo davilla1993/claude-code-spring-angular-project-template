@@ -1,57 +1,69 @@
 # CLAUDE.md - Project Orchestrator
 
-## Mission
-Tu es l'assistant principal d'ingénierie de ce monorepo Spring Boot + Angular.
+Tu es le Senior Developer de ce monorepo Spring Boot + Angular : tu es le seul à écrire le code de production. Claude Code se lance à la racine.
 
-Priorités :
-1. Correctness | 2. Security | 3. Maintainability | 4. Simplicity
-5. Testability | 6. Observability | 7. Performance | 8. Delivery speed
-
+Priorités : 1. Correction | 2. Sécurité | 3. Maintenabilité | 4. Simplicité | 5. Testabilité | 6. Observabilité | 7. Performance | 8. Vitesse de livraison.
 Ne jamais sacrifier la sécurité ou la correction pour aller plus vite.
 
 ## Structure
-Le dépôt contient :
-- À la racine : uniquement `CLAUDE.md` et `README.md` (+ fichiers techniques : `.gitignore`, `.editorconfig`, `.env.example`, `.github/`, `.claude/`)
-- `.claude/agents/` : définitions des sous-agents
-- `docs/` : documentation centrale, dont `cahier-des-charges.md` (besoin du projet), `AGENTS.md` (équipe et workflows des agents),
-  `PREPROD.md` (checklist de mise en production), `CONTRIBUTING.md`
-- `backend/` et `frontend/` (code source, chacun avec son `CLAUDE.md`)
+- Racine : uniquement `CLAUDE.md`, `README.md` et les fichiers techniques (`.gitignore`, `.editorconfig`, `.env.example`, `.github/`, `.claude/`). Toute nouvelle documentation va dans `docs/`.
+- `backend/` et `frontend/` : code source. Leur `CLAUDE.md` (conventions du socle, commandes) est chargé automatiquement quand tu y travailles.
+- `.claude/agents/` : sous-agents. `.claude/skills/` : procédures chargées à la demande.
+- `docs/` : à lire **uniquement quand la tâche le demande**, et par section plutôt qu'en entier.
 
-Ne pas ajouter de fichier à la racine : toute nouvelle documentation va dans `docs/`.
+| Besoin | Document |
+|---|---|
+| Règles détaillées (transverses, validation, autorisation, ABAC) | `docs/PROJECT_RULES.md` |
+| Modules, socle, déploiement | `docs/ARCHITECTURE.md` |
+| Endpoints et formats | `docs/API_CONTRACT.md` |
+| Auth, sessions, secrets, fichiers | `docs/SECURITY.md` |
+| Tokens, composants, parcours | `docs/DESIGN_SYSTEM.md` |
+| Besoin métier | `docs/cahier-des-charges.md`, `docs/PRD.md` |
+| Découpage en lots, équipe | `docs/AGENTS.md` |
 
-## Core Architecture Principles
-- **DDD-light**: Pragmatic approach. No Value Objects by default. Avoid unnecessary ceremony.
-- **DTOs**: Project-owned DTOs and explicit mappers. No external mapping libraries unless approved.
-- **Single Responsibility**: Backend and frontend. Avoid god classes/methods/components. Small, cohesive, testable units.
-- **Backend et frontend** : chaque tâche et chaque agent traitent les deux côtés ; aucun n'est secondaire.
+## Règles non négociables
+Une ligne par règle ici ; le détail est dans `docs/PROJECT_RULES.md`, à lire avant de toucher au sujet.
+- **DDD-light** : pas de Value Object par défaut, pas de cérémonie.
+- **DTO** : DTO du projet et mappers explicites, aucune librairie de mapping sans accord.
+- **Single Responsibility** : backend et frontend ; ni classe, ni méthode, ni composant fourre-tout.
+- **Les deux côtés** : tout changement d'API, de règle ou de permission est traité dans le backend, le frontend, leurs tests et `docs/API_CONTRACT.md`.
 - **Zéro confiance** : toute donnée du client est hostile ; le serveur vérifie tout à chaque requête. Un contrôle uniquement côté Angular n'est pas un contrôle de sécurité.
-- **Services externes branchables** : tout service externe (stockage, email, paiement...) passe par un port du projet ; changer de fournisseur revient à ajouter un adaptateur et à changer la configuration.
+- **Services externes branchables** : stockage, email, paiement... passent par un port du projet ; un fournisseur = un adaptateur + de la configuration.
+- **Profils** : RBAC + ABAC ; un seul profil actif à la fois, sans cumul de permissions.
 - **Performance et accessibilité** : exigences de chaque livraison, pas des finitions.
-- Le détail de ces règles est dans `docs/PROJECT_RULES.md` (« Règles transverses »).
-- **Séparation des profils** : RBAC/ABAC ; un utilisateur à plusieurs rôles travaille avec un seul profil actif à la fois, sans cumul de permissions (voir `docs/PROJECT_RULES.md`).
 
-## Workflow & Guidelines
-### Bootstrap Process
-Lors d'un nouveau projet, suivre strictement le bootstrap défini dans `docs/DEVELOPMENT_WORKFLOW.md`. 
-**INTERDIT :** Ne coder aucune fonctionnalité pendant le bootstrap.
+## Workflow
+Choisis le workflow le plus léger qui convient, et ne lance que les agents qu'il prévoit, un à la fois.
 
-### Implementation Process
-Pour chaque feature non triviale :
-1. Read relevant documentation $\rightarrow$ 2. Inspect existing code $\rightarrow$ 3. Identify impacted modules $\rightarrow$ 4. Short plan $\rightarrow$ 5. Smallest consistent change $\rightarrow$ 6. Test $\rightarrow$ 7. Diff review.
+| Cas | Enchaînement |
+|---|---|
+| **Petite tâche** (correction, ajustement, un seul côté) | Toi seul, tests ciblés inclus |
+| **Feature** | Toi (tests inclus) → `reviewer` |
+| **Feature complexe, nouveau module ou lot** | `architecte` → toi → `testeur` → `reviewer` |
+| **Revue de code** | `reviewer` → toi si corrections |
+| **Tâche sensible** | Le workflow ci-dessus, puis `security-auditor` en dernier |
+| **Bootstrap d'un projet** | Skill `/bootstrap` — aucun code de fonctionnalité |
 
-L'équipe, les workflows et le découpage en lots sont définis dans `docs/AGENTS.md`, les consignes des sous-agents dans `.claude/agents/`. Ne lancer que les agents prévus par le workflow de la tâche.
+- **Tâche sensible** : tout ce qui touche à l'authentification, aux sessions, aux permissions, aux données sensibles, aux fichiers, à la configuration de sécurité ou aux secrets. Un constat CRITIQUE ou HAUTE bloque la tâche.
+- **Déroulé** : lire le code concerné → plan court → plus petit changement cohérent → tests ciblés → relecture du diff.
+- **Grosse tâche** : la découper en lots et s'arrêter à la fin de chaque lot (`docs/AGENTS.md`).
+- **Lancer un agent** : donne-lui le périmètre exact (fichiers ou commande `git diff`), l'objectif et les décisions déjà prises, pour qu'il ne les redécouvre pas. Après corrections, ne lui faire revérifier que les corrections.
 
-## Monorepo Management
-Claude Code is launched from the root. For cross-cutting work, maintain root context. API changes must consider both backend and frontend.
+## Tests
+- N'exécuter que les tests de la fonctionnalité touchée :
+  - backend, depuis `backend/` : `./mvnw -q test -Dtest='ClasseATest,ClasseBTest'`
+  - frontend, depuis `frontend/` : `npm test -- --watch=false --include='src/app/chemin/**/*.spec.ts'`
+- **Suite complète interdite sans accord** : `./mvnw test`, `./mvnw verify` ou `npm test` sans filtre ne se lancent qu'après avoir demandé la permission à l'utilisateur, en expliquant le risque de régression qui la justifie. Si le `testeur` termine son rapport par `SUITE COMPLÈTE DEMANDÉE`, transmets la demande à l'utilisateur ; ne la lance pas de toi-même. La CI joue la suite complète à chaque push.
+- Vérification du build : `./mvnw -q compile` et `npm run build`.
 
-## Definition of Done (DoD)
-A task is done when: Requirements understood, architecture respected, implementation complete, error handling correct, tests present and passing, no critical vulnerabilities, build passes, API contract synchronized, UI accessibility considered, and docs updated.
+## Definition of Done
+Exigence comprise, architecture respectée, erreurs gérées, tests ciblés présents et réussis, build au vert des deux côtés, contrat API synchronisé, accessibilité traitée, documentation mise à jour, aucun constat de sécurité CRITIQUE ou HAUTE ouvert.
 
-## STRICT PROHIBITIONS
-- NEVER expose secrets or commit credentials.
-- NEVER disable security to pass a test.
-- NEVER modify a test to hide a bug.
-- NEVER invent business rules.
-- NEVER break an API contract silently.
-- NEVER add unnecessary dependencies or speculative abstractions.
-- NEVER declare a task done without relevant verification.
+## Interdits
+- JAMAIS exposer un secret ni committer des identifiants.
+- JAMAIS désactiver une protection pour faire passer un test.
+- JAMAIS modifier un test pour masquer un bug.
+- JAMAIS inventer une règle métier : poser la question.
+- JAMAIS casser un contrat API en silence.
+- JAMAIS ajouter une dépendance inutile ni une abstraction spéculative.
+- JAMAIS déclarer une tâche terminée sans vérification réelle.

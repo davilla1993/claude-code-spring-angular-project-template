@@ -1,63 +1,37 @@
 # Backend - Spring Boot
 
-Les règles de la racine s'appliquent toujours.
+Spring Boot 4 / Java 25, monolithe modulaire DDD-light, PostgreSQL. Package racine `com.gfolly.backend`. Suivre les versions réellement présentes dans `pom.xml`.
 
-Respecter l'architecture approuvée :
-- API/controllers
-- application/services
-- domain/business rules
-- persistence
-- infrastructure
+## Structure d'un module
+`api` (controllers + `dto/requests|responses`) → `application` (un use case par classe) → `domain` (entités, enums, exceptions) → `infrastructure` (repositories, `mapper/request|response`, adaptateurs).
 
-Suivre la version Spring Boot réellement présente.
+Modules du socle : `iam` (utilisateurs, rôles, permissions, JWT, sessions), `system` (journal d'audit), `shared` (briques communes), `infrastructure` (sécurité, CORS, WebSocket, rate limiting, ports et adaptateurs de stockage et d'email).
 
-Vérifier :
-- dependency injection
-- validation
-- transactions
-- exception handling
-- profiles/configuration
-- observability
-- secure defaults
+## Conventions du socle (à réutiliser, ne pas dupliquer)
+- **Entités :** étendre `BaseEntity` (`publicId` UUID, audit JPA, soft delete). Seul le `publicId` est exposé, jamais l'id technique.
+- **Controllers :** minces. `@Valid` sur chaque DTO de requête, `@PreAuthorize("hasAuthority('<permission>')")` sur chaque endpoint non public, réponse `ApiResponse<T>` ; listes paginées via `PageResponse.from(page)`. Jamais d'entité JPA en entrée ou en sortie.
+- **Autorisation sur la ressource (ABAC) :** dans le use case, après le chargement et avant la modification ; refus par `ForbiddenOperationException` (`docs/PROJECT_RULES.md`, « Convention ABAC »).
+- **Permissions :** étendre `iam/domain/Permission` et `Role`. Seul le profil actif compte. Ne jamais contourner `SecurityConfig`.
+- **Erreurs :** exception métier dédiée + handler dans `GlobalExceptionHandler`, messages dans `ErrorMessages`.
+- **Validation partagée :** `PersonName`, `PasswordPolicy` ; toute règle est reprise côté frontend.
+- **Audit :** `AuditLogService.log(action, entityType, entityId, details, status)` pour toute action sensible.
+- **Fichiers :** injecter `FileStorageService`, qui porte les contrôles communs ; le fournisseur se branche sur `StoragePort` (`LocalFileStorageAdapter`).
+- **Emails :** ajouter une méthode à `EmailService`, qui rédige le message ; le fournisseur se branche sur `EmailPort` (`SmtpEmailAdapter`).
+- **Mappers :** classes explicites dans `mapper/request` et `mapper/response`, sans logique métier.
 
-API :
-- valider toute entrée externe
-- utiliser des DTO explicites lorsque pertinent
-- éviter d'exposer directement les entités de persistence
-- erreurs cohérentes
-- pas de breaking change silencieux
+## Base de données
+- Schéma géré par Hibernate (`ddl-auto=update`) dans le socle ; migrations Flyway/Liquibase si le projet l'exige.
+- Intégrité référentielle, transactions au niveau du use case, pas de N+1, index justifiés, listes paginées.
+- Aucune modification destructive sans accord explicite.
 
-DB :
-- migrations
-- intégrité référentielle
-- transactions
-- N+1
-- indexes justifiés
-- aucune modification destructive sans accord explicite
+## Configuration
+- `application.yml` (commun, sans secret), `application-dev.yml` (valeurs locales en clair), `application-prod.yml` (variables d'environnement obligatoires, sans valeur par défaut).
+- Profil par défaut : `dev` ; en production `SPRING_PROFILES_ACTIVE=prod` est obligatoire (`docs/PREPROD.md`).
+- Toute nouvelle propriété sensible ou propre à l'environnement est ajoutée aux deux profils et à `.env.example`.
 
-Tests unitaires et tests d'intégration lorsque les frontières le justifient.
-
-## Socle existant
-
-Le backend fournit déjà authentification, utilisateurs, audit, stockage de fichiers, WebSocket et rate limiting
-(voir `docs/ARCHITECTURE.md` [socle], `docs/API_CONTRACT.md`, `docs/SECURITY.md`).
-- Réutiliser ces composants ; ne pas les dupliquer ni contourner `SecurityConfig`.
-- Nouvelles permissions : étendre `iam/domain/Permission` et `Role`.
-- Commandes : `./mvnw test` (le test de contexte nécessite Docker, sinon il est ignoré) ;
-  `./mvnw spring-boot:run` (profil `dev` par défaut ; PostgreSQL local + MailHog démarrés).
-- Configuration : `application.yml` (commun, sans secret), `application-dev.yml` (valeurs locales en clair),
-  `application-prod.yml` (variables d'environnement obligatoires, sans valeur par défaut).
-  Profil par défaut : `dev` ; en production `SPRING_PROFILES_ACTIVE=prod` est obligatoire (voir `docs/PREPROD.md`).
-  Toute nouvelle propriété sensible ou propre à l'environnement doit être ajoutée aux deux profils et à `.env.example`.
-
-## Backend Architecture Rules
-
-- Use DDD-light.
-- Do not introduce Value Objects by default.
-- Create project-owned DTOs.
-- Create explicit DTO mappers.
-- Do not introduce external DTO/mapping libraries without explicit approval.
-- Respect Single Responsibility Principle.
-- Avoid god classes and catch-all methods.
-- Keep controllers thin.
-- Keep business logic in appropriate services/domain components.
+## Commandes (depuis `backend/`)
+- Tests ciblés : `./mvnw -q test -Dtest='ClasseATest,ClasseBTest'`. La suite complète (`./mvnw test`, `./mvnw verify`) exige l'accord de l'utilisateur.
+- Compilation : `./mvnw -q compile`.
+- Lancement : `./mvnw spring-boot:run` (profil `dev` ; PostgreSQL local et MailHog démarrés).
+- **JDK 25 obligatoire.** Avec un JDK plus récent, la compilation échoue sur Lombok (`ExceptionInInitializerError ... EndPosTable`) : ce n'est pas un bug du code, relancer avec `JAVA_HOME` pointant sur un JDK 25.
+- Les tests Testcontainers (`*IntegrationTest`, test de contexte) sont ignorés sans Docker : le signaler dans le compte rendu.

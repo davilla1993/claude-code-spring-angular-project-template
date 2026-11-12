@@ -18,13 +18,7 @@ Spring Boot 4 / Java 25, monolithe modulaire DDD-light, **mono-tenant**. Package
 
 Chaque module métier suit : `api` (controllers + `dto/requests|responses`) → `application` (un use case par classe) → `domain` (entités, enums, exceptions) → `infrastructure` (repositories, `mapper/request|response`, adaptateurs).
 
-Conventions du socle à réutiliser :
-- Entités : étendre `BaseEntity` (publicId UUID, audit JPA createdAt/By, soft delete).
-- Réponses : toujours `ApiResponse<T>` ; listes paginées via `PageResponse.from(page)`.
-- Erreurs : exception métier dédiée + handler dans `GlobalExceptionHandler`, messages dans `ErrorMessages`.
-- Audit : `AuditLogService.log(action, entityType, entityId, details, status)`.
-- Fichiers : injecter `FileStorageService`, qui porte les contrôles communs. Le fournisseur se branche sur `StoragePort` (`LocalFileStorageAdapter`).
-- Emails : ajouter une méthode à `EmailService`, qui rédige le message. Le fournisseur se branche sur `EmailPort` (`SmtpEmailAdapter`).
+Conventions du socle à réutiliser : `backend/CLAUDE.md` (source unique).
 
 ## Frontend architecture [socle]
 

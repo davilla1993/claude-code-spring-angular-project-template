@@ -1,6 +1,7 @@
 # Project Rules
 
-> Règles spécifiques au projet. Les règles globales sont dans CLAUDE.md.
+> Source unique du détail des règles. `CLAUDE.md` n'en donne qu'un résumé d'une ligne ; les conventions du socle sont dans `backend/CLAUDE.md` et `frontend/CLAUDE.md`.
+> Lire la section concernée par la tâche, pas le fichier entier.
 
 ## Architecture et conventions Backend
 
@@ -78,9 +79,6 @@ Un service ou composant externe doit pouvoir être remplacé sans modifier la st
 - HTML sémantique, navigation complète au clavier, focus visible et géré, noms accessibles, contraste suffisant.
 - Erreurs de formulaire reliées à leur champ, responsive, états de chargement, d'erreur et vides présents.
 
-## Naming
-## Package/module structure
-## API conventions
 ## Validation
 
 Chaque règle est appliquée côté serveur et reprise côté frontend pour un retour immédiat. Toute évolution se fait des deux côtés.
@@ -88,10 +86,12 @@ Chaque règle est appliquée côté serveur et reprise côté frontend pour un r
 - **Prénom et nom :** 2 à 25 caractères, espaces de début et de fin non comptés (`PersonName`).
 - **Mot de passe :** 8 à 25 caractères, avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial (`PasswordPolicy`).
 
-## Error handling
-## Logging
-## Database
 ## Testing
+
+- Exécuter uniquement les tests de la fonctionnalité touchée (commandes dans `CLAUDE.md`, « Tests »).
+- La suite complète ne se lance qu'avec l'accord explicite de l'utilisateur ; la CI la joue à chaque push.
+- Chaque règle d'autorisation a un test du cas autorisé et un test du cas refusé, côté serveur.
+
 ## Security
 
 ### Autorisation et séparation des profils
@@ -133,6 +133,6 @@ if (actorId.equals(document.getCreatedByUserId())) {
 
 Stocker sur la ressource le `publicId` de son auteur : `BaseEntity.createdBy` contient un email ou `SYSTEM`, et ne convient pas à cette comparaison. Le message d'erreur est à ajouter à `ErrorMessages`.
 
-## Angular
-## Git
-## Documentation
+## Conventions à compléter au bootstrap
+
+À ajouter ici, uniquement si le projet en a besoin et sans répéter ce qui précède : nommage, structure des modules, conventions d'API, gestion des erreurs, logs, base de données, tests, Angular, Git.
