@@ -17,7 +17,7 @@
   position: absolute;
   inset-inline-start: var(--space-4);
   inset-block-start: -10rem;
-  z-index: 1001;
+  z-index: var(--z-skip-link);
   padding: var(--space-2) var(--space-4);
   background: var(--color-surface);
   border-radius: var(--radius);

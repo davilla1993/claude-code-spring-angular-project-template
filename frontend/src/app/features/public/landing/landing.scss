@@ -1,5 +1,5 @@
 .hero {
-  max-inline-size: 40rem;
+  max-inline-size: var(--width-form);
   margin: var(--space-8) auto;
   text-align: center;
 }
