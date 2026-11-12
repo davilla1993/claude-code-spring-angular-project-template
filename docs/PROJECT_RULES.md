@@ -73,7 +73,7 @@ Un service ou composant externe doit pouvoir être remplacé sans modifier la st
 La pagination se prévoit à la conception, pas quand la table a grossi : l'ajouter après coup casse le contrat API et oblige à reprendre l'écran, les tests et les consommateurs.
 
 - **Toute liste est paginée côté serveur dès sa première version** : endpoint, use case, repository (`Pageable` → `Page`) et écran. Aucun `findAll()` sans `Pageable` derrière un endpoint, même si la table est petite aujourd'hui.
-- **Backend :** `@PageableDefault(size, sort)` sur le controller, pour une taille et un tri par défaut stables ; réponse `PageResponse.from(page)`. La taille de page est bornée par le serveur : une valeur demandée par le client n'est jamais crue sur parole.
+- **Backend :** `@PageableDefault(size, sort)` sur le controller, pour une taille et un tri par défaut stables ; réponse `PageResponse.from(page)`. La taille de page est bornée par le serveur (`spring.data.web.pageable.max-page-size: 50` dans `application.yml`) : une valeur demandée par le client n'est jamais crue sur parole.
 - **Tri et filtres :** appliqués par la requête SQL, jamais en mémoire ni dans le navigateur ; colonnes de tri limitées à une liste connue.
 - **Frontend :** composant `Pagination`, total affiché, filtres appliqués conservés d'une page à l'autre (`docs/DESIGN_SYSTEM.md`, « Tableaux »). Pas de chargement complet suivi d'un découpage côté client.
 - **Contrat :** `docs/API_CONTRACT.md` décrit les paramètres `page`, `size`, `sort` et le tri par défaut de chaque liste.

@@ -85,7 +85,7 @@ Codes : 400 validation/paramètre, 401 non authentifié, 403 interdit, 404 intro
 
 ## Pagination [socle]
 
-Paramètres Spring : `page` (0-based), `size`, `sort=champ,asc|desc`. Réponse `data` :
+Paramètres Spring : `page` (0-based), `size` (20 par défaut, plafonné à 50 par le serveur : une valeur supérieure est ramenée à 50), `sort=champ,asc|desc`. Réponse `data` :
 `{content, page, size, totalElements, totalPages, last}`.
 
 ## Filtering and sorting

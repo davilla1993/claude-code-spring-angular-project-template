@@ -16,6 +16,12 @@ spring:
     show-sql: false
     open-in-view: false
 
+  # Taille de page maximale : une valeur "size" supérieure demandée par le client est ramenée à 50.
+  data:
+    web:
+      pageable:
+        max-page-size: 50
+
   threads:
     virtual:
       enabled: true
