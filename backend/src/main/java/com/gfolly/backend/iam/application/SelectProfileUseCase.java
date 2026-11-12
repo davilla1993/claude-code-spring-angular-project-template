@@ -40,7 +40,7 @@ public class SelectProfileUseCase {
                 .orElseThrow(() -> new InvalidCredentialsException(ErrorMessages.TOKEN_INVALID));
 
         if (!user.getRoles().contains(role)) {
-            auditLogService.log("PROFILE_SELECT", "USER", userId, "profile=" + role, AuditLog.ActionStatus.FAILED);
+            auditLogService.log("PROFILE_SELECT", "USER", userId, "Profil demandé : " + role, AuditLog.ActionStatus.FAILED);
             throw new ForbiddenOperationException(ErrorMessages.PROFILE_NOT_HELD);
         }
 
@@ -48,7 +48,7 @@ public class SelectProfileUseCase {
         AuthSession session = new AuthSession(authTokenService.startExclusiveSession(user, role),
                 UserResponseMapper.toResponse(user, role));
 
-        auditLogService.log("PROFILE_SELECT", "USER", userId, "profile=" + role, AuditLog.ActionStatus.SUCCESS);
+        auditLogService.log("PROFILE_SELECT", "USER", userId, "Profil demandé : " + role, AuditLog.ActionStatus.SUCCESS);
         return session;
     }
 

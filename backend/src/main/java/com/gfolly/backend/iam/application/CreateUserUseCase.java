@@ -39,7 +39,7 @@ public class CreateUserUseCase {
                 UserRequestMapper.toNewUser(request, passwordEncoder.encode(request.temporaryPassword())));
 
         auditLogService.log("USER_CREATE", "USER", user.getPublicId(),
-                "email=" + user.getEmail() + ", roles=" + new TreeSet<>(user.getRoles()), AuditLog.ActionStatus.SUCCESS);
+                "Adresse email : " + user.getEmail() + " ; rôles : " + new TreeSet<>(user.getRoles()), AuditLog.ActionStatus.SUCCESS);
 
         return UserResponseMapper.toResponse(user);
     }

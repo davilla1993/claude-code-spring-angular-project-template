@@ -139,7 +139,7 @@ class SelectProfileUseCaseTest {
         assertThat(session.tokens().refreshToken()).isEqualTo("new-refresh");
         assertThat(session.user().activeRole()).isEqualTo(Role.USER);
         assertThat(session.user().permissions()).isEmpty(); // pas de cumul avec ADMIN
-        verify(auditLogService).log("PROFILE_SELECT", "USER", user.getPublicId(), "profile=USER",
+        verify(auditLogService).log("PROFILE_SELECT", "USER", user.getPublicId(), "Profil demandé : USER",
                 AuditLog.ActionStatus.SUCCESS);
     }
 }

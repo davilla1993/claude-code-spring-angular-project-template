@@ -57,7 +57,7 @@ public class UpdateUserUseCase {
         }
 
         auditLogService.log("USER_UPDATE", "USER", targetId,
-                rolesChanged ? "roles " + previousRoles + " -> " + requestedRoles : null,
+                rolesChanged ? "Rôles : " + previousRoles + " → " + requestedRoles : null,
                 AuditLog.ActionStatus.SUCCESS);
 
         return UserResponseMapper.toResponse(user);

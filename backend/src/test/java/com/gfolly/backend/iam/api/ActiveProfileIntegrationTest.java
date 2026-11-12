@@ -114,7 +114,7 @@ class ActiveProfileIntegrationTest {
 
         // Audit : profil de l'auteur au moment de l'action, c'est-à-dire avant le changement.
         List<AuditLog> entries = profileSelections(user);
-        assertThat(entries).extracting(AuditLog::getDetails).containsExactly("profile=USER", "profile=ADMIN");
+        assertThat(entries).extracting(AuditLog::getDetails).containsExactly("Profil demandé : USER", "Profil demandé : ADMIN");
         assertThat(entries).extracting(AuditLog::getActiveProfile).containsExactly(null, "USER");
         assertThat(entries).extracting(AuditLog::getUserEmail).containsOnly(user.getEmail());
         assertThat(entries).extracting(AuditLog::getStatus).containsOnly(AuditLog.ActionStatus.SUCCESS);

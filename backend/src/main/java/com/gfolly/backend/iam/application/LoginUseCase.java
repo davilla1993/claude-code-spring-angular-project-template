@@ -72,7 +72,7 @@ public class LoginUseCase {
 
         if (user.isEmpty() || !passwordMatches) {
             auditLogService.logAs(email, "LOGIN", "USER", user.map(User::getPublicId).orElse(null),
-                    "Invalid credentials", AuditLog.ActionStatus.FAILED);
+                    "Identifiants invalides", AuditLog.ActionStatus.FAILED);
             throw new InvalidCredentialsException(ErrorMessages.CREDENTIALS_INVALID);
         }
         return user.get();
