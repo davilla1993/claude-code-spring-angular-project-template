@@ -19,17 +19,23 @@
   </div>
 }
 
-<div class="toolbar">
-  <div class="field">
-    <label for="users-role-filter">Rôle</label>
-    <select id="users-role-filter" class="select" [ngModel]="roleFilter()" (ngModelChange)="onRoleFilterChange($event)">
-      <option value="">Tous les rôles</option>
-      @for (role of roles; track role) {
-        <option [value]="role">{{ roleLabels[role] }}</option>
-      }
-    </select>
+<form class="card filters" (ngSubmit)="applyFilters()" aria-label="Filtres de la liste des utilisateurs">
+  <div class="form-row">
+    <div class="field">
+      <label for="users-role-filter">Rôle</label>
+      <select id="users-role-filter" class="select" name="role" [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)">
+        <option value="">Tous les rôles</option>
+        @for (role of roles; track role) {
+          <option [value]="role">{{ roleLabels[role] }}</option>
+        }
+      </select>
+    </div>
   </div>
-</div>
+  <div class="form-actions">
+    <button type="submit" class="btn">Filtrer</button>
+    <button type="button" class="btn btn--secondary" (click)="resetFilters()">Réinitialiser</button>
+  </div>
+</form>
 
 @if (error(); as message) {
   <div class="alert alert--error" role="alert">
@@ -48,7 +54,7 @@
         <thead>
           <tr>
             <th scope="col">Nom</th>
-            <th scope="col">Email</th>
+            <th scope="col">Adresse email</th>
             <th scope="col">Rôles</th>
             <th scope="col">Statut</th>
             <th scope="col"><span class="visually-hidden">Actions</span></th>

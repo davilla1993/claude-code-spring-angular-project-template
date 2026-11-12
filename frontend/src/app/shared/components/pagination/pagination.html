@@ -11,4 +11,4 @@
     </button>
   </nav>
 }
-<p class="muted pagination__total">{{ page().totalElements }} résultat(s)</p>
+<p class="muted pagination__total">{{ page().totalElements }} {{ page().totalElements > 1 ? 'résultats' : 'résultat' }}</p>

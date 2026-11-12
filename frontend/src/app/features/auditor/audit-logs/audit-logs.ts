@@ -6,7 +6,14 @@ import { apiErrorMessage } from '../../../core/utils/api-error';
 import { Pagination } from '../../../shared/components/pagination/pagination';
 import { DEFAULT_PAGE_SIZE } from '../../../shared/constants/app.constants';
 import { PageResponse } from '../../../shared/models/api-response.model';
-import { AuditLog, AuditLogFilters, AuditStatus } from '../../../shared/models/audit-log.model';
+import {
+  AUDIT_ACTION_LABELS,
+  AUDIT_ENTITY_LABELS,
+  AuditLog,
+  AuditLogFilters,
+  AuditStatus,
+} from '../../../shared/models/audit-log.model';
+import { ROLE_LABELS } from '../../../shared/models/user.model';
 
 /** Consultation filtrable du journal d'audit (permission audit:log:view). */
 @Component({
@@ -17,6 +24,12 @@ import { AuditLog, AuditLogFilters, AuditStatus } from '../../../shared/models/a
 })
 export class AuditLogs implements OnInit {
   private readonly auditApi = inject(AuditApi);
+
+  protected readonly actionLabels = AUDIT_ACTION_LABELS;
+  protected readonly entityLabels = AUDIT_ENTITY_LABELS;
+  protected readonly entityTypes = Object.keys(AUDIT_ENTITY_LABELS);
+  /** Le profil journalisé est un code de rôle ; un code inconnu est affiché tel quel. */
+  protected readonly roleLabels: Record<string, string> = ROLE_LABELS;
 
   protected readonly filters = inject(NonNullableFormBuilder).group({
     userEmail: [''],

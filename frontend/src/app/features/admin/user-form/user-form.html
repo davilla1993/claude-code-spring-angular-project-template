@@ -82,7 +82,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn" [disabled]="submitting()">
-          {{ submitting() ? 'Enregistrement…' : 'Enregistrer' }}
+          {{ submitting() ? 'Enregistrement…' : isEdit() ? 'Enregistrer les modifications' : "Créer l'utilisateur" }}
         </button>
         <a class="btn btn--secondary" routerLink="/app/admin/users">Annuler</a>
       </div>

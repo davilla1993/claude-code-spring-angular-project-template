@@ -1,13 +1,15 @@
-<h1>Mon compte</h1>
+<div class="page-header">
+  <h1>Mon compte</h1>
+</div>
 
 <div class="account">
   @if (session.user(); as user) {
     <section class="card" aria-labelledby="profile-title">
-      <h2 id="profile-title">Profil</h2>
+      <h2 id="profile-title">Informations personnelles</h2>
       <dl class="account__profile">
         <dt>Nom</dt>
         <dd>{{ user.firstName }} {{ user.lastName }}</dd>
-        <dt>Email</dt>
+        <dt>Adresse email</dt>
         <dd>{{ user.email }}</dd>
         <dt>Profil actif</dt>
         <dd>{{ user.activeRole ? roleLabels[user.activeRole] : '—' }}</dd>
@@ -61,7 +63,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn" [disabled]="submitting()">
-          {{ submitting() ? 'Enregistrement…' : 'Mettre à jour' }}
+          {{ submitting() ? 'Enregistrement…' : 'Changer le mot de passe' }}
         </button>
       </div>
     </form>

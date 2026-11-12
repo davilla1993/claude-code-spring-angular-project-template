@@ -5,12 +5,17 @@
 <form class="card filters" [formGroup]="filters" (ngSubmit)="applyFilters()" aria-label="Filtres du journal d'audit">
   <div class="form-row">
     <div class="field">
-      <label for="audit-email">Email de l'utilisateur</label>
+      <label for="audit-email">Adresse email</label>
       <input id="audit-email" class="input" formControlName="userEmail" />
     </div>
     <div class="field">
       <label for="audit-entity">Type d'entité</label>
-      <input id="audit-entity" class="input" formControlName="entityType" placeholder="ex : USER" />
+      <select id="audit-entity" class="select" formControlName="entityType">
+        <option value="">Tous</option>
+        @for (type of entityTypes; track type) {
+          <option [value]="type">{{ entityLabels[type] }}</option>
+        }
+      </select>
     </div>
     <div class="field">
       <label for="audit-status">Statut</label>
@@ -21,11 +26,11 @@
       </select>
     </div>
     <div class="field">
-      <label for="audit-from">Du</label>
+      <label for="audit-from">Date de début</label>
       <input id="audit-from" class="input" type="datetime-local" formControlName="from" />
     </div>
     <div class="field">
-      <label for="audit-to">Au</label>
+      <label for="audit-to">Date de fin</label>
       <input id="audit-to" class="input" type="datetime-local" formControlName="to" />
     </div>
   </div>
@@ -66,9 +71,9 @@
             <tr>
               <td>{{ log.actionDate | date: 'short' }}</td>
               <td>{{ log.userEmail ?? '—' }}</td>
-              <td>{{ log.activeProfile ?? '—' }}</td>
-              <td>{{ log.action }}</td>
-              <td>{{ log.entityType }}@if (log.entityId) {<br /><span class="muted entity-id">{{ log.entityId }}</span>}</td>
+              <td>{{ log.activeProfile ? (roleLabels[log.activeProfile] ?? log.activeProfile) : '—' }}</td>
+              <td>{{ actionLabels[log.action] ?? log.action }}</td>
+              <td>{{ entityLabels[log.entityType] ?? log.entityType }}@if (log.entityId) {<br /><span class="muted entity-id">{{ log.entityId }}</span>}</td>
               <td>
                 <span class="badge" [class.badge--success]="log.status === 'SUCCESS'" [class.badge--danger]="log.status === 'FAILED'">
                   {{ log.status === 'SUCCESS' ? 'Succès' : 'Échec' }}

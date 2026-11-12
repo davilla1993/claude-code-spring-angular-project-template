@@ -7,6 +7,7 @@ import { apiErrorMessage } from '../../../core/utils/api-error';
 import { PASSWORD_RULES, passwordStrength } from '../../../core/validators/password-validators';
 import { personName } from '../../../core/validators/person-name-validators';
 import { Role, ROLE_LABELS, ROLES } from '../../../shared/models/user.model';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog-service';
 import { FieldErrorPipe } from '../../../shared/pipes/field-error-pipe';
 import { ToastStore } from '../../../shared/toasts/toast-store';
 
@@ -24,6 +25,7 @@ export class UserForm implements OnInit {
   private readonly session = inject(SessionStore);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   /** Paramètre de route :id (absent en création). */
   readonly id = input<string>();
@@ -67,16 +69,19 @@ export class UserForm implements OnInit {
     control.markAsTouched();
   }
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+    const { firstName, lastName, email, temporaryPassword, roles } = this.form.getRawValue();
+    const id = this.id();
+    if (!(await this.confirmSubmit(!!id, `${firstName} ${lastName}`))) {
       return;
     }
     this.submitting.set(true);
     this.error.set(null);
 
-    const { firstName, lastName, email, temporaryPassword, roles } = this.form.getRawValue();
-    const id = this.id();
     const request = id
       ? this.usersApi.update(id, { firstName, lastName, roles })
       : this.usersApi.create({ firstName, lastName, email, temporaryPassword, roles });
@@ -91,6 +96,22 @@ export class UserForm implements OnInit {
         this.error.set(apiErrorMessage(err));
       },
     });
+  }
+
+  private confirmSubmit(isEdit: boolean, fullName: string): Promise<boolean> {
+    return this.confirmDialog.confirm(
+      isEdit
+        ? {
+            title: "Enregistrer les modifications ?",
+            message: `Les informations et les rôles de ${fullName} seront mis à jour.`,
+            confirmLabel: 'Enregistrer',
+          }
+        : {
+            title: "Créer l'utilisateur ?",
+            message: `Un compte sera créé pour ${fullName}, avec le mot de passe temporaire saisi.`,
+            confirmLabel: 'Créer',
+          },
+    );
   }
 
   private loadUser(id: string): void {

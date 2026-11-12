@@ -27,7 +27,9 @@ export class UsersList implements OnInit {
   protected readonly roleLabels = ROLE_LABELS;
   protected readonly roleNames = roleNames;
 
+  /** Filtre en cours de saisie ; `appliedRole` est celui de la liste affichée, réutilisé par la pagination. */
   protected readonly roleFilter = signal<Role | ''>('');
+  private appliedRole: Role | '' = '';
   protected readonly page = signal<PageResponse<User> | null>(null);
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -42,7 +44,7 @@ export class UsersList implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.usersApi
-      .list({ page: pageIndex, size: DEFAULT_PAGE_SIZE, sort: 'createdAt,desc' }, this.roleFilter() || undefined)
+      .list({ page: pageIndex, size: DEFAULT_PAGE_SIZE, sort: 'createdAt,desc' }, this.appliedRole || undefined)
       .subscribe({
         next: (page) => {
           this.page.set(page);
@@ -55,9 +57,14 @@ export class UsersList implements OnInit {
       });
   }
 
-  protected onRoleFilterChange(role: Role | ''): void {
-    this.roleFilter.set(role);
+  protected applyFilters(): void {
+    this.appliedRole = this.roleFilter();
     this.load(0);
+  }
+
+  protected resetFilters(): void {
+    this.roleFilter.set('');
+    this.applyFilters();
   }
 
   protected isSelf(user: User): boolean {
@@ -69,7 +76,7 @@ export class UsersList implements OnInit {
     if (
       !activate &&
       !(await this.confirmDialog.confirm({
-        title: 'Désactiver le compte',
+        title: 'Désactiver le compte ?',
         message: `${user.firstName} ${user.lastName} ne pourra plus se connecter et ses sessions en cours seront fermées.`,
         confirmLabel: 'Désactiver',
         danger: true,
@@ -88,7 +95,7 @@ export class UsersList implements OnInit {
 
   protected async resetPassword(user: User): Promise<void> {
     const confirmed = await this.confirmDialog.confirm({
-      title: 'Réinitialiser le mot de passe',
+      title: 'Réinitialiser le mot de passe ?',
       message: `Un mot de passe temporaire va être généré pour ${user.firstName} ${user.lastName}. Ses sessions en cours seront fermées.`,
       confirmLabel: 'Réinitialiser',
       danger: true,

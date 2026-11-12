@@ -5,6 +5,7 @@ import { UsersApi } from '../../core/api/users-api';
 import { SessionStore } from '../../core/services/session-store';
 import { apiErrorMessage } from '../../core/utils/api-error';
 import { matchingFields, PASSWORD_RULES, passwordStrength } from '../../core/validators/password-validators';
+import { ConfirmDialogService } from '../../shared/components/confirm-dialog/confirm-dialog-service';
 import { ROLE_LABELS, roleNames } from '../../shared/models/user.model';
 import { ConfirmFieldErrorPipe } from '../../shared/pipes/confirm-field-error-pipe';
 import { FieldErrorPipe } from '../../shared/pipes/field-error-pipe';
@@ -20,6 +21,7 @@ import { ToastStore } from '../../shared/toasts/toast-store';
 export class Account {
   private readonly usersApi = inject(UsersApi);
   private readonly toasts = inject(ToastStore);
+  private readonly confirmDialog = inject(ConfirmDialogService);
   protected readonly session = inject(SessionStore);
 
   protected readonly roleLabels = ROLE_LABELS;
@@ -36,9 +38,17 @@ export class Account {
   protected readonly submitting = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  protected submit(formDirective: FormGroupDirective): void {
+  protected async submit(formDirective: FormGroupDirective): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Changer le mot de passe ?',
+      message: 'Votre mot de passe actuel sera remplacé par le nouveau.',
+      confirmLabel: 'Changer',
+    });
+    if (!confirmed) {
       return;
     }
     this.submitting.set(true);
