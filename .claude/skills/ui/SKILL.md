@@ -30,7 +30,7 @@ Détermine le mode d'après la demande : **Écran** (créer ou modifier) ou **Au
 
 Tu ne modifies aucun fichier avant validation.
 
-1. **Périmètre :** l'écran, le module ou le thème demandé. Pour toute l'application, découper en lots par module (`CLAUDE.md`, « Découpage en lots ») : un rapport par lot.
+1. **Périmètre :** l'écran, le module ou le thème demandé. Pour toute l'application : un seul passage jusqu'à une trentaine de gabarits HTML ; au-delà, découper en lots par module (`CLAUDE.md`, « Découpage en lots »), un rapport par lot.
 2. **Relever les écarts** par rapport à `docs/DESIGN_SYSTEM.md`, dans cet ordre :
    - incohérences entre écrans : même action avec un libellé, un style ou un emplacement différent ; plusieurs styles de bouton, de champ, de tableau, de modale ou de message ;
    - valeurs en dur et styles dupliqués (commande `grep` ci-dessus, sur le périmètre) ;
@@ -46,11 +46,16 @@ Tu ne modifies aucun fichier avant validation.
 
 Juger une interface sans la voir ne vaut rien.
 
-1. Lancer le frontend : `npm start` depuis `frontend/` (http://localhost:4200). Les écrans connectés demandent aussi le backend (`./mvnw spring-boot:run` depuis `backend/`, PostgreSQL et MailHog démarrés) et un compte (`docs/scripts/`).
-2. Ouvrir l'écran avec l'outil de navigateur disponible dans la session (Claude in Chrome, navigateur intégré ou MCP Playwright) et le capturer à **1280, 768 et 375 px** de large.
+1. Lancer le frontend : `npm start` depuis `frontend/` (http://localhost:4200). Les écrans connectés demandent aussi le backend (`./mvnw spring-boot:run` depuis `backend/`, JDK 25, PostgreSQL démarré) et un compte de test : demander à l'utilisateur un compte existant, ou son accord pour en créer un avec `docs/scripts/create-user-two-roles.sql`. Ne jamais créer de compte ni modifier la base sans cet accord.
+2. Capturer l'écran à **1280, 768 et 375 px** de large :
+   - avec l'outil de navigateur de la session s'il y en a un (Claude in Chrome, navigateur intégré, MCP Playwright) ;
+   - sinon avec le script du skill, qui pilote Chrome headless et mesure le débordement horizontal :
+     `UI_EMAIL=... UI_PASSWORD=... UI_PROFILE=Administrateur node .claude/skills/ui/capture.mjs <dossier du scratchpad> /app /app/admin/users`
+     (sans `UI_EMAIL` pour les écrans publics). Lire ensuite les images produites. Ne pas utiliser `chrome --screenshot` directement : la fenêtre headless ne descend pas sous 500 px et fausse les captures mobiles.
+   - Passer tous les chemins en un seul lancement : la connexion est limitée en débit (réponse 429 après plusieurs essais ; redémarrer le backend remet le compteur à zéro).
 3. Regarder chaque capture : alignements sur une même verticale, espacements réguliers, hiérarchie (le titre puis l'action principale se voient en premier), aucun défilement horizontal, aucun texte tronqué ou qui déborde, cohérence avec un écran voisin du même type.
 4. Parcourir l'écran au clavier (Tab, Entrée, Échap) : ordre logique, focus visible.
-5. Provoquer les états : vide, erreur (backend arrêté ou saisie invalide), chargement.
+5. Provoquer les états : vide, erreur (backend arrêté ou saisie invalide), chargement. Avec le script, seuls les états atteignables par une adresse sont capturés : signaler les autres comme non vus.
 6. Corriger, puis capturer de nouveau uniquement ce qui a changé.
 
 Si aucun outil de navigateur n'est disponible, ou si l'application ne peut pas être lancée : dis-le explicitement dans le compte rendu (« non vérifié visuellement ») et liste les écrans à contrôler à la main. Ne présente jamais comme vérifiée une interface que tu n'as pas vue.

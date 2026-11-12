@@ -65,11 +65,12 @@ De haut en bas, toujours dans cet ordre :
 
 1. **En-tête de page** (`.page-header`) : `h1` à gauche, action principale à droite.
 2. **Message contextuel** éventuel (`.alert`).
-3. **Filtres** (barre au-dessus de la liste), s'il y en a.
+3. **Filtres** (`.card.filters` au-dessus de la liste), s'il y en a.
 4. **Contenu** : tableau, formulaire ou cartes.
 5. **Pagination** (`Pagination`), sous la liste.
 
 - Une seule action principale (`.btn`) par écran ou par formulaire ; les autres sont secondaires (`.btn--secondary`) ou des liens.
+- Titre de page : il nomme l'écran. Groupe nominal pour une page de consultation (« Utilisateurs », « Journal d'audit »), verbe à l'infinitif et objet pour une page d'action (« Modifier l'utilisateur »).
 - Liste → détail ou formulaire → retour à la liste : le même parcours pour toutes les ressources.
 - Navigation : en-tête unique (`core/layout/header`), entrées affichées selon le profil actif, entrée courante marquée. Pas de second système de navigation.
 
@@ -83,6 +84,7 @@ Avant de créer un composant ou une classe, chercher ici et dans `styles.scss`. 
 | Formulaire | `.form`, `.form-row`, `.field`, `.input`, `.select`, `.checkbox-group`, `.checkbox`, `.field-hint`, `.field-error`, `.form-actions` |
 | Bloc de contenu | `.card` ; `.form-card` pour un formulaire ; `.auth-card` pour l'authentification |
 | Liste de données | `.table-wrapper` > `.table`, `.table-actions`, composant `Pagination` |
+| Filtres d'une liste | `<form class="card filters">` avec `.form-row` et `.form-actions` |
 | Statut d'un élément | `.badge`, `.badge--success`, `.badge--danger` |
 | Message dans la page | `.alert--error` / `--success` / `--info` / `--warning` |
 | Retour après une action | `ToastStore` |
@@ -95,7 +97,7 @@ Avant de créer un composant ou une classe, chercher ici et dans `styles.scss`. 
 - Ordre dans un groupe : l'action principale est au bord d'alignement. Formulaire (aligné à gauche) : principale, puis « Annuler ». Modale (alignée à droite) : « Annuler », puis principale.
 - `.btn--danger` uniquement pour une action destructrice ou difficile à annuler.
 - Un bouton désactivé reste lisible ; pendant un envoi, il est désactivé et son libellé indique l'action en cours.
-- Pas de bouton réduit à une icône. Si une icône est ajoutée, elle accompagne le texte.
+- Pas de bouton réduit à une icône. Si une icône est ajoutée, elle accompagne le texte. Seule exception : la fermeture « × » d'un toast, avec son `aria-label`.
 
 ### Formulaires
 - Une colonne par défaut ; `.form-row` pour des champs courts et liés (prénom et nom).
@@ -104,13 +106,17 @@ Avant de créer un composant ou une classe, chercher ici et dans `styles.scss`. 
 - Aide sous le champ (`.field-hint`), avant la saisie, pour toute contrainte de format.
 - Erreur sous le champ (`.field-error`), reliée par `aria-describedby`, avec `aria-invalid` ; message qui dit quoi corriger. Affichée après la sortie du champ ou l'envoi, pas pendant la frappe. Pipes `fieldError` / `confirmFieldError`.
 - Erreur du serveur : `.alert--error` en tête du formulaire, saisie conservée.
+- Bouton d'envoi : verbe et objet (« Créer l'utilisateur », « Changer le mot de passe »), jamais « Enregistrer » ou « Valider » seul.
 - Actions en bas à gauche (`.form-actions`) : principale, puis « Annuler ».
 
 ### Tableaux
 - En-têtes courts, `scope="col"`, `<caption>` (éventuellement `.visually-hidden`).
 - Texte aligné à gauche, nombres à droite, dates dans un format unique.
 - Actions de ligne dans la dernière colonne (`.table-actions`, `.btn--sm`), dans le même ordre sur chaque ligne et dans chaque tableau.
-- Toujours paginé côté serveur ; total affiché ; filtres au-dessus, appliqués sans rechargement de page.
+- Toujours paginé côté serveur ; total affiché.
+- Filtres : un seul modèle, quel que soit leur nombre. Formulaire `.card.filters` au-dessus du tableau, appliqué par le bouton « Filtrer » et vidé par « Réinitialiser » ; jamais de filtrage à la saisie. La pagination conserve les filtres appliqués.
+- Jamais de code technique à l'écran (`USER_CREATE`, `ADMIN`) : chaque code a un libellé, défini avec son modèle dans `shared/models`.
+- Dates : `short` dans un tableau, `longDate` dans une fiche ou une phrase. Pas d'autre format.
 - Sur petit écran, le tableau défile horizontalement dans `.table-wrapper` ; la page, jamais.
 
 ### Modales
