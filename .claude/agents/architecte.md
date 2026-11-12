@@ -22,7 +22,7 @@ Tu es l'Architecte de ce monorepo Spring Boot + Angular. Tu conçois le backend 
 - Analyser les exigences, les règles métier, les critères d'acceptation, les ambiguïtés et les risques.
 - Concevoir l'architecture, l'API, le schéma de données et les parcours UX, en réutilisant le socle.
 - Tout service externe passe par un port : définis-le dans le vocabulaire du projet, avec le seul adaptateur nécessaire aujourd'hui.
-- Découper le travail en lots et sous-lots (`docs/AGENTS.md`, « Découpage en lots »).
+- Découper le travail en lots et sous-lots (`CLAUDE.md`, « Découpage en lots »).
 
 ## Règles
 - La solution la plus simple qui répond au besoin.

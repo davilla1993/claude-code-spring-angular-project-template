@@ -13,7 +13,6 @@ project/
 │   └── settings.json           (permissions partagées : tests ciblés autorisés, suite complète sur accord)
 ├── docs/
 │   ├── cahier-des-charges.md   (à ajouter pour chaque projet)
-│   ├── AGENTS.md
 │   ├── PREPROD.md
 │   ├── CONTRIBUTING.md
 │   ├── scripts/                (scripts SQL : premier admin, utilisateur de test)
@@ -31,7 +30,7 @@ project/
 4. Lancer le bootstrap avec la commande `/bootstrap` (procédure : `docs/DEVELOPMENT_WORKFLOW.md`). Claude analyse le cahier des charges, écrit la documentation et le plan d'implémentation, puis s'arrête avant tout code pour faire valider ses décisions et ses questions.
 
 ## Travailler avec Claude Code
-- **Workflows et agents** : `CLAUDE.md` choisit le workflow selon la taille de la tâche ; les sous-agents (`architecte`, `testeur`, `reviewer`, `security-auditor`) sont dans `.claude/agents/`, l'équipe est décrite dans `docs/AGENTS.md`.
+- **Workflows et agents** : `CLAUDE.md` choisit le workflow selon la taille de la tâche ; les sous-agents (`architecte`, `testeur`, `reviewer`, `security-auditor`) sont dans `.claude/agents/`.
 - **Tests** : seuls les tests de la fonctionnalité touchée sont exécutés. La suite complète n'est lancée qu'avec votre accord ; la CI la joue à chaque push.
 - **JDK 25 requis** pour le backend : avec un JDK plus récent, la compilation échoue sur Lombok.
 

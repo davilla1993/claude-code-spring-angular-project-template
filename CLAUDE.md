@@ -19,7 +19,6 @@ Ne jamais sacrifier la sécurité ou la correction pour aller plus vite.
 | Auth, sessions, secrets, fichiers | `docs/SECURITY.md` |
 | Tokens, composants, parcours | `docs/DESIGN_SYSTEM.md` |
 | Besoin métier | `docs/cahier-des-charges.md`, `docs/PRD.md` |
-| Découpage en lots, équipe | `docs/AGENTS.md` |
 
 ## Règles non négociables
 Une ligne par règle ici ; le détail est dans `docs/PROJECT_RULES.md`, à lire avant de toucher au sujet.
@@ -46,8 +45,14 @@ Choisis le workflow le plus léger qui convient, et ne lance que les agents qu'i
 
 - **Tâche sensible** : tout ce qui touche à l'authentification, aux sessions, aux permissions, aux données sensibles, aux fichiers, à la configuration de sécurité ou aux secrets. Un constat CRITIQUE ou HAUTE bloque la tâche.
 - **Déroulé** : lire le code concerné → plan court → plus petit changement cohérent → tests ciblés → relecture du diff.
-- **Grosse tâche** : la découper en lots et s'arrêter à la fin de chaque lot (`docs/AGENTS.md`).
 - **Lancer un agent** : donne-lui le périmètre exact (fichiers ou commande `git diff`), l'objectif et les décisions déjà prises, pour qu'il ne les redécouvre pas. Après corrections, ne lui faire revérifier que les corrections.
+
+## Découpage en lots
+Toute grosse fonctionnalité, revue de code ou longue tâche est découpée en lots (résultat cohérent et vérifiable) et, si besoin, en sous-lots (petite étape qui laisse le build au vert). Exemple : `Lot 1 Authentification → 1a modèle, 1b endpoints, 1c écran`.
+- Présenter le découpage avant de commencer.
+- Fin de sous-lot : build et tests ciblés vérifiés, puis sous-lot suivant.
+- Fin de lot : `testeur`, `reviewer` et, si le lot est sensible, `security-auditor` sur le diff du lot ; puis s'arrêter et attendre l'accord de l'utilisateur.
+- Revue de code : même découpage, par module ou par thème, un rapport par lot.
 
 ## Tests
 - N'exécuter que les tests de la fonctionnalité touchée :
