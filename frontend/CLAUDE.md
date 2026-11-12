@@ -18,6 +18,7 @@ Charger le skill `/ui` : il applique `docs/DESIGN_SYSTEM.md` (une seule façon d
 ## Règles
 - **Composants :** une responsabilité ; HTML, SCSS et TypeScript dans des fichiers séparés ; pas de logique métier dans les templates ; état partagé dans un service dédié.
 - **États :** chaque écran traite le chargement, l'erreur et le vide.
+- **Listes :** paginées par le serveur dès leur première version, avec le composant `Pagination` ; jamais de liste chargée en entier puis découpée dans le navigateur.
 - **API :** un changement d'API met à jour modèles, services `core/api`, consommateurs et tests. Ne pas dupliquer les règles métier du backend.
 - **Sécurité :** guards et masquage n'adaptent que l'interface, le serveur décide. Aucun secret ni jeton dans le code ou le stockage du navigateur. Pas de `innerHTML` ni de `bypassSecurityTrust*`.
 - **Accessibilité :** HTML sémantique, labels, navigation complète au clavier, focus visible et géré, erreurs reliées à leur champ, responsive.

@@ -50,6 +50,10 @@ Sans profil actif (utilisateur à plusieurs rôles, juste après la connexion), 
 
 `GET ?userEmail=&entityType=&status=SUCCESS|FAILED&from=&to=&page=&size=&sort=` — permission `audit:log:view`. Tri par défaut : `actionDate,desc`. Chaque entrée indique `activeProfile`, le profil actif de l'auteur au moment de l'action.
 
+Codes journalisés — toute action ou entité ajoutée côté serveur est reportée ici et dans les libellés du frontend (`shared/models/audit-log.model.ts`), sinon elle s'affiche par son code et ne peut pas être filtrée :
+- `action` : `LOGIN`, `REGISTER`, `PROFILE_SELECT`, `PASSWORD_CHANGE`, `PASSWORD_RESET`, `PASSWORD_SETUP`, `USER_CREATE`, `USER_UPDATE`, `USER_ACTIVATE`, `USER_DEACTIVATE`, `USER_PASSWORD_RESET`.
+- `entityType` : `USER`.
+
 ### Fichiers — `/api/uploads/{clé}` [socle]
 
 `GET` : lecture authentifiée des fichiers déposés via `FileStorageService` (pas d'endpoint d'upload générique : à ajouter par fonctionnalité). 200 avec le contenu du fichier, 401 sans session, 403 sans profil actif, 404 si la clé est invalide ou le fichier introuvable, 500 si le stockage est en panne. Le fichier est toujours renvoyé en entier : l'en-tête `Range` est ignoré.

@@ -5,6 +5,7 @@ import { UsersApi } from '../../../core/api/users-api';
 import { SessionStore } from '../../../core/services/session-store';
 import { apiErrorMessage } from '../../../core/utils/api-error';
 import { matchingFields, PASSWORD_RULES, passwordStrength } from '../../../core/validators/password-validators';
+import { ConfirmDialogService } from '../../../shared/components/confirm-dialog/confirm-dialog-service';
 import { ConfirmFieldErrorPipe } from '../../../shared/pipes/confirm-field-error-pipe';
 import { FieldErrorPipe } from '../../../shared/pipes/field-error-pipe';
 import { ToastStore } from '../../../shared/toasts/toast-store';
@@ -20,6 +21,7 @@ export class SetupPassword {
   private readonly session = inject(SessionStore);
   private readonly router = inject(Router);
   private readonly toasts = inject(ToastStore);
+  private readonly confirmDialog = inject(ConfirmDialogService);
 
   protected readonly passwordRules = PASSWORD_RULES;
   protected readonly form = inject(NonNullableFormBuilder).group(
@@ -32,9 +34,18 @@ export class SetupPassword {
   protected readonly submitting = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+    // Session déjà ouverte : ce formulaire n'est pas exempté de confirmation (frontend/CLAUDE.md).
+    const confirmed = await this.confirmDialog.confirm({
+      title: 'Enregistrer le mot de passe ?',
+      message: 'Il remplacera le mot de passe temporaire qui vous a été communiqué.',
+      confirmLabel: 'Enregistrer',
+    });
+    if (!confirmed) {
       return;
     }
     this.submitting.set(true);
