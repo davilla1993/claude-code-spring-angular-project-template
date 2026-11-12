@@ -27,7 +27,8 @@ Contrôle le backend et le frontend avec la même exigence. Si le diff ne touche
 - **Confirmation des actions (si UI) :** opération d'écriture sans confirmation, ou modale dupliquée (`frontend/CLAUDE.md`).
 - **Cohérence visuelle (si UI) :** valeur en dur au lieu d'un token, classe ou composant qui double le socle, écran qui s'écarte de la structure ou des libellés des écrans voisins (`docs/DESIGN_SYSTEM.md`, sections concernées).
 - **Accessibilité (si UI) :** clavier, focus, HTML sémantique, noms accessibles, contraste, erreurs de formulaires, responsive, états de chargement, d'erreur et vides.
-- **Performance :** N+1, liste non paginée, requête trop large, rendu Angular, appels API dupliqués, lazy loading.
+- **Pagination :** toute liste est paginée côté serveur, de l'endpoint à l'écran ; une liste non paginée est BLOQUANT (`docs/PROJECT_RULES.md`, « Pagination dès le départ »).
+- **Performance :** N+1, requête trop large, rendu Angular, appels API dupliqués, lazy loading.
 
 ## Sécurité
 L'audit de sécurité revient à `security-auditor`. Si le diff touche à l'authentification, aux sessions, aux permissions, aux données sensibles, aux fichiers, à la configuration de sécurité ou aux secrets, et que cet audit n'est pas prévu, signale-le en une ligne.

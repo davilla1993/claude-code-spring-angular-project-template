@@ -68,9 +68,22 @@ Un service ou composant externe doit pouvoir être remplacé sans modifier la st
 - **Tests :** le métier se teste avec une fausse implémentation du port, et tous les adaptateurs passent les mêmes tests de comportement.
 - **Pas d'anticipation :** on crée le port dès la première intégration, avec le seul adaptateur nécessaire. Les autres s'ajoutent le jour où le besoin existe.
 
+### Pagination dès le départ
+
+La pagination se prévoit à la conception, pas quand la table a grossi : l'ajouter après coup casse le contrat API et oblige à reprendre l'écran, les tests et les consommateurs.
+
+- **Toute liste est paginée côté serveur dès sa première version** : endpoint, use case, repository (`Pageable` → `Page`) et écran. Aucun `findAll()` sans `Pageable` derrière un endpoint, même si la table est petite aujourd'hui.
+- **Backend :** `@PageableDefault(size, sort)` sur le controller, pour une taille et un tri par défaut stables ; réponse `PageResponse.from(page)`. La taille de page est bornée par le serveur : une valeur demandée par le client n'est jamais crue sur parole.
+- **Tri et filtres :** appliqués par la requête SQL, jamais en mémoire ni dans le navigateur ; colonnes de tri limitées à une liste connue.
+- **Frontend :** composant `Pagination`, total affiché, filtres appliqués conservés d'une page à l'autre (`docs/DESIGN_SYSTEM.md`, « Tableaux »). Pas de chargement complet suivi d'un découpage côté client.
+- **Contrat :** `docs/API_CONTRACT.md` décrit les paramètres `page`, `size`, `sort` et le tri par défaut de chaque liste.
+- **Seule exception :** une liste de référence fermée et courte, définie par le code (rôles, statuts, types). Une liste que les utilisateurs peuvent allonger n'est jamais une exception.
+- **Conception et revue :** l'Architecte prévoit la pagination de chaque liste dans son rapport ; une liste non paginée est un constat BLOQUANT du Reviewer.
+- **Tests :** chaque liste a un test qui vérifie la pagination (page demandée, total) et la conservation des filtres.
+
 ### Performance et rapidité
 
-- **Backend :** pas de N+1, pagination des listes, index justifiés, requêtes limitées aux données utiles.
+- **Backend :** pas de N+1, index justifiés, requêtes limitées aux données utiles.
 - **Frontend :** lazy loading, `OnPush` et signals lorsque c'est possible, `track` sur les listes, pas d'appel API dupliqué, bundle surveillé.
 - Mesurer avant d'optimiser : pas de cache ni d'abstraction sans besoin constaté.
 

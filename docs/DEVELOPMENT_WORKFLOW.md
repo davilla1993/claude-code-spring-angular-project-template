@@ -14,7 +14,7 @@ Le workflow des tâches courantes (features, revues, audits) est dans `CLAUDE.md
 Lui demander, en une fois, un rapport couvrant :
 - **Exigences :** acteurs, cas d'utilisation, exigences fonctionnelles et non fonctionnelles, règles métier, critères d'acceptation, cas limites, hypothèses, risques, questions ouvertes.
 - **Architecture :** modules à créer, ce qui est repris du socle, schéma de données, intégrations (un port par service externe), rôles et permissions, règles ABAC, déploiement.
-- **API :** endpoints à ajouter, avec leur permission.
+- **API :** endpoints à ajouter, avec leur permission ; toute liste paginée, avec son tri par défaut et ses filtres.
 - **UX :** parcours, écrans, états, composants à réutiliser ou à créer.
 - **Plan :** découpage en lots et sous-lots, dans l'ordre des dépendances.
 

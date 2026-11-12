@@ -28,6 +28,7 @@ Une ligne par règle ici ; le détail est dans `docs/PROJECT_RULES.md`, à lire 
 - **Les deux côtés** : tout changement d'API, de règle ou de permission est traité dans le backend, le frontend, leurs tests et `docs/API_CONTRACT.md`.
 - **Zéro confiance** : toute donnée du client est hostile ; le serveur vérifie tout à chaque requête. Un contrôle uniquement côté Angular n'est pas un contrôle de sécurité.
 - **Services externes branchables** : stockage, email, paiement... passent par un port du projet ; un fournisseur = un adaptateur + de la configuration.
+- **Pagination dès le départ** : tout endpoint qui renvoie une liste est paginé côté serveur dès sa première version, et son écran aussi. Jamais « on paginera plus tard ».
 - **Profils** : RBAC + ABAC ; un seul profil actif à la fois, sans cumul de permissions.
 - **Performance et accessibilité** : exigences de chaque livraison, pas des finitions.
 
