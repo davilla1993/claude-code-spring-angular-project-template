@@ -1,36 +1,25 @@
 # Engineering Agents
 
-Équipe réduite pour limiter la consommation de tokens. Les consignes de chaque sous-agent sont dans `.claude/agents/`.
+Équipe réduite pour limiter la consommation de tokens. Les consignes de chaque sous-agent sont dans `.claude/agents/` ; le choix du workflow est dans `CLAUDE.md` (« Workflow »), chargé à chaque session.
 
-| Agent | Fichier | Périmètre | Droits |
-|---|---|---|---|
-| **Senior Developer** | session principale | Back, front, base de données, DevOps | Seul à écrire le code de production |
-| **Architecte** | `architecte.md` | Exigences, architecture, UX, schéma de base de données | Rapport seulement |
-| **Testeur** | `testeur.md` | Tests, régressions, cas limites | Écrit uniquement les tests ; signale les bugs sans les corriger |
-| **Reviewer** | `reviewer.md` | Qualité du code, accessibilité, performance | Rapport seulement |
-| **Security Auditor** | `security-auditor.md` | JWT, sessions, cookies, CSRF, CORS, XSS, injection, IDOR, secrets, OWASP | Rapport seulement |
+| Agent | Fichier | Modèle | Périmètre | Droits |
+|---|---|---|---|---|
+| **Senior Developer** | session principale | celui de la session | Back, front, base de données, DevOps, tests des features | Seul à écrire le code de production |
+| **Architecte** | `architecte.md` | opus | Exigences, architecture, UX, schéma de données | Rapport seulement |
+| **Testeur** | `testeur.md` | sonnet | Tests complémentaires d'un lot ou d'une feature complexe | Écrit uniquement les tests ; signale les bugs sans les corriger |
+| **Reviewer** | `reviewer.md` | opus | Qualité du code, accessibilité, performance | Rapport seulement |
+| **Security Auditor** | `security-auditor.md` | opus | JWT, sessions, cookies, CSRF, CORS, XSS, injection, IDOR, secrets, OWASP | Rapport seulement |
 
-## Exigences communes
-Tous les agents travaillent sur le backend **et** le frontend, et appliquent les « Règles transverses » de `PROJECT_RULES.md` : Single Responsibility, zéro confiance, services externes branchables, performance et accessibilité.
+Chaque agent a un budget de lecture et un nombre de tours limité : s'il l'atteint, il rend son rapport en listant ce qu'il n'a pas examiné.
 
 ## Senior Developer
-Implémente et corrige le code : Spring Boot, Angular, migrations, configuration, CI/CD. Applique les règles de `backend/CLAUDE.md` et `frontend/CLAUDE.md`. Vérifie le build des deux côtés avant de passer la main. Traite les bugs du Testeur et les findings du Reviewer et du Security Auditor.
+Implémente et corrige le code : Spring Boot, Angular, migrations, configuration, CI/CD. Écrit les tests de ce qu'il implémente. Vérifie le build des deux côtés avant de passer la main. Traite les bugs du Testeur et les constats du Reviewer et du Security Auditor.
 
-# Workflows
+## Tests
+Seuls les tests de la fonctionnalité touchée sont exécutés. La suite complète ne se lance qu'avec l'accord de l'utilisateur (`CLAUDE.md`, « Tests »). Le Testeur ne la lance jamais : il la demande dans son rapport.
 
-| Cas | Enchaînement |
-|---|---|
-| **Petite tâche** | Senior Developer seul (tests inclus) |
-| **Feature** | Senior Developer → Testeur → Reviewer |
-| **Feature complexe ou nouveau module** | Architecte → Senior Developer → Testeur → Reviewer |
-| **Revue de code** | Reviewer → Senior Developer si corrections |
-| **Audit de sécurité** | Security Auditor → Senior Developer si corrections → Security Auditor sur les corrections |
-| **Bootstrap** | Architecte, sans code (voir `DEVELOPMENT_WORKFLOW.md`) |
-
-## Tâches sensibles
-Le Security Auditor est obligatoire, même pour une petite tâche, dès qu'elle touche à l'authentification, aux sessions, aux permissions, aux données sensibles, aux fichiers, à la configuration de sécurité ou aux secrets. Il intervient en fin de workflow, et un constat CRITIQUE ou HAUTE bloque la tâche.
-
-Il est aussi lancé avant une mise en production (`PREPROD.md`).
+## Security Auditor
+Obligatoire en fin de workflow pour toute tâche sensible (`CLAUDE.md`), même petite, et avant une mise en production (`PREPROD.md`). Un constat CRITIQUE ou HAUTE bloque la tâche.
 
 # Découpage en lots
 
@@ -47,14 +36,14 @@ Lot 2 : ...
 - **Lot :** résultat cohérent et vérifiable.
 - **Sous-lot :** petite étape qui laisse le build au vert.
 - **Plan :** présenter le découpage avant de commencer.
-- **Sous-lot terminé :** le Senior Developer vérifie le build, puis passe au suivant.
-- **Lot terminé :** le Testeur, le Reviewer et le Security Auditor interviennent sur le diff du lot, si le workflow le prévoit.
+- **Sous-lot terminé :** le Senior Developer vérifie le build et les tests ciblés, puis passe au suivant.
+- **Lot terminé :** le Testeur, le Reviewer et, si le lot est sensible, le Security Auditor interviennent sur le diff du lot.
 - **Validation :** s'arrêter à la fin de chaque lot et attendre l'accord de l'utilisateur.
 - **Revue de code :** même découpage, par module ou par thème ; un rapport par lot.
 
 # Limiter les tokens
 
-- La session principale joue le Senior Developer ; les autres agents ne sont lancés que si le workflow le prévoit.
-- Un agent à la fois, jamais en parallèle.
+- Un agent à la fois, jamais en parallèle, et seulement si le workflow le prévoit.
+- Donner à l'agent son périmètre exact et les décisions déjà prises.
 - Rapports courts : uniquement les problèmes trouvés, avec leur preuve.
 - Après corrections, ne revérifier que les corrections.
