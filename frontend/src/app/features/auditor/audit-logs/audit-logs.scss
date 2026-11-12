@@ -1,4 +1,4 @@
 .entity-id {
   font-size: var(--font-size-sm);
-  overflow-wrap: anywhere;
+  white-space: nowrap; // un identifiant se lit d'un seul tenant ; le tableau défile dans .table-wrapper
 }

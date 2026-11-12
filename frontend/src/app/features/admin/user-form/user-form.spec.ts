@@ -114,6 +114,7 @@ describe('UserForm roles', () => {
 
     expect(element().querySelector('form')).toBeNull();
     expect(element().querySelector('[role="alert"]')).not.toBeNull();
+    expect(element().querySelector('a[href="/app/admin/users"]')).not.toBeNull();
   });
 
   it('loads and updates the roles of another user', async () => {
